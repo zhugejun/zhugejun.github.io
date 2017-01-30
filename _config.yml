@@ -1,0 +1,19 @@
+# Site settings
+title: Random Learning Machine
+tagline: "Teaching is the best way of learning."
+description: > 
+  I am just a random guy who is learning about machine learning.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "http://gejun.name" 
+
+
+
+# Build settings
+markdown: kramdown
+kramdown:
+    auto_ids: false
+
+gems: [jekyll-paginate]
+paginate: 4
+paginate_path: "/blog/page:num/"
+permalink: /blog/:title
