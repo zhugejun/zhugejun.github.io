@@ -2,16 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://gejun.name/archives/</loc>
+    <loc>https://gejun.name/archives/</loc>
   </url><url>
-    <loc>http://gejun.name/categories/</loc>
+    <loc>https://gejun.name/categories/</loc>
   </url><url>
-    <loc>http://gejun.name/</loc>
+    <loc>https://gejun.name/</loc>
   </url><url>
-    <loc>http://gejun.name/search/</loc>
+    <loc>https://gejun.name/search/</loc>
   </url><url>
-    <loc>http://gejun.name/series/</loc>
+    <loc>https://gejun.name/series/</loc>
   </url><url>
-    <loc>http://gejun.name/tags/</loc>
+    <loc>https://gejun.name/tags/</loc>
   </url>
 </urlset>
