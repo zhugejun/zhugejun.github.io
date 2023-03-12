@@ -45,8 +45,8 @@ outputs:
         - JSON
 
 params:
-    env: production # to enable google analytics, opengraph, twitter-cards and schema.
-    description: "Notes on Machine Learning DevOps (MLOps)"
+    env: production 
+    description: "Notes on statistics, machine learning, deep learning, and natural language processing. Teaching is the best way of learning."
     author: "Gejun Zhu"
 
     defaultTheme: auto
@@ -80,7 +80,21 @@ params:
     homeInfoParams:
         Title: "👋 Hi, I'm Gejun Zhu"
         Content: >
-            Welcome to my blog. I am a full-stack developer using Django and React. 
+            Welcome to my blog. I am currently working as a Statistician at a public college. 
+            I am interested in statistics, machine learning, and deep learning.
+            The main purpose of this blog is to share what I've learned and what I am currently learning. 
+            My favorite quote from Richard Feynman is "What I cannot create, I don't understand."
+            I hope that you will find something useful and interesting here.
+    
+    mainSections:
+        - blog
+        - machine-learning
+        - mlops
+        - computer-vision
+        - deep-learning
+        - leetcode
+        - natural-language-processing
+        - portfolio
 
 
     socialIcons:
@@ -168,3 +182,7 @@ services:
         disableInlineCSS: true
     twitter:
         disableInlineCSS: true
+
+
+# quarto
+ignoreFiles: [ "\\.qmd$", "\\.ipynb$", "\\.py$" ]
