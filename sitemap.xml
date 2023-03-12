@@ -2,16 +2,40 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://gejun.name/archives/</loc>
+    <loc>https://gejun.name/tags/bigram/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/natural-language-processing/building-makemore/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/categories/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/mooc/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/natural-language-processing/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/neural-network/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/nlp/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/pytorch/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/</loc>
+    <lastmod>2023-03-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/archives/</loc>
   </url><url>
     <loc>https://gejun.name/search/</loc>
   </url><url>
     <loc>https://gejun.name/series/</loc>
-  </url><url>
-    <loc>https://gejun.name/tags/</loc>
   </url>
 </urlset>

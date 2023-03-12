@@ -5,6 +5,34 @@
     <link>https://gejun.name/categories/</link>
     <description>Recent content in Categories on Gejun&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://gejun.name/categories/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Sat, 04 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MOOC</title>
+      <link>https://gejun.name/categories/mooc/</link>
+      <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/categories/mooc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Neural Network</title>
+      <link>https://gejun.name/categories/neural-network/</link>
+      <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/categories/neural-network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NLP</title>
+      <link>https://gejun.name/categories/nlp/</link>
+      <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/categories/nlp/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>
