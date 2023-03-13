@@ -60,7 +60,20 @@ params:
     ShowCodeCopyButtons: true
     ShowToc: true
 
-    comments: true 
+    comments: 
+        giscus:
+            data-repo: "zhugejun/zhugejun.github.io"
+            data-repo-id: "R_kgDOHhj4uw"
+            data-category: "General"
+            data-category-id: "DIC_kwDOHhj4u84CU1X6"
+            data-mapping: "pathname"
+            data-strict: "0"
+            data-reactions-enabled: "1"
+            data-emit-metadata: "0"
+            data-input-position: "bottom"
+            data-theme: "preferred-theme"
+            data-lang: "en"
+            crossorigin: "anonymous"
 
     images: [""]
 
