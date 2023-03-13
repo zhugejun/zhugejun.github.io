@@ -62,18 +62,15 @@ params:
 
     comments: 
         giscus:
-            data-repo: "zhugejun/zhugejun.github.io"
-            data-repo-id: "R_kgDOHhj4uw"
-            data-category: "General"
-            data-category-id: "DIC_kwDOHhj4u84CU1X6"
-            data-mapping: "pathname"
-            data-strict: "0"
-            data-reactions-enabled: "1"
-            data-emit-metadata: "0"
-            data-input-position: "bottom"
-            data-theme: "preferred-theme"
-            data-lang: "en"
-            crossorigin: "anonymous"
+            repo: "zhugejun/zhugejun.github.io"
+            repo-id: "R_kgDOHhj4uw"
+            category: "Announcements"
+            category-id: "DIC_kwDOHhj4u84CU1X6"
+            mapping: "pathname"
+            strict: "0"
+            reactions_enabled: "1"
+            theme: "preferred_color_scheme"
+            lang: "en"
 
     images: [""]
 
