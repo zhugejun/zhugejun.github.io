@@ -11,22 +11,40 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 04 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 13 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>bigram</title>
-      <link>https://gejun.name/tags/bigram/</link>
-      <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
+      <title>embedding</title>
+      <link>https://gejun.name/tags/embedding/</link>
+      <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://gejun.name/tags/bigram/</guid>
+      <guid>https://gejun.name/tags/embedding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>n-gram</title>
+      <link>https://gejun.name/tags/n-gram/</link>
+      <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/tags/n-gram/</guid>
       <description></description>
     </item>
     
     <item>
       <title>pytorch</title>
       <link>https://gejun.name/tags/pytorch/</link>
-      <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
       
       <guid>https://gejun.name/tags/pytorch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bigram</title>
+      <link>https://gejun.name/tags/bigram/</link>
+      <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/tags/bigram/</guid>
       <description></description>
     </item>
     

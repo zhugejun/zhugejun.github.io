@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>pytorch on Gejun&#39;s Blog</title>
-    <link>https://gejun.name/tags/pytorch/</link>
-    <description>Recent content in pytorch on Gejun&#39;s Blog</description>
+    <title>embedding on Gejun&#39;s Blog</title>
+    <link>https://gejun.name/tags/embedding/</link>
+    <description>Recent content in embedding on Gejun&#39;s Blog</description>
     <image>
       <title>Gejun&#39;s Blog</title>
       <url>https://gejun.name</url>
@@ -11,7 +11,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 13 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 13 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/tags/embedding/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Multilayer Perceptron (MLP)</title>
       <link>https://gejun.name/natural-language-processing/building-makemore-mlp/</link>
@@ -19,16 +19,6 @@
       
       <guid>https://gejun.name/natural-language-processing/building-makemore-mlp/</guid>
       <description>In Part1, we learned how to build a neural network with one hidden layer to generate words. The model we built performed fairly well as we got the exact words generated based on counting. However, the bigram model suffers from the limitation that it assumes that each character only depends on its previous character. Suppose there is only one bigram starting with a particular character. In that case, the model will always generate the following character in that bigram, regardless of the context or the probability of other characters.</description>
-    </item>
-    
-    <item>
-      <title>Bigram Character-level Language Model</title>
-      <link>https://gejun.name/natural-language-processing/building-makemore/</link>
-      <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://gejun.name/natural-language-processing/building-makemore/</guid>
-      <description>This is a series of learning notes for the excellent online course Neural Networks: Zero to Hero created by Andrej Karpathy. The official Jupyter Notebook for this lecture is here.
-In this lecture, Andrej shows us two different approaches to generating characters. The first approach involves sampling characters based on a probability distribution, while the second uses a neural network built from scratch. Before we can generate characters using either approach, let&amp;rsquo;s prepare the data first.</description>
     </item>
     
   </channel>
