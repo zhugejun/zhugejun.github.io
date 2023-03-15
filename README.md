@@ -49,8 +49,8 @@ comments:
     giscus:
         repo: "[ENTER REPO HERE]"
         repo-id: "[ENTER REPO ID HERE]"
-        category: "[ENTER CATEGORY ID HERE]"
-        category-id: "[ENTER CATEGORY NAME HERE]"
+        category: "[ENTER CATEGORY NAME HERE]"
+        category-id: "[ENTER CATEGORY ID HERE]"
         mapping: "pathname"
         strict: "0"
         reactions_enabled: "1"
