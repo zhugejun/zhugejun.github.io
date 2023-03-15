@@ -12,7 +12,7 @@ buildFuture: false
 buildExpired: false
 enableEmoji: true
 pygmentsUseClasses: true
-googleAnalytics: G-BEP7FKQVEG
+# googleAnalytics: "G-BEP7FKQVEG"
 
 minify:
     disableXML: true
