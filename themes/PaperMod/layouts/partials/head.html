@@ -162,7 +162,7 @@
 {{- partial "extend_head.html" . -}}
 
 {{ if .Params.math }}{{ partial "katex.html" . }}{{ end }}
-{{ if .Site.Params.gtm_id}}{{- partial "gtm.html" . }}{{ end }}
+{{ if .Site.Params.gtm_id }}{{ partial "gtm.html" . }}{{ end }}
 
 {{- /* Misc */}}
 {{- if hugo.IsProduction | or (eq site.Params.env "production") }}
