@@ -59,6 +59,7 @@ params:
     ShowBreadCrumbs: true
     ShowCodeCopyButtons: true
     ShowToc: true
+    gtm_id: "G-BEP7FKQVEG"
 
     comments: 
         giscus:
