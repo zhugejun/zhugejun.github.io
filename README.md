@@ -4,8 +4,8 @@ This repository is for my personal blog built with [Hugo](https://gohugo.io/).
 Here are some useful links and instructions for a quick setup.
 
 ## Theme
-- Repo: [PaperMod](https://github.com/adityatelange/hugo-PaperMod) :heart:
-- Installation: [link](https://github.com/adityatelange/hugo-PaperMod/wiki/Installation)
+- [PaperMod](https://github.com/adityatelange/hugo-PaperMod) :heart:
+- [Installation](https://github.com/adityatelange/hugo-PaperMod/wiki/Installation)
 
 I would suggest using the method 1 because I found it's hard to customize the theme using a git submodule.
 
