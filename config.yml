@@ -119,7 +119,7 @@ params:
           url: "index.xml"
 
     editPost:
-        URL: "https://github.com/zhugejun.github.io/content"
+        URL: "https://github.com/zhugejun/zhugejun.github.io/tree/main/content"
         Text: "Suggest Changes" 
         appendFilePath: true 
 
