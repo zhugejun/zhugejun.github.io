@@ -11,7 +11,17 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 13 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Transformer Architecture by Building GPT</title>
+      <link>https://gejun.name/natural-language-processing/understanding-attention-nlp/</link>
+      <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/natural-language-processing/understanding-attention-nlp/</guid>
+      <description>In Part2, we constructed a straightforward MLP model to generate characters based on 32k popular names. In this lecture, Andrej guides us on gradually incorporating the transformer architecture to improve the performance of our bigram model. We will start by refactoring our previous model and then add code from the transformer architecture piece by piece to see how it helps our model.
+Data Preparation Let&amp;rsquo;s first import the necessary libraries and get the data ready.</description>
+    </item>
+    
     <item>
       <title>Multilayer Perceptron (MLP)</title>
       <link>https://gejun.name/natural-language-processing/building-makemore-mlp/</link>
@@ -19,16 +29,6 @@
       
       <guid>https://gejun.name/natural-language-processing/building-makemore-mlp/</guid>
       <description>In Part1, we learned how to build a neural network with one hidden layer to generate words. The model we built performed fairly well as we got the exact words generated based on counting. However, the bigram model suffers from the limitation that it assumes that each character only depends on its previous character. Suppose there is only one bigram starting with a particular character. In that case, the model will always generate the following character in that bigram, regardless of the context or the probability of other characters.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Transformer Architecture by Building GPT</title>
-      <link>https://gejun.name/natural-language-processing/understanding-attention-nlp/</link>
-      <pubDate>Fri, 10 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://gejun.name/natural-language-processing/understanding-attention-nlp/</guid>
-      <description>In Part2, we constructed a straightforward MLP model to generate characters based on 32k popular names. In this lecture, Andrej guides us on gradually incorporating the transformer architecture to improve the performance of our bigram model. We will start by refactoring our previous model and then add code from the transformer architecture piece by piece to see how it helps our model.
-Data Preparation Let&amp;rsquo;s first import the necessary libraries and get the data ready.</description>
     </item>
     
     <item>
