@@ -1,0 +1,951 @@
+---
+title: Understanding Transformer Architecture by Building GPT
+date: "2023-03-10"
+categories: 
+  - NLP
+  - Python
+  - Transformer
+tags: 
+  - transformers
+  - encoder
+  - docoder
+  - pytorch
+  - attention
+format: hugo-md
+math: true
+jupyter: python3
+---
+
+
+{{{< youtube kCc8FmEb1nY >}}}
+
+
+In [Part2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we constructed a straightforward MLP model to generate characters based on 32k popular names.
+In this lecture, [Andrej](https://karpathy.ai) guides us on gradually incorporating the transformer architecture to improve the performance of our bigram model. 
+We will start by refactoring our previous model and then add code from the transformer architecture piece by piece to see how it helps our model.
+
+
+## Data Preparation
+
+Let's first import the necessary libraries and get the data ready.
+We will use the tiny shakespeare dataset, featured in Andrej Karpathy's blog post [The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/).
+
+```{python}
+import math
+import requests
+import torch
+from torch import nn
+import torch.nn.functional as F
+import numpy as np
+import matplotlib.pyplot as plt
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+data_url = "https://t.ly/u1Ax"
+text = requests.get(data_url).text
+
+# building vocabulary
+chars = sorted(list(set(text)))
+vocab_size = len(chars)
+print(f"Vocabulary size: {vocab_size}")
+print(f"Vocabulary: {repr(''.join(chars))}")
+
+# mappings
+stoi = {c: i for i, c in enumerate(chars)}
+itos = {v: k for k, v in stoi.items()}
+def encode(s): return [stoi[c] for c in s]
+def decode(l): return ''.join([itos[i] for i in l])
+```
+
+
+We have 65 characters, including all lower- and upper-case letters and a few special characters, `\n !$&',-.3:;?`.
+Next, we split the data into two parts: 90% of the dataset for training and 10% for validation.
+
+```{python}
+# create tensor
+data = torch.tensor(encode(text), dtype=torch.long)
+n = int(0.9*len(data))
+train_data = data[:n]
+val_data = data[n:]
+print(train_data.shape)
+print(val_data.shape)
+```
+
+### Training Data
+
+Feeding the entire text to the transformer all at once can be computationally expensive and prohibitive.
+To address this issue, neural network models use batch processing techniques to update the model's weights and biases. 
+This technique involves dividing the training dataset into smaller subsets, or batches, of size `batch_size`.
+The batches are then processed separately by the neural network to update the model's parameters.
+For a character generation model, we need a sequence of characters as our training sample, which can be considered a time dimension.
+For the sample below, the input is `[18]` and the target is `47` at time 0, and the input is `[18, 47]` and the target is `56`, and so on.
+
+```{python}
+block_size = 8
+x = train_data[:block_size]
+y = train_data[1:block_size+1]
+for t in range(block_size):
+    context = x[:t+1]
+    target = y[t]
+    print(f"Time: {t}, input: {context}, target: {target}")
+```
+
+To create our training data, we select a sequence starting from the character of a fixed size `block_size` in each batch.
+We then create our input and target along the time dimension inside each sequence, resulting in `batch_size` time `block_size` training examples.
+The example below shows that there are $4\times 8=32$ training examples in each batch as we have 4 sequences of 8 characters each. 
+
+```{python}
+batch_size = 4
+block_size = 8
+
+
+def get_batch(split):
+    data = train_data if split == "train" else val_data
+    idx = torch.randint(len(data) - block_size, (batch_size,))
+    x = torch.stack([data[i:i+block_size] for i in idx])
+    y = torch.stack([data[i+1:i+block_size+1] for i in idx])
+    x, y = x.to(device), y.to(device)
+    return x, y
+
+x_batch, y_batch = get_batch("train")
+print(x_batch.shape, y_batch.shape)
+
+for b in range(batch_size):
+    print(f"---------- Batch {b} ----------")
+    for t in range(block_size):
+        context = x_batch[b, :t+1] 
+        target = y_batch[b, t]
+        print(f"Time: {t}, input: {context}, target: {target}")
+```
+
+
+## BigramLanguageModel
+
+Let's rewrite our previous bigram model.
+Here is the main part of the model we built in [Part 1](https://gejun.name/natural-language-processing/building-makemore/).
+
+```{python}
+# | eval: false
+
+W = torch.randn((27, 27), requires_grad=True)
+logits = xenc @ W 
+counts = logits.exp()
+probs = counts / counts.sum(1, keepdim=True)
+```
+
+### Base model
+
+From [Part 2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we learned how to represent a token with a fixed-length, real-valued, and learnable vector, which is known as token embedding.
+The embedding matrix can be initialized by [`nn.Embedding`](https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html) where `num_embeddings` refers to the vocabulary size, and `embedding_dim` refers to the length of the feature vector.
+For consistency with the original paper, we will use `d_model` to represent the feature vector's length, which will be set to 64 instead of the vocabulary size.
+As a result, we need to create another linear layer to ensure that the output dimension is the same as the vocabulary size.
+
+It's worth noting that we cannot compute the cross-entropy for a 3-dimensional matrix, as seen from the [documentation](https://pytorch.org/docs/stable/generated/torch.nn.functional.cross_entropy.html) of `cross_entropy` function. 
+Therefore, we need to reshape the logits and targets before computing it.
+
+```{python}
+torch.manual_seed(42)
+
+batch_size = 32
+d_model = 64
+
+# B: batch_size
+# T: time, up to block_size
+# C: d_model
+# 65: vocabulary size
+
+class BigramLanguageModel(nn.Module):
+
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, d_model) # 65, C
+        self.output_linear = nn.Linear(d_model, vocab_size)            # C, 65
+
+    def forward(self, idx, targets=None):
+        # idx: B, T
+        embedded = self.token_embedding_table(idx) # B, T, C
+        logits = self.output_linear(embedded)      # B, T, 65
+
+        # there is no target when predicting
+        if targets is None:
+            loss = None
+        else:
+            B, T, C = logits.shape
+            logits = logits.view(B*T, C) # N, C
+            targets = targets.view(B*T)  # N
+            loss = F.cross_entropy(logits, targets)
+        return logits, loss
+    
+    def generate(self, idx, max_length):
+        for _ in range(max_length):
+            logits, _ = self(idx)
+            # focus on the char on last time stamp because it's a bigram model
+            logits = logits[:, -1, :] # B, C
+            probs = F.softmax(logits, dim=-1)
+            idx_next = torch.multinomial(probs, num_samples=1)
+            # concatenate the new generated to the old ones
+            idx = torch.cat((idx, idx_next), dim=1)
+        return idx
+
+base_model = BigramLanguageModel(vocab_size).to(device)
+idx = torch.zeros((1, 1), dtype=torch.long, device=device)
+print(decode(base_model.generate(idx, max_length=100).squeeze().tolist()))
+```
+
+Certainly, the 100 characters generated at this point are not meaningful as the model has not been trained yet.
+
+### Training
+
+```{python}
+optimizer = torch.optim.AdamW(base_model.parameters(), lr=1e-3)
+
+# training
+epochs = 10000
+for epoch in range(epochs):
+    x_batch, y_batch = get_batch("train")
+    logits, loss = base_model(x_batch, y_batch)
+    optimizer.zero_grad(set_to_none=True)
+    loss.backward()
+    optimizer.step()
+    if epoch % 1000 == 0 or epoch == epochs - 1:
+        print(f"Epoch {epoch}: {loss.item()}")
+
+# starting with [[0]]
+idx = torch.zeros((1, 1), dtype=torch.long, device=device)
+print(decode(base_model.generate(idx, max_length=100).squeeze().tolist()))
+```
+
+
+The generated characters appear more word-like than before, but most are misspelled because the bigram model only generates a new character based on the last generated character.
+To improve our model's performance, we need a way to incorporate information from previously generated characters up to `block_size`.
+One solution is to use a bag-of-words model to extract features from previously generated characters.
+In a bag-of-words model, a text is treated as a bag of tokens, disregarding grammar and order.
+In the next section, we will introduce the transformer architecture from the classic paper, [Attention is all you need](https://arxiv.org/pdf/1706.03762.pdf).
+We will explain what attention is, how to calculate, and most importantly, how to understand it intuitively.
+Furthermore, we will implement it step by step and see how it improves our model's performance.
+
+## Transformer Architecture
+
+The transformer model architecture from the paper is shown below.
+
+![encoder-decoder-architecture](transformer-architecture.jpg)
+
+Let's first clarify what an encoder is.
+According to the paper: 
+
+> "The encoder maps an input sequence of symbol representations $(x_1, ..., x_n)$ to a sequence of continuous representations $z=(z_1, ..., z_n)$. 
+It converts an input sequence of tokens into a sequence of embedding vectors, often called a hidden state.
+The encoder is composed of a stack of encoder layers, which are used to update the input embeddings to produce representations that encode some contextual information in the sequence."
+
+
+In the transformer architecture shown above, the encoder is on the left side inside the blue box, and it contains multiple encoder layers.
+The encoder compresses and extracts important information from the input sequence while discarding the irrelevant information.
+
+Next, let's see what a decoder is.
+The decoder is inside the red box on the right side of the transformer architecture.
+It is also composed of a stack of decoder layers, which are similar to encoder layers except that they add an extra masked layer in the multi-head attention.
+
+Last but not least, the state generated from the encoder is passed to the decoder and generates the output sequence, which is referred to as cross-attention.
+A decoder uses the encoder's hidden state to iteratively generate an output sequence of tokens, one at a time.
+
+GPT, which stands for Generative Pretrained Transformer, focuses on the decoder part.
+Therefore, our model architecture becomes the following.
+
+![gpt-architecture](GPT.jpg)
+
+In the next few sections, we will build the model from bottom to top.
+Since the input embedding stays the same, we will skip the input embedding section and talk about positional embedding.
+
+## Positional Embedding
+
+The embedding of input tokens alone does not capture any information about their relative positions within the sequence.
+Hence a positional embedding is introduced to inject this information.
+According to the paper, there are multiple ways for positional embeddings, with some being fixed while others are learnable.
+For our implementation, we will use a learnable positional embedding with the same dimension as the token embedding, which is `d_model`.
+The num_embeddings parameter in the `nn.Embedding` function will be set to `block_size` since our training sequence has a maximum length of `block_size`.
+
+Let's dive into the dimensions of the input tokens.
+The input tokens have two dimensions: the batch dimension, which indicates how many independent sequences the model processes in parallel, and the time dimension, which records the current position within the sequence up to a maximum length of `block_size`.
+After the input tokens pass through the token and positional embedding layers, they will have an additional channel dimension, which is a convention borrowed from computer vision.
+For simplicity, we will use `B`, `T`, and `C` to denote the batch, time, and channel dimensions, respectively.
+
+```{python}
+class BigramLanguageModel(nn.Module):
+
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, d_model)
+        # position embedding table
+        self.position_embedding_table = nn.Embedding(block_size, d_model)
+        self.output_linear = nn.Linear(d_model, vocab_size)
+
+    def forward(self, idx, targets=None):
+        # idx: B, T
+        B, T = idx.shape
+        token_embed = self.token_embedding_table(idx)     # B, T, C
+        posit_embed = self.position_embedding_table(torch.arange(T, device=device))  # T, C
+        # sum of token and positional embeddings 
+        x = token_embed + posit_embed              # B, T, C
+        logits = self.output_linear(x)             # B, T, vocab_size
+
+        if targets is None:
+            loss = None
+        else:
+            B, T, C = logits.shape
+            logits = logits.view(B*T, C) # (N, C)
+            targets = targets.view(B*T)  # (N)
+            loss = F.cross_entropy(logits, targets)
+        return logits, loss
+
+base_model = BigramLanguageModel(vocab_size).to(device)
+optimizer = torch.optim.AdamW(base_model.parameters(), lr=1e-3)
+epochs = 10000
+for epoch in range(epochs):
+    x_batch, y_batch = get_batch("train")
+    logits, loss = base_model(x_batch, y_batch)
+    optimizer.zero_grad(set_to_none=True)
+    loss.backward()
+    optimizer.step()
+    if epoch % 1000 == 0 or epoch == epochs - 1:
+        print(f"Epoch {epoch}: {loss.item()}")
+```
+
+
+## Attention
+
+What is attention?
+
+> "An attention function can be described as mapping a query and a set of key-value pairs to an output,
+where the query, keys, values, and output are all vectors. The output is computed as a weighted sum
+of the values, where the weight assigned to each value is computed by a compatibility function of the
+query with the corresponding key."
+
+![attention-multihead](attention-multi-head.png)
+
+We can compute the attention score using the following steps as described in the paper.
+
+$$Attention(Q,K,V)=softmax\bigl( \frac{QK^T}{\sqrt{d_k}}\bigr) V$$
+
+To better understand the attention formula above, it's helpful to review some linear algebra concepts.
+
+### Dot Product
+
+The [dot product](https://www.wikiwand.com/en/Dot_product) of two Euclidean vectors $\vec{a}$ and $\vec{b}$ is defined by
+
+$$\vec{a} \cdot \vec{b} = \sum_{i=1}^n a_ib_i$$
+
+where $n$ is the length of the vectors.
+
+Geometrically, the dot product of two vectors is equal to the product of their magnitudes and the cosine of the angle between them.
+Specifically, if $\theta$ is the angle between $\vec{a}$ and $\vec{b}$, then
+
+$$\vec{a} \cdot \vec{b} = \|a\| \cdot \|b\| cos(\theta)$$
+
+![dot-product-projection](320px-Dot_Product.png)
+*scalar projection [source](https://www.wikiwand.com/en/Dot_product)*
+
+The quantity $\|a\|cos(\theta)$ is the scalar projection of $\vec{a}$ onto $\vec{b}$.
+The higher the product, the more similar two vectors.
+Let's take the learned embedding from our last model and compute the dot products of some tokens from our vocabulary.
+
+```{python}
+char1 = 'a'
+char2 = 'z'
+char3 = 'e'
+
+token_embeddings = base_model.token_embedding_table.weight
+
+def calc_dp(char1, char2):
+    with torch.no_grad():
+        embed1 = token_embeddings[stoi[char1]]
+        embed2 = token_embeddings[stoi[char2]]
+        return sum(embed1 * embed2)
+
+print(f"Dot product of {char1} and {char1}: {calc_dp(char1, char1):.6f}")
+print(f"Dot product of {char1} and {char2}: {calc_dp(char1, char2):.6f}")
+print(f"Dot product of {char1} and {char3}: {calc_dp(char1, char3):.6f}")
+```
+
+The dot product of the feature vectors of `a` and itself is much higher than with `e` or `z`.
+Also, the results show that `a` is more similar to `e` then to `z`.
+
+
+### Attention Score
+
+Every token in the input sequence generates a query vector and a key vector of the same dimension.
+This operation is called **self-attention** because $Q$, $V$, and $T$ are all derived from the same source in GPT.
+The dot product of the query and key vectors measures their similarity.
+
+Let $X_{m\times n}$ and $W$ denote the embedding matrix of the input sequence and the weight of the linear transformation, where $m$ is the number of tokens, $n$ is the token dimension, and $k$ is the output dimension of the linear transformation or the head size of our attention. 
+Each row represents the token embedding for each token in the input.
+Then, we apply three linear transformations on $X$ to project it onto 3 new vector spaces:
+
+- $X_{m\times n} \cdot W^Q_{n\times k} = Q_{m\times k}$ to obtain the query space.
+- $X_{m\times n} \cdot W^K_{n\times k} = K_{m\times k}$ to obtain the key space.
+- $X_{m\times n} \cdot W^V_{n\times k} = V_{m\times k}$ to obtain the value space.
+
+$Q\cdot K^T$ is the attention score matrix, having a shape of $m \times m$.
+The larger the value, the closer the vectors and hence the more attention.
+
+Let's take the learned token and positional embeddings from our previous model, apply the query and key transformations, and calculate the attention scores of the sequence `sea`.
+
+```{python}
+sequence = "sea"
+# get positional embeddings from model
+position_embeddings = base_model.position_embedding_table.weight
+
+tokens = torch.tensor([stoi [c] for c in sequence])
+positions = torch.tensor([i for i in range(len(sequence))])
+# final embedding matrix for a given sequence
+embed = token_embeddings[tokens] + position_embeddings[positions]
+
+# query and vector weights
+d_k = 16
+torch.manual_seed(42)
+q = nn.Linear(embed.shape[1], d_k, bias=False).to(device)
+k = nn.Linear(embed.shape[1], d_k, bias=False).to(device)
+
+# query and key space
+with torch.no_grad():
+    Q = q(embed)
+    K = k(embed)
+
+    # similarity between query and keys
+    score = Q @ K.T
+print(score)
+```
+
+The attention score vector for `e` is `[ 2.5321,  0.4942, -0.1078]`
+However, the dot products may become too large in magnitude when the head size $d_k$ is large, which can result in extremely small gradients after applying the softmax function.
+To mitigate this issue, the scores are scaled by multiplying with the factor $\frac{1}{\sqrt{d_k}}$, as suggested in the paper.
+
+```{python}
+with torch.no_grad():
+    score /= math.sqrt(d_k)
+    score = F.softmax(score, dim=-1)
+    print(score)
+```
+
+After scaling, the attention score vector for token `e` in `sea` becomes `[0.4722, 0.2837, 0.2441]`.
+This implies that the token `s` requires more attention than the tokens `e` and `a`.
+
+Wait a minute!
+Why does the token `e` pay attention to the future token `a` in a GPT model?
+It is cheating in this way.
+How can we preserve the information from the previous tokens while not peeking the future tokens?
+The masking layer.
+
+### Masking
+
+Where exactly do we apply a masking layer?
+Since we want to use a softmax function to normalize the attention scores until the current position so that the divided attention sums to one, it should be applied after calculating the unscaled attention score and before the softmax layer. 
+In this way, we can exclude the future tokens.
+To implement this masking, we will use a PyTorch built-in function, `torch.tril`, which preserves the original values for the lower triangular part of the matrix while setting the upper part to zero.
+In our case, we replace the scores in the upper triangular part of the matrix with a very small number, such as `float("-inf")`, so that they will become zeros after applying the softmax function.
+
+```{python}
+with torch.no_grad():
+    mask = torch.tril(torch.ones(embed.shape[0], embed.shape[0])).to(device)
+    score = score.masked_fill(mask == 0, float("-inf"))
+    score = F.softmax(score, dim=-1)
+    print(score)
+```
+
+Now, the scaled attention vector for `e` becomes `[0.5470, 0.4530, 0.0000]`, indicating that the model pays roughly half of its attention to tokens `s` and `e` when it reaches token `e` while completely ignoring the future token `a`.
+
+
+### Weighted Sum
+
+Finally, we obtain a new adjusted embedding for each token in the context by multiplying the attention matrix with the value matrix $V$.
+
+```{python}
+v = nn.Linear(embed.shape[1], d_k, bias=False).to(device)
+
+with torch.no_grad():
+    V = v(embed)
+    new_embed = score @ V
+    print(new_embed)
+```
+
+To put it in another way, we force the tokens to look at each other by multiplying the attention scores with the value matrix $V$.
+This helps to adjust the value matrix to represent the entire sequence better as training progresses.
+
+
+### Demystifying QKV
+
+How do we understand attention from intuition? 
+Here is a great answer from [Cross Validated](https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms).
+
+> The key/value/query concept is analogous to retrieval systems. 
+For example, when you search for videos on Youtube, the search engine will map your **query** 
+(text in the search bar) against a set of **keys** (video title, description, etc.) associated 
+with candidate videos in their database, then present you the best matched videos (**values**).
+
+![youtube-search](youtube-search.png)
+*[source](https://www.youtube.com/watch?v=ySEx_Bqxvvo&ab_channel=AlexanderAmini)*
+
+Here are the intuitive meaning of these matrices:
+
+- The query matrix represents a piece of information we are looking for in a query we have.
+- The key matrix is intuitively meant to represent the relevance of each word to our query. And the key matrix represents how important each word is to my overall query.
+- The value matrix intuitively represents the contextless meaning of our input tokens.
+
+Imagine that you’re at the supermarket buying all the ingredients you need for your dinner.
+You have the dish’s recipe, and the ingredients (query) are what you look for in a supermarket.
+Scanning the shelves, you look at the labels (keys) and check whether they match an ingredient on your list.
+You are determining the similarity between query and keys.
+If you have a match, you take the item (value) from the shelf.
+
+Let's put the attention layer into a single `Head` class.
+
+```{python}
+#| eval: false
+class Head(nn.Module):
+
+    def __init__(self, d_k):
+        super().__init__()
+        self.query = nn.Linear(d_model, d_k, bias=False) # C, d_k
+        self.key = nn.Linear(d_model, d_k, bias=False)   # C, d_k
+        self.value = nn.Linear(d_model, d_k, bias=False) # C, d_k
+        # not a model parameter
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))   # block_size, block_size
+
+    def forward(self, x):
+        
+        B, T, C = x.shape
+        q = self.query(x) # B, T, d_k
+        k = self.key(x)   # B, T, d_k
+
+        score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(C)         # B, T, T
+        score = score.masked_fill(self.tril[:T, :T] == 0, float("-inf"))    # B, T, T
+        score = F.softmax(score, dim=-1)                                    # B, T, T
+
+        v = self.value(x)   # B, T, d_k
+        out = score @ v     # (B, T, T)@(B, T, d_k) = (B, T, d_k)
+        return out
+```
+
+To ensure compatibility with matrix multiplication, we need to set the head size as the embedding dimension, `d_model`, because we currently only have one head layer.
+However, we will not train this model at this moment.
+
+```{python}
+#| eval: false
+class BigramLanguageModel(nn.Module):
+
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, d_model)
+        self.position_embedding_table = nn.Embedding(block_size, d_model)
+        self.self_attn = Head(d_model)
+        self.output_linear = nn.Linear(d_model, vocab_size)
+
+    def forward(self, idx, targets=None):
+        B, T = idx.shape
+        token_embed = self.token_embedding_table(idx) 
+        posit_embed = self.position_embedding_table(torch.arange(T, device=device)) 
+        x = token_embed + posit_embed 
+        # apply self attention
+        x = self.self_attn(x) 
+        logits = self.output_linear(x)
+
+        if targets is None:
+            loss = None
+        else:
+            B, T, C = logits.shape
+            logits = logits.view(B*T, C)
+            targets = targets.view(B*T)
+            loss = F.cross_entropy(logits, targets)
+        return logits, loss
+
+    def generate(self, idx, max_length):
+        
+        for _ in range(max_length):
+            logits, loss = self(idx[:, -block_size:])
+            logits = logits[:, -1, :]
+            probs = F.softmax(logits, dim=-1)
+            idx_next = torch.multinomial(probs, num_samples=1)
+            idx = torch.cat((idx, idx_next), dim=1) 
+        return idx
+```
+
+
+### Multi-head Attention
+
+As an old saying goes, two heads are better than one. 
+By having multiple heads, we can apply multiple transformations to the embeddings.
+Each projection has its own set of learnable parameters, which enables the self-attention layer to focus on different semantic aspects of the sequence.
+We will denote the number of heads as `h`.
+
+```{python}
+#| eval: false
+class MultiHeadAttention(nn.Module):
+
+    def __init__(self, h, d_k):
+        super.__init__()
+        self.heads = nn.ModuleList([Head(d_k) for _ in range(h)])
+    
+    def forward(self, x):
+        return torch.cat([head(x) for head in self.heads], dim=-1) # B, T, C
+```
+
+
+### Dropout
+
+Dropout was proposed in [Dropout: A Simple Way to Prevent Neural Networks from Overfitting](https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf) by Nitish Srivastava et al. in 2014.
+In this technique, a certain proportion of neurons are randomly dropped out during training to prevent overfitting. 
+
+> We apply dropout to the output of each sub-layer, before it is added to the
+sub-layer input and normalized.
+
+![dropout](dropout.png)
+*[source](https://wiki.tum.de/download/attachments/23568252/Selection_532.png)*
+
+We will apply PyTorch's built-in function `nn.Dropout` to our `Head` and `MultiHeadAttention` layers.
+
+
+```{python}
+dropout = 0.1
+
+class Head(nn.Module):
+
+    def __init__(self, d_k):
+        super().__init__()
+        self.query = nn.Linear(d_model, d_k, bias=False) # C, d_k
+        self.key = nn.Linear(d_model, d_k, bias=False)   # C, d_k
+        self.value = nn.Linear(d_model, d_k, bias=False) # C, d_k
+        # not a model parameter
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))   # block_size, block_size
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        
+        B, T, C = x.shape
+        q = self.query(x) # B, T, d_k
+        k = self.key(x)   # B, T, d_k
+
+        score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(C)         # B, T, T
+        score = score.masked_fill(self.tril[:T, :T] == 0, float("-inf"))    # B, T, T
+        score = F.softmax(score, dim=-1)                                    # B, T, T
+        score = self.dropout(score)
+
+        v = self.value(x)   # B, T, d_k
+        out = score @ v     # (B, T, T)@(B, T, d_k) = (B, T, d_k)
+        return out
+
+
+class MultiHeadAttention(nn.Module):
+
+    def __init__(self, h, d_k):
+        super.__init__()
+        self.heads = nn.ModuleList([Head(d_k) for _ in range(h)])
+        self.dropout = nn.Dropout(dropout)
+    
+    def forward(self, x):
+        x = torch.cat([head(x) for head in self.heads], dim=-1) # B, T, C
+        x = self.dropout(x)
+        return x
+```
+
+### Residual Connection
+
+The concept of residual connections was first introduced in 2015 by Kaiming He et al. in their paper [Deep Residual Learning for Image Recognition](https://arxiv.org/pdf/1512.03385.pdf).
+It allows the network to bypass one or more layers, which helps alleviate the vanishing gradient problem that could occur in very deep neural networks. 
+
+![resnet-residual-connection](resnet.png)
+*source: https://paperswithcode.com/*
+
+To implement residual connections and a projection layer in our multi-head attention module, we modify the `MultiHeadAttention` class as follows.
+
+```{python}
+class MultiHeadAttention(nn.Module):
+
+    def __init__(self, h, d_k):
+        super().__init__()
+        self.heads = nn.ModuleList([Head(d_k) for _ in range(h)])
+        self.proj = nn.Linear(d_model, d_model)
+        self.dropout = nn.Dropout(dropout)
+    
+    def forward(self, x):
+        x = torch.cat([head(x) for head in self.heads], dim=-1)
+        x = self.proj(x)
+        x = self.dropout(x)
+        return x
+```
+
+### Feed-Forward
+
+As stated in the paper: 
+
+> In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully
+connected feed-forward network, which is applied to each position separately and identically.
+
+This means that instead of processing the entire sequence of embeddings as a single vector, the feed-forward network applies the same linear transformations to each embedding individually.
+
+> While the linear transformations are the same across different positions, they use different parameters
+from layer to layer. Another way of describing this is as two convolutions with kernel size 1.
+The dimensionality of input and output is $d_{model} = 512$, and the inner-layer has dimensionality
+$d_{ff} = 2048$.
+
+This implies that our first linear layer in the feed-forward layer has an output dimension of `d_model * 4`, which serves as the input dimension of the second linear layer.
+We also apply a dropout layer to the feed-forward layer to avoid overfitting.
+
+```{python}
+class FeedForward(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(d_model, d_model * 4),
+            nn.ReLU(),
+            nn.Linear(d_model * 4, d_model),
+            nn.Dropout(dropout)
+        )
+    
+    def forward(self, x):
+        x = self.net(x)
+        return x
+```
+
+### Layer Normalization
+
+
+The concept of layer normalization was introduced by Jimmy Lei Ba et al. in their paper [Layer Normalization](https://arxiv.org/pdf/1607.06450.pdf) published in 2016. 
+Unlike batch normalization, which normalizes the inputs to a batch of data, layer normalization normalizes the inputs to a single layer of the network.
+In our implementation, we apply layer normalization before self-attention and feed-forward layers.
+
+![layer-normalization](layer-normalization.png)
+*source: https://paperswithcode.com/*
+
+### Refactoring
+
+Let's refactor the code to put multi-head attention and feed-forward layers to a single `Block` class.
+Moreover, the head size would be automatically set to `d_model/h`. 
+
+```{python}
+class Block(nn.Module):
+
+    def __init__(self, h):
+        super().__init__()
+        d_k = d_model // h
+        self.attn = MultiHeadAttention(h, d_k)
+        self.ff = FeedForward()
+        self.ln1 = nn.LayerNorm(d_model)
+        self.ln2 = nn.LayerNorm(d_model)
+        
+    
+    def forward(self, x):
+        # attention + residual connection
+        x = x + self.attn(x)
+        # layer normalization
+        x = self.ln1(x)
+        # feed forward
+        x = x + self.ff(x)
+        # layer normalization
+        x = self.ln2(x)
+        return x
+```
+
+
+## Put Everything Together
+
+Here are the steps to build a GPT with transformer architecture:
+
+1. Initialize the token embedding table with the vocabulary size and embedding dimension `(vocab_size, d_model)`.
+2. Initialize the positional embedding table with the maximum sequence length and embedding dimension `(block_size, d_model)`.
+3. Create `N` identical decoder layers using the `Block` class with multi-head attention, feed-forward, and layer normalization layers. The `head_size` parameter will be automatically set to `d_model/h`.
+4. Add a linear output layer with the output dimension equal to the `vocab_size`.
+
+
+```{python}
+batch_size = 16 
+block_size = 32
+eval_interval = 1000
+eval_iters = 200
+learning_rate = 1e-3
+epochs = 10000
+d_model = 64   # dimension of embedding
+h = 8          # number of heads
+N = 6          # number of identical layers
+dropout = 0.1  # dropout percentage
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+
+@torch.no_grad()
+def estimate_loss():
+    out = {}
+    model.eval()
+    for split in ['train', 'val']:
+        losses = torch.zeros(eval_iters)
+        for k in range(eval_iters):
+            X, Y = get_batch(split)
+            logits, loss = model(X, Y)
+            losses[k] = loss.item()
+        out[split] = losses.mean()
+    model.train()
+    return out
+
+class BigramLanguageModel(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, d_model)
+        self.position_embedding_table = nn.Embedding(block_size, d_model)
+        self.blocks = nn.Sequential(*[Block(h) for _ in range(N)])
+        self.output_linear = nn.Linear(d_model, vocab_size)
+    
+    def forward(self, idx, targets=None):
+        B, T = idx.shape
+
+        token_embed = self.token_embedding_table(idx)
+        posit_embed = self.position_embedding_table(torch.arange(T, device=device))
+        x = token_embed + posit_embed
+        x = self.blocks(x)
+        logits = self.output_linear(x)
+
+        if targets is None:
+            loss = None
+        else:
+            B, T, C = logits.shape
+            logits = logits.view(B*T, C)
+            targets = targets.view(B*T)
+            loss = F.cross_entropy(logits, targets)
+        return logits, loss
+
+
+    def generate(self, idx, max_length):
+        for _ in range(max_length):
+            logits, _ = self(idx[:, -block_size:])
+            logits = logits[:, -1, :]
+            probs = F.softmax(logits, dim=-1)
+            idx_next = torch.multinomial(probs, num_samples=1)
+            idx = torch.cat((idx, idx_next), dim=1)
+        return idx
+
+
+model = BigramLanguageModel().to(device)
+print(sum(p.numel() for p in model.parameters())/1e6, 'M parameters')
+```
+
+
+## Retraining
+
+```{python}
+optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+
+for i in range(epochs):
+
+    if i % eval_interval == 0 or i == epochs - 1:
+        losses = estimate_loss()
+        print(f"step {i:>6}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+
+    x_batch, y_batch = get_batch('train')
+    logits, loss = model(x_batch, y_batch)
+    optimizer.zero_grad(set_to_none=True)
+    loss.backward()
+    optimizer.step()
+
+context = torch.zeros((1, 1), dtype=torch.long, device=device)
+print(decode(model.generate(context, max_length=2000)[0].tolist()))
+```
+
+
+The newly generated text contains more word-like characters and resembles the style of Shakespeare, with a more significant proportion of correctly spelled words.
+
+
+## Revisiting Attention
+
+```{python}
+sequence = """MENENIUS:\nWhat is gra"""
+token_embeddings = model.token_embedding_table.weight
+position_embeddings = model.position_embedding_table.weight
+tokens = torch.tensor([stoi [c] for c in sequence])
+positions = torch.tensor([i for i in range(len(sequence))])
+embed = token_embeddings[tokens] + position_embeddings[positions]
+
+# query and vector weights
+q = model.blocks[5].attn.heads[7].query
+k = model.blocks[5].attn.heads[7].key
+v = model.blocks[5].attn.heads[7].value
+
+# query and key space
+with torch.no_grad():
+    Q = q(embed)
+    K = k(embed)
+    score = Q @ K.T
+    score /= math.sqrt(d_model // h)
+    mask = torch.tril(torch.ones(embed.shape[0], embed.shape[0])).to(device)
+    score = score.masked_fill(mask == 0, float("-inf"))
+    score = F.softmax(score, dim=-1)
+
+    V = v(embed)
+    new_embed = score @ V
+print(f"Attention scores for the sequence:\n {score[-1, :]}")
+print(f"Adjusted and compressed embeddings for the sequence:\n {new_embed}")
+```
+
+## Notes
+
+Here are some tiny differences between my code and the code in the video.
+
+1. I applied layer normalization after the self-attention layer, while he applied immediately on `x` before `x` entered the self-attention and feed-forward layers.
+
+```{python}
+#| eval: false
+class Block(nn.Module):
+    """ Transformer block: communication followed by computation """
+
+    def __init__(self, n_embd, n_head):
+        # n_embd: embedding dimension, n_head: the number of heads we'd like
+        super().__init__()
+        head_size = n_embd // n_head
+        self.sa = MultiHeadAttention(n_head, head_size)
+        self.ffwd = FeedFoward(n_embd)
+        self.ln1 = nn.LayerNorm(n_embd)
+        self.ln2 = nn.LayerNorm(n_embd)
+
+    def forward(self, x):
+        x = x + self.sa(self.ln1(x))
+        x = x + self.ffwd(self.ln2(x))
+        return x
+```
+2. The scaling factor I used was $d_k$ instead of $d_model$ (maybe it's a typo in his code?).
+```{python}
+#| eval: false
+class Head(nn.Module):
+    """ one head of self-attention """
+
+    def __init__(self, d_k):
+        super().__init__()
+        self.key = nn.Linear(n_embd, head_size, bias=False)
+        self.query = nn.Linear(n_embd, head_size, bias=False)
+        self.value = nn.Linear(n_embd, head_size, bias=False)
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        B, T, C = x.shape  # batch_size, block_size, n_embd
+        k = self.key(x)    # (B,T,C)
+        q = self.query(x)  # (B,T,C)
+        # compute attention scores ("affinities")
+        wei = q @ k.transpose(-2,-1) * C **-0.5 # (B, T, C) @ (B, C, T) -> (B, T, T)
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) # (B, T, T)
+        wei = F.softmax(wei, dim=-1) # (B, T, T)
+        wei = self.dropout(wei)
+        # perform the weighted aggregation of the values
+        v = self.value(x) # (B,T,C)
+        out = wei @ v # (B, T, T) @ (B, T, C) -> (B, T, C)
+        return out
+
+```
+
+
+
+## Other Resources
+
+- https://sebastianraschka.com/blog/2023/self-attention-from-scratch.html
+- https://jalammar.github.io/illustrated-transformer/
+- https://www.youtube.com/watch?v=ptuGllU5SQQ&list=PLoROMvodv4rOSH4v6133s9LFPRHjEmbmJ&index=9
+- https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms
+- https://web.stanford.edu/class/cs224n/readings/cs224n-self-attention-transformers-2023_draft.pdf
+- https://learning.oreilly.com/library/view/natural-language-processing/9781098136789/
