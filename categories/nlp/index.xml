@@ -22,6 +22,16 @@
     </item>
     
     <item>
+      <title>Understanding Transformer Architecture by Building GPT</title>
+      <link>https://gejun.name/natural-language-processing/understanding-attention-nlp/</link>
+      <pubDate>Fri, 10 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/natural-language-processing/understanding-attention-nlp/</guid>
+      <description>In Part2, we constructed a straightforward MLP model to generate characters based on 32k popular names. In this lecture, Andrej guides us on gradually incorporating the transformer architecture to improve the performance of our bigram model. We will start by refactoring our previous model and then add code from the transformer architecture piece by piece to see how it helps our model.
+Data Preparation Let&amp;rsquo;s first import the necessary libraries and get the data ready.</description>
+    </item>
+    
+    <item>
       <title>Bigram Character-level Language Model</title>
       <link>https://gejun.name/natural-language-processing/building-makemore/</link>
       <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>

@@ -48,5 +48,23 @@
       <description></description>
     </item>
     
+    <item>
+      <title>Python</title>
+      <link>https://gejun.name/categories/python/</link>
+      <pubDate>Fri, 10 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/categories/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Transformer</title>
+      <link>https://gejun.name/categories/transformer/</link>
+      <pubDate>Fri, 10 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/categories/transformer/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>
