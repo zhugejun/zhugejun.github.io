@@ -1169,3 +1169,4 @@ class Head(nn.Module):
 -   https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms
 -   https://web.stanford.edu/class/cs224n/readings/cs224n-self-attention-transformers-2023_draft.pdf
 -   https://learning.oreilly.com/library/view/natural-language-processing/9781098136789/
+-   https://nlp.seas.harvard.edu/annotated-transformer/
