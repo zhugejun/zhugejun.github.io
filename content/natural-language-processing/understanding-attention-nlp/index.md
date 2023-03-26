@@ -1132,7 +1132,7 @@ class Block(nn.Module):
         return x
 ```
 
-1.  The scaling factor I used was $d_k$ instead of $d_model$ (maybe it's a typo in his code?).
+1.  The scaling factor I used was $d_k$ instead of $d_{model}$ (maybe it's a typo in his code?).
 
 ``` python
 class Head(nn.Module):
