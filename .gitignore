@@ -13,3 +13,5 @@ hugo.linux
 /.hugo_build.lock
 
 .ipynb_checkpoints
+
+.DS_Store
