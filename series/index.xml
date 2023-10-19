@@ -10,6 +10,6 @@
       <link>https://gejun.name</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://gejun.name/series/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language><atom:link href="https://gejun.name/series/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
