@@ -17,3 +17,8 @@ hugo.linux
 .DS_Store
 
 .vscode
+
+
+**/speaker-view.html
+
+**/reveal-chalkboard/README.md
