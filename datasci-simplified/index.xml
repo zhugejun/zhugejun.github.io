@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Datasci-simplifieds on Gejun&#39;s Blog</title>
+    <link>https://gejun.name/datasci-simplified/</link>
+    <description>Recent content in Datasci-simplifieds on Gejun&#39;s Blog</description>
+    <image>
+      <title>Gejun&#39;s Blog</title>
+      <url>https://gejun.name</url>
+      <link>https://gejun.name</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 16 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/datasci-simplified/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Back to Basics - Data Science</title>
+      <link>https://gejun.name/datasci-simplified/back-to-basics/</link>
+      <pubDate>Sat, 16 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/datasci-simplified/back-to-basics/</guid>
+      <description>Statistics Introduction to Probability: Probability Distributions: Bayes Theorem: Central Limit Theorem: Code | Slides | Video Confidence Interval: Hypothesis Testing: p-value: Type I and Type II Errors: Power of a Test: t-test: ANOVA: Chi-Square Test: Linear Regression: Machine Learning Logistic Regression: Decision Trees: Random Forests: Gradient Boosting: Support Vector Machines: K-Nearest Neighbors: K-Means Clustering: Hierarchical Clustering: Principal Component Analysis: Singular Value Decomposition: Deep Learning Neural Networks: Convolutional Neural Networks: Natural Language Processing Word Embeddings: Word2Vec: GloVe: FastText: BERT: LeetCode (Grind75) Two Sum R tidyverse: ggplot2: dplyr: tidyr: purrr: readr: tibble: stringr: Python numpy: pandas: matplotlib: seaborn: scikit-learn: scipy: decorator: </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://gejun.name/datasci-simplified/central-limit-theorem/index_files/libs/revealjs/plugin/notes/speaker-view/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/datasci-simplified/central-limit-theorem/index_files/libs/revealjs/plugin/notes/speaker-view/</guid>
+      <description> reveal.js - Speaker View Loading speaker view... Upcoming Time Click to Reset 0:00 AM 00:00:00 Pacing – Time to finish current slide 00:00:00 Notes </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://gejun.name/datasci-simplified/central-limit-theorem/index_files/libs/revealjs/plugin/reveal-chalkboard/readme/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://gejun.name/datasci-simplified/central-limit-theorem/index_files/libs/revealjs/plugin/reveal-chalkboard/readme/</guid>
+      <description>Chalkboard With this plugin you can add a chalkboard to reveal.js. The plugin provides two possibilities to include handwritten notes to your presentation:
+you can make notes directly on the slides, e.g. to comment on certain aspects, you can open a chalkboard or whiteboard on which you can make notes. The main use case in mind when implementing the plugin is classroom usage in which you may want to explain some course content and quickly need to make some notes.</description>
+    </item>
+    
+  </channel>
+</rss>
