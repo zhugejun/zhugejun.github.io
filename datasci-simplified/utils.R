@@ -80,26 +80,31 @@ plot_samples = function(samples) {
   return(p1)
 }
 
-plot_sample_means = function(samples, true_prop) {
+plot_sample_means = function(samples, size, true_prop, include_title = TRUE) {
 
   x_min = floor(min(samples$sample_value))
   x_max = ceiling(max(samples$sample_value))
 
-  x_breaks = seq(x_min, x_max, (x_max - x_min) / 10)
-  
   sample_means = samples |>
     group_by(sample_number) |>
     summarise(average = mean(sample_value))
   
-  p2 = ggplot(sample_means, aes(x = average)) +
+  if (include_title) {
+    title = str_glue("Sampling Distribution of the Sample Means (size={size})")
+  } else {
+    title = NULL
+  }
+
+  p = ggplot(sample_means, aes(x = average)) +
     geom_histogram(aes(y = after_stat(density)), fill = "orange", color = "white", breaks = seq(x_min, x_max, (x_max - x_min) / 50)) +
     geom_density(aes(y = after_stat(density)), color = "red") +
     geom_vline(xintercept = true_prop, color = "blue", linetype = "dashed") +
     scale_x_continuous(limits = c(x_min, x_max), breaks =  seq(x_min, x_max, (x_max - x_min) / 10)) +
-    labs(x = "Sample mean", y = "Density") +
-    ylim(0, 11.0) +
+    labs(x = "Sample mean", y = "Density", title = title) +
+    ylim(0, 15) +
     theme_minimal() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
-  return(p2)
+  
+  return(p)
 }
