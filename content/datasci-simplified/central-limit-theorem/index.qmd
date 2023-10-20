@@ -39,12 +39,6 @@ marbles = sample(c(red_marble, blue_marble),
                  prob = c(prob_red, 1 - prob_red))
 ```
 
-. . .
-
-```{r}
-#| echo: true
-cat(marbles[1:10])
-```
 
 ## Taking One Sample
 
@@ -73,14 +67,17 @@ trials = list()
 
 ```{r}
 #| echo: true
+size = 10
+n = 100
 
-samples = get_samples(marbles, sample_size = 10, number_of_samples = 100, func = is_red)
+samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
-kable(head(sample_proportions, 5)) 
+kable(head(sample_proportions, 5), "html") |>
+  kable_styling(font_size = 20)
 
 ```
 
@@ -88,7 +85,7 @@ kable(head(sample_proportions, 5))
 
 ```{r}
 #| echo: true
-standard_errors = tibble(sample_size = 10, standard_error = sd(sample_proportions$proportion))
+standard_errors = tibble(sample_size = size, standard_error = sd(sample_proportions$proportion))
 kable(standard_errors)
 ```
 
@@ -97,10 +94,11 @@ kable(standard_errors)
 trials[[1]] = samples
 ```
 
-## Taking Samples Repeatedly
+## Taking More Samples
 
 ```{r}
 #| echo: true
+p10 = plot_sample_means(samples, size, prob_red)
 plot_samples_and_averages(samples, prob_red)
 ```
 
@@ -108,15 +106,15 @@ plot_samples_and_averages(samples, prob_red)
 
 ```{r}
 #| echo: true
-
-samples = get_samples(marbles, sample_size = 20, number_of_samples = 100, func = is_red)
+size = 20
+samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
 standard_errors = standard_errors |>
-  add_row(sample_size = 20, 
+  add_row(sample_size = size, 
           standard_error = sd(sample_proportions$proportion))
 
 kable(standard_errors)
@@ -131,22 +129,25 @@ trials[[2]] = samples
 
 ```{r}
 #| echo: true
-plot_samples_and_averages(samples, prob_red)
+p20 = plot_sample_means(samples, size, prob_red)
+grid.arrange(p10, p20)
 ```
+
 
 ## Increasing Sample Size to 50
 
 ```{r}
 #| echo: true
+size = 50
 
-samples = get_samples(marbles, sample_size = 50, number_of_samples = 100, func = is_red)
+samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
 standard_errors = standard_errors |>
-  add_row(sample_size = 50, 
+  add_row(sample_size = size, 
           standard_error = sd(sample_proportions$proportion))
 
 kable(standard_errors, "html")
@@ -161,22 +162,23 @@ trials[[3]] = samples
 
 ```{r}
 #| echo: true
-plot_samples_and_averages(samples, prob_red)
+p50 = plot_sample_means(samples, size, prob_red)
+grid.arrange(p10, p20, p50)
 ```
 
 ## Increasing Sample Size to 100
 
 ```{r}
 #| echo: true
-
-samples = get_samples(marbles, sample_size = 100, number_of_samples = 100, func = is_red)
+size = 100
+samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
 standard_errors = standard_errors |>
-  add_row(sample_size = 100, 
+  add_row(sample_size = size, 
           standard_error = sd(sample_proportions$proportion))
 
 kable(standard_errors, "html")
@@ -191,7 +193,8 @@ trials[[4]] = samples
 
 ```{r}
 #| echo: true
-plot_samples_and_averages(samples, prob_red)
+p100 = plot_sample_means(samples, size, prob_red)
+grid.arrange(p10, p20, p50, p100, ncol=1)
 ```
 
 ## Unravel the Magic - CLT
@@ -235,10 +238,10 @@ plot_samples_and_averages(samples, mean(salaries))
 
 ```{r}
 #| echo: false
-sm1 = plot_sample_means(trials[[1]], prob_red)
-sm2 = plot_sample_means(trials[[2]], prob_red)
-sm3 = plot_sample_means(trials[[3]], prob_red)
-sm4 = plot_sample_means(trials[[4]], prob_red)
+sm1 = plot_sample_means(trials[[1]], 10, prob_red, FALSE)
+sm2 = plot_sample_means(trials[[2]], 20, prob_red, FALSE)
+sm3 = plot_sample_means(trials[[3]], 50, prob_red, FALSE)
+sm4 = plot_sample_means(trials[[4]], 100, prob_red, FALSE)
 grid.arrange(sm1, sm2, sm3, sm4, ncol = 4)
 ```
 

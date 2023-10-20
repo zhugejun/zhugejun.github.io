@@ -427,22 +427,14 @@
 <span id="cb1-15"><a href="#cb1-15"></a>                 <span class="at">replace =</span> <span class="cn">TRUE</span>, </span>
 <span id="cb1-16"><a href="#cb1-16"></a>                 <span class="at">prob =</span> <span class="fu">c</span>(prob_red, <span class="dv">1</span> <span class="sc">-</span> prob_red))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">cat</span>(marbles[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>🔵 🔵 🔴 🔵 🔵 🔴 🔵 🔴 🔵 🔵</code></pre>
-</div>
-</div>
-</div>
 </section>
 <section id="taking-one-sample" class="slide level2">
 <h2>Taking One Sample</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>one_sample <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> <span class="dv">10</span>, <span class="at">number_of_samples =</span> <span class="dv">1</span>, <span class="at">func =</span> is_red)</span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">kable</span>(one_sample, <span class="st">"html"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>  <span class="fu">kable_styling</span>(<span class="at">font_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>one_sample <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> <span class="dv">10</span>, <span class="at">number_of_samples =</span> <span class="dv">1</span>, <span class="at">func =</span> is_red)</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">kable</span>(one_sample, <span class="st">"html"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">kable_styling</span>(<span class="at">font_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table" data-quarto-postprocess="true" style="font-size: 20px; margin-left: auto; margin-right: auto;">
 <thead>
@@ -500,8 +492,8 @@
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>sample_proportion <span class="ot">=</span> <span class="fu">mean</span>(one_sample<span class="sc">$</span>sample_value)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">print</span>(<span class="fu">str_glue</span>(<span class="st">"Percentage of red marbles: {sample_proportion * 100}%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>sample_proportion <span class="ot">=</span> <span class="fu">mean</span>(one_sample<span class="sc">$</span>sample_value)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">print</span>(<span class="fu">str_glue</span>(<span class="st">"Percentage of red marbles: {sample_proportion * 100}%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Percentage of red marbles: 50%</code></pre>
 </div>
@@ -511,15 +503,19 @@
 <section id="taking-more-samples" class="slide level2">
 <h2>Taking More Samples</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> <span class="dv">10</span>, <span class="at">number_of_samples =</span> <span class="dv">100</span>, <span class="at">func =</span> is_red)</span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
-<span id="cb7-6"><a href="#cb7-6"></a></span>
-<span id="cb7-7"><a href="#cb7-7"></a><span class="fu">kable</span>(<span class="fu">head</span>(sample_proportions, <span class="dv">5</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>size <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>n <span class="ot">=</span> <span class="dv">100</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
+<span id="cb5-5"><a href="#cb5-5"></a></span>
+<span id="cb5-6"><a href="#cb5-6"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="fu">kable</span>(<span class="fu">head</span>(sample_proportions, <span class="dv">5</span>), <span class="st">"html"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a>  <span class="fu">kable_styling</span>(<span class="at">font_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table data-quarto-postprocess="true">
+<table class="table" data-quarto-postprocess="true" style="font-size: 20px; margin-left: auto; margin-right: auto;">
 <thead>
 <tr class="header">
 <th style="text-align: right;" data-quarto-table-cell-role="th">sample_number</th>
@@ -555,8 +551,8 @@
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>standard_errors <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">sample_size =</span> <span class="dv">10</span>, <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">kable</span>(standard_errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>standard_errors <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">sample_size =</span> size, <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">kable</span>(standard_errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true">
 <thead>
@@ -578,27 +574,29 @@
 </div>
 </div>
 </section>
-<section id="taking-samples-repeatedly" class="slide level2">
-<h2>Taking Samples Repeatedly</h2>
+<section id="taking-more-samples-1" class="slide level2">
+<h2>Taking More Samples</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">plot_samples_and_averages</span>(samples, prob_red)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>p10 <span class="ot">=</span> <span class="fu">plot_sample_means</span>(samples, size, prob_red)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="fu">plot_samples_and_averages</span>(samples, prob_red)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section id="increasing-sample-size-to-20" class="slide level2">
 <h2>Increasing Sample Size to 20</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> <span class="dv">20</span>, <span class="at">number_of_samples =</span> <span class="dv">100</span>, <span class="at">func =</span> is_red)</span>
-<span id="cb10-2"><a href="#cb10-2"></a></span>
-<span id="cb10-3"><a href="#cb10-3"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
-<span id="cb10-6"><a href="#cb10-6"></a></span>
-<span id="cb10-7"><a href="#cb10-7"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> <span class="dv">20</span>, </span>
-<span id="cb10-9"><a href="#cb10-9"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
-<span id="cb10-10"><a href="#cb10-10"></a></span>
-<span id="cb10-11"><a href="#cb10-11"></a><span class="fu">kable</span>(standard_errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>size <span class="ot">=</span> <span class="dv">20</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> size, </span>
+<span id="cb8-10"><a href="#cb8-10"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="fu">kable</span>(standard_errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true">
 <thead>
@@ -626,24 +624,27 @@
 <section id="increasing-sample-size-to-20-1" class="slide level2">
 <h2>Increasing Sample Size to 20</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">plot_samples_and_averages</span>(samples, prob_red)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>p20 <span class="ot">=</span> <span class="fu">plot_sample_means</span>(samples, size, prob_red)</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">grid.arrange</span>(p10, p20)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="index_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
 <section id="increasing-sample-size-to-50" class="slide level2">
 <h2>Increasing Sample Size to 50</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> <span class="dv">50</span>, <span class="at">number_of_samples =</span> <span class="dv">100</span>, <span class="at">func =</span> is_red)</span>
-<span id="cb12-2"><a href="#cb12-2"></a></span>
-<span id="cb12-3"><a href="#cb12-3"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
-<span id="cb12-6"><a href="#cb12-6"></a></span>
-<span id="cb12-7"><a href="#cb12-7"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> <span class="dv">50</span>, </span>
-<span id="cb12-9"><a href="#cb12-9"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
-<span id="cb12-10"><a href="#cb12-10"></a></span>
-<span id="cb12-11"><a href="#cb12-11"></a><span class="fu">kable</span>(standard_errors, <span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>size <span class="ot">=</span> <span class="dv">50</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> size, </span>
+<span id="cb10-11"><a href="#cb10-11"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<span id="cb10-12"><a href="#cb10-12"></a></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="fu">kable</span>(standard_errors, <span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true">
 <thead>
@@ -663,7 +664,7 @@
 </tr>
 <tr class="odd">
 <td style="text-align: right;">50</td>
-<td style="text-align: right;">0.0727356</td>
+<td style="text-align: right;">0.0724464</td>
 </tr>
 </tbody>
 </table>
@@ -675,24 +676,26 @@
 <section id="increasing-sample-size-to-50-1" class="slide level2">
 <h2>Increasing Sample Size to 50</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">plot_samples_and_averages</span>(samples, prob_red)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>p50 <span class="ot">=</span> <span class="fu">plot_sample_means</span>(samples, size, prob_red)</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="fu">grid.arrange</span>(p10, p20, p50)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="index_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
 <section id="increasing-sample-size-to-100" class="slide level2">
 <h2>Increasing Sample Size to 100</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> <span class="dv">100</span>, <span class="at">number_of_samples =</span> <span class="dv">100</span>, <span class="at">func =</span> is_red)</span>
-<span id="cb14-2"><a href="#cb14-2"></a></span>
-<span id="cb14-3"><a href="#cb14-3"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
-<span id="cb14-6"><a href="#cb14-6"></a></span>
-<span id="cb14-7"><a href="#cb14-7"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> <span class="dv">100</span>, </span>
-<span id="cb14-9"><a href="#cb14-9"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
-<span id="cb14-10"><a href="#cb14-10"></a></span>
-<span id="cb14-11"><a href="#cb14-11"></a><span class="fu">kable</span>(standard_errors, <span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>size <span class="ot">=</span> <span class="dv">100</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
+<span id="cb12-7"><a href="#cb12-7"></a></span>
+<span id="cb12-8"><a href="#cb12-8"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> size, </span>
+<span id="cb12-10"><a href="#cb12-10"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<span id="cb12-11"><a href="#cb12-11"></a></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="fu">kable</span>(standard_errors, <span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true">
 <thead>
@@ -712,11 +715,11 @@
 </tr>
 <tr class="odd">
 <td style="text-align: right;">50</td>
-<td style="text-align: right;">0.0727356</td>
+<td style="text-align: right;">0.0724464</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">100</td>
-<td style="text-align: right;">0.0423896</td>
+<td style="text-align: right;">0.0433026</td>
 </tr>
 </tbody>
 </table>
@@ -728,10 +731,11 @@
 <section id="increasing-sample-size-to-100-1" class="slide level2">
 <h2>Increasing Sample Size to 100</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">plot_samples_and_averages</span>(samples, prob_red)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>p100 <span class="ot">=</span> <span class="fu">plot_sample_means</span>(samples, size, prob_red)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">grid.arrange</span>(p10, p20, p50, p100, <span class="at">ncol=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="index_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"></section>
 <section id="unravel-the-magic---clt" class="slide level2">
 <h2>Unravel the Magic - CLT</h2>
 <p>As the sample size increases, typically when n &gt; 30, the distribution of the sample means approaches a normal distribution.</p>
@@ -739,35 +743,35 @@
 <section id="real-world-data" class="slide level2">
 <h2>Real-world Data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb16-2"><a href="#cb16-2"></a></span>
-<span id="cb16-3"><a href="#cb16-3"></a>n <span class="ot">=</span> <span class="dv">1000</span></span>
-<span id="cb16-4"><a href="#cb16-4"></a>mean_log <span class="ot">=</span> <span class="fu">log</span>(<span class="dv">30000</span>)</span>
-<span id="cb16-5"><a href="#cb16-5"></a>sd_log <span class="ot">=</span> <span class="dv">1</span> </span>
-<span id="cb16-6"><a href="#cb16-6"></a>salaries <span class="ot">=</span> <span class="fu">rlnorm</span>(n, <span class="at">meanlog =</span> mean_log, <span class="at">sdlog =</span> sd_log)</span>
-<span id="cb16-7"><a href="#cb16-7"></a></span>
-<span id="cb16-8"><a href="#cb16-8"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(salaries), <span class="fu">aes</span>(<span class="at">x =</span> salaries)) <span class="sc">+</span> </span>
-<span id="cb16-9"><a href="#cb16-9"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span> </span>
-<span id="cb16-10"><a href="#cb16-10"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">mean</span>(salaries), <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb16-11"><a href="#cb16-11"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">mean</span>(salaries) <span class="sc">*</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="dv">400</span>, <span class="at">label =</span> <span class="fu">str_glue</span>(<span class="st">"{round(mean(salaries), 2)}"</span>)), </span>
-<span id="cb16-12"><a href="#cb16-12"></a>            <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb16-13"><a href="#cb16-13"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Salary Distribution"</span>, <span class="at">x =</span> <span class="st">"Salary"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span> </span>
-<span id="cb16-14"><a href="#cb16-14"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a>n <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>mean_log <span class="ot">=</span> <span class="fu">log</span>(<span class="dv">30000</span>)</span>
+<span id="cb14-5"><a href="#cb14-5"></a>sd_log <span class="ot">=</span> <span class="dv">1</span> </span>
+<span id="cb14-6"><a href="#cb14-6"></a>salaries <span class="ot">=</span> <span class="fu">rlnorm</span>(n, <span class="at">meanlog =</span> mean_log, <span class="at">sdlog =</span> sd_log)</span>
+<span id="cb14-7"><a href="#cb14-7"></a></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(salaries), <span class="fu">aes</span>(<span class="at">x =</span> salaries)) <span class="sc">+</span> </span>
+<span id="cb14-9"><a href="#cb14-9"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span> </span>
+<span id="cb14-10"><a href="#cb14-10"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">mean</span>(salaries), <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">mean</span>(salaries) <span class="sc">*</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="dv">400</span>, <span class="at">label =</span> <span class="fu">str_glue</span>(<span class="st">"{round(mean(salaries), 2)}"</span>)), </span>
+<span id="cb14-12"><a href="#cb14-12"></a>            <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Salary Distribution"</span>, <span class="at">x =</span> <span class="st">"Salary"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span> </span>
+<span id="cb14-14"><a href="#cb14-14"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="index_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section>
 <section id="real-world-data-1" class="slide level2">
 <h2>Real-world Data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(salaries, <span class="at">sample_size =</span> <span class="dv">100</span>, <span class="at">number_of_samples =</span> <span class="dv">100</span>)</span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="fu">plot_samples_and_averages</span>(samples, <span class="fu">mean</span>(salaries))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(salaries, <span class="at">sample_size =</span> <span class="dv">100</span>, <span class="at">number_of_samples =</span> <span class="dv">100</span>)</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="fu">plot_samples_and_averages</span>(samples, <span class="fu">mean</span>(salaries))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="index_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"></section>
 <section id="key-insights" class="slide level2">
 <h2>Key Insights</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"><ul>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"><ul>
 <li>Sample means cluster around the population mean</li>
 <li>Larger sample sizes decrease variability</li>
 <li>Distribution of sample means becomes more normal as size increases</li>
