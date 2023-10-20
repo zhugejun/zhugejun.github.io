@@ -4,17 +4,24 @@ subtitle: "Marbles to the Rescue: Making the Abstract Tangible"
 format: 
   revealjs:
     slide-number: true
-    chalkboard: true
+    chalkboard: false
     smaller: true
     scrollable: true
 editor: source
 ---
+
 
 ## Premise
 
 Imagine that you have a bag filled with [red]{style="color: red"} and [blue]{style="color: blue"} marbles.
 
 How would you guess the proportion of [red]{style="color: red"} ones without going through every marble?
+
+
+## Central Limit Theorem
+
+As the sample size increases, typically when it's greater than 30, 
+the distribution of the sample means approaches a normal distribution.
 
 ## Simulating Marble Population
 
@@ -32,7 +39,7 @@ blue_marble = "🔵"
 prob_red = 0.64
 num_marbles = 1000
 
-set.seed(42) # reproducibility
+set.seed(42) 
 marbles = sample(c(red_marble, blue_marble), 
                  size = num_marbles, 
                  replace = TRUE, 
@@ -44,6 +51,8 @@ marbles = sample(c(red_marble, blue_marble),
 
 ```{r}
 #| echo: true
+
+set.seed(42)
 one_sample = get_samples(marbles, sample_size = 10, number_of_samples = 1, func = is_red)
 
 kable(one_sample, "html") |>
@@ -54,6 +63,7 @@ kable(one_sample, "html") |>
 
 ```{r}
 #| echo: true
+
 sample_proportion = mean(one_sample$sample_value)
 print(str_glue("Percentage of red marbles: {sample_proportion * 100}%"))
 ```
@@ -70,6 +80,7 @@ trials = list()
 size = 10
 n = 100
 
+set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
@@ -107,6 +118,7 @@ plot_samples_and_averages(samples, prob_red)
 ```{r}
 #| echo: true
 size = 20
+set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
@@ -130,7 +142,7 @@ trials[[2]] = samples
 ```{r}
 #| echo: true
 p20 = plot_sample_means(samples, size, prob_red)
-grid.arrange(p10, p20)
+grid.arrange(p10, p20, ncol=2)
 ```
 
 
@@ -139,7 +151,7 @@ grid.arrange(p10, p20)
 ```{r}
 #| echo: true
 size = 50
-
+set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
@@ -163,7 +175,7 @@ trials[[3]] = samples
 ```{r}
 #| echo: true
 p50 = plot_sample_means(samples, size, prob_red)
-grid.arrange(p10, p20, p50)
+grid.arrange(p10, p20, p50, ncol=2)
 ```
 
 ## Increasing Sample Size to 100
@@ -171,6 +183,7 @@ grid.arrange(p10, p20, p50)
 ```{r}
 #| echo: true
 size = 100
+set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
 sample_proportions = samples |>
@@ -193,16 +206,12 @@ trials[[4]] = samples
 
 ```{r}
 #| echo: true
+
 p100 = plot_sample_means(samples, size, prob_red)
-grid.arrange(p10, p20, p50, p100, ncol=1)
+grid.arrange(p10, p20, p50, p100, ncol=2)
 ```
 
-## Unravel the Magic - CLT
-
-As the sample size increases, typically when n > 30, 
-the distribution of the sample means approaches a normal distribution.
-
-## Real-world Data
+## Skewed Data
 
 ```{r}
 #| echo: true
@@ -223,7 +232,7 @@ ggplot(data.frame(salaries), aes(x = salaries)) +
 
 ```
 
-## Real-world Data
+## Skewed Data
 
 ```{r}
 #| echo: true
@@ -231,10 +240,7 @@ samples = get_samples(salaries, sample_size = 100, number_of_samples = 100)
 plot_samples_and_averages(samples, mean(salaries))
 ```
 
-
-
 ## Key Insights
-
 
 ```{r}
 #| echo: false
@@ -250,4 +256,21 @@ grid.arrange(sm1, sm2, sm3, sm4, ncol = 4)
 -   Distribution of sample means becomes more normal as size increases
 -   Works for any population distribution
 
+## Red Marble Proportion Estimation
+
+
+```{r}
+#| echo: true
+
+set.seed(42)
+one_sample = sample(marbles, 100)
+print(str_glue("Percentage of red marbles: {mean(one_sample == red_marble) * 100}%"))
+```
+
+
+
+## Question
+
+- How confident are we in the estimation?
+- How can we quantify our level of certainty?
 
