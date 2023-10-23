@@ -59,8 +59,8 @@ kable(one_sample, "html") |>
 ```{r}
 #| echo: true
 
-sample_proportion = mean(one_sample$sample_value)
-print(str_glue("Percentage of red marbles: {sample_proportion * 100}%"))
+sample_mean = mean(one_sample$sample_value)
+print(str_glue("Percentage of red marbles: {sample_mean * 100}%"))
 ```
 
 ## Taking More Samples
@@ -78,11 +78,11 @@ n = 100
 set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
-sample_proportions = samples |>
+sample_means = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
-kable(head(sample_proportions, 5), "html") |>
+kable(head(sample_means, 5), "html") |>
   kable_styling(font_size = 20)
 
 ```
@@ -91,7 +91,7 @@ kable(head(sample_proportions, 5), "html") |>
 
 ```{r}
 #| echo: true
-standard_errors = tibble(sample_size = size, standard_error = sd(sample_proportions$proportion))
+standard_errors = tibble(sample_size = size, standard_error = sd(sample_means$proportion))
 kable(standard_errors)
 ```
 
@@ -116,13 +116,13 @@ size = 20
 set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
-sample_proportions = samples |>
+sample_means = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
 standard_errors = standard_errors |>
   add_row(sample_size = size, 
-          standard_error = sd(sample_proportions$proportion))
+          standard_error = sd(sample_means$proportion))
 
 kable(standard_errors)
 ```
@@ -149,13 +149,13 @@ size = 50
 set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
-sample_proportions = samples |>
+sample_means = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
 standard_errors = standard_errors |>
   add_row(sample_size = size, 
-          standard_error = sd(sample_proportions$proportion))
+          standard_error = sd(sample_means$proportion))
 
 kable(standard_errors, "html")
 ```
@@ -181,13 +181,13 @@ size = 100
 set.seed(42)
 samples = get_samples(marbles, sample_size = size, number_of_samples = n, func = is_red)
 
-sample_proportions = samples |>
+sample_means = samples |>
   group_by(sample_number) |>
   summarise(proportion = mean(sample_value))
 
 standard_errors = standard_errors |>
   add_row(sample_size = size, 
-          standard_error = sd(sample_proportions$proportion))
+          standard_error = sd(sample_means$proportion))
 
 kable(standard_errors, "html")
 ```

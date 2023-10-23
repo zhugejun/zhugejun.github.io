@@ -491,8 +491,8 @@
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>sample_proportion <span class="ot">=</span> <span class="fu">mean</span>(one_sample<span class="sc">$</span>sample_value)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">print</span>(<span class="fu">str_glue</span>(<span class="st">"Percentage of red marbles: {sample_proportion * 100}%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>sample_mean <span class="ot">=</span> <span class="fu">mean</span>(one_sample<span class="sc">$</span>sample_value)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">print</span>(<span class="fu">str_glue</span>(<span class="st">"Percentage of red marbles: {sample_mean * 100}%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Percentage of red marbles: 50%</code></pre>
 </div>
@@ -508,11 +508,11 @@
 <span id="cb5-4"><a href="#cb5-4"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb5-5"><a href="#cb5-5"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
 <span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>sample_means <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
 <span id="cb5-8"><a href="#cb5-8"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
 <span id="cb5-9"><a href="#cb5-9"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
 <span id="cb5-10"><a href="#cb5-10"></a></span>
-<span id="cb5-11"><a href="#cb5-11"></a><span class="fu">kable</span>(<span class="fu">head</span>(sample_proportions, <span class="dv">5</span>), <span class="st">"html"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="fu">kable</span>(<span class="fu">head</span>(sample_means, <span class="dv">5</span>), <span class="st">"html"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb5-12"><a href="#cb5-12"></a>  <span class="fu">kable_styling</span>(<span class="at">font_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table" data-quarto-postprocess="true" style="font-size: 20px; margin-left: auto; margin-right: auto;">
@@ -551,7 +551,7 @@
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>standard_errors <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">sample_size =</span> size, <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>standard_errors <span class="ot">=</span> <span class="fu">tibble</span>(<span class="at">sample_size =</span> size, <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_means<span class="sc">$</span>proportion))</span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="fu">kable</span>(standard_errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true">
@@ -589,13 +589,13 @@
 <span id="cb8-2"><a href="#cb8-2"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb8-3"><a href="#cb8-3"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>sample_means <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
 <span id="cb8-6"><a href="#cb8-6"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
 <span id="cb8-7"><a href="#cb8-7"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
 <span id="cb8-8"><a href="#cb8-8"></a></span>
 <span id="cb8-9"><a href="#cb8-9"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
 <span id="cb8-10"><a href="#cb8-10"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> size, </span>
-<span id="cb8-11"><a href="#cb8-11"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<span id="cb8-11"><a href="#cb8-11"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_means<span class="sc">$</span>proportion))</span>
 <span id="cb8-12"><a href="#cb8-12"></a></span>
 <span id="cb8-13"><a href="#cb8-13"></a><span class="fu">kable</span>(standard_errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -637,13 +637,13 @@
 <span id="cb10-2"><a href="#cb10-2"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb10-3"><a href="#cb10-3"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
 <span id="cb10-4"><a href="#cb10-4"></a></span>
-<span id="cb10-5"><a href="#cb10-5"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>sample_means <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
 <span id="cb10-6"><a href="#cb10-6"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
 <span id="cb10-8"><a href="#cb10-8"></a></span>
 <span id="cb10-9"><a href="#cb10-9"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
 <span id="cb10-10"><a href="#cb10-10"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> size, </span>
-<span id="cb10-11"><a href="#cb10-11"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<span id="cb10-11"><a href="#cb10-11"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_means<span class="sc">$</span>proportion))</span>
 <span id="cb10-12"><a href="#cb10-12"></a></span>
 <span id="cb10-13"><a href="#cb10-13"></a><span class="fu">kable</span>(standard_errors, <span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -689,13 +689,13 @@
 <span id="cb12-2"><a href="#cb12-2"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb12-3"><a href="#cb12-3"></a>samples <span class="ot">=</span> <span class="fu">get_samples</span>(marbles, <span class="at">sample_size =</span> size, <span class="at">number_of_samples =</span> n, <span class="at">func =</span> is_red)</span>
 <span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a>sample_proportions <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>sample_means <span class="ot">=</span> samples <span class="sc">|&gt;</span></span>
 <span id="cb12-6"><a href="#cb12-6"></a>  <span class="fu">group_by</span>(sample_number) <span class="sc">|&gt;</span></span>
 <span id="cb12-7"><a href="#cb12-7"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(sample_value))</span>
 <span id="cb12-8"><a href="#cb12-8"></a></span>
 <span id="cb12-9"><a href="#cb12-9"></a>standard_errors <span class="ot">=</span> standard_errors <span class="sc">|&gt;</span></span>
 <span id="cb12-10"><a href="#cb12-10"></a>  <span class="fu">add_row</span>(<span class="at">sample_size =</span> size, </span>
-<span id="cb12-11"><a href="#cb12-11"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_proportions<span class="sc">$</span>proportion))</span>
+<span id="cb12-11"><a href="#cb12-11"></a>          <span class="at">standard_error =</span> <span class="fu">sd</span>(sample_means<span class="sc">$</span>proportion))</span>
 <span id="cb12-12"><a href="#cb12-12"></a></span>
 <span id="cb12-13"><a href="#cb12-13"></a><span class="fu">kable</span>(standard_errors, <span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
