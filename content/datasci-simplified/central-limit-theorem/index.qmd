@@ -18,11 +18,6 @@ Imagine that you have a bag filled with [red]{style="color: red"} and [blue]{sty
 How would you guess the proportion of [red]{style="color: red"} ones without going through every marble?
 
 
-## Central Limit Theorem
-
-As the sample size increases, typically when it's greater than 30, 
-the distribution of the sample means approaches a normal distribution.
-
 ## Simulating Marble Population
 
 ```{r}
@@ -210,6 +205,12 @@ trials[[4]] = samples
 p100 = plot_sample_means(samples, size, prob_red)
 grid.arrange(p10, p20, p50, p100, ncol=2)
 ```
+
+
+## Central Limit Theorem
+
+As the sample size increases, typically when it's greater than 30, 
+the distribution of the sample means approaches a normal distribution.
 
 ## Skewed Data
 
