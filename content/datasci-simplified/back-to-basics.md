@@ -9,7 +9,7 @@ draft: false
 - Introduction to Probability:
 - Probability Distributions:
 - Bayes Theorem:
-- Central Limit Theorem: [Code](https://github.com) | [Slides](/datasci-simplified/central-limit-theorem/index.html) | [Video](https://youtu.be/2QeDRsxSF9M)
+- Central Limit Theorem: [Code](/datasci-simplified/central-limit-theorem/index.qmd) | [Slides](/datasci-simplified/central-limit-theorem/index.html) | [Video](https://www.youtube.com/watch?v=zUXJMzoiqlE)
 - Confidence Interval:
 - Hypothesis Testing:
 - p-value:
