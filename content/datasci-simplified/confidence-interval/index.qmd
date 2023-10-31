@@ -1,0 +1,330 @@
+---
+title: "Unraveling the Confidence Interval Puzzle"
+subtitle: "From a Single Estimate to a Range"
+format: 
+  revealjs:
+    slide-number: true
+    smaller: true
+    chalkboard: true
+    scrollable: true
+editor: source
+---
+
+
+## Central Limit Theorem
+
+As the sample size increases, typically when it's greater than 30, 
+the distribution of the sample means approaches a normal distribution.
+
+. . . 
+
+Mathematically,
+
+$$\bar X \sim N(\mu, \frac{\sigma^2}{n})$$
+
+where $\mu$ is the population mean and $\sigma^2$ is the population variance.
+
+
+
+## Red Marble Proportion Estimation
+
+```{r}
+#| echo: true
+
+library(tidyverse)
+source("../utils.R")
+
+red_marble = "🔴"
+blue_marble = "🔵"
+
+prob_red = 0.64
+num_marbles = 5000 # 1000 -> 5000
+
+set.seed(42)
+marbles = sample(c(red_marble, blue_marble), size = num_marbles, 
+                 replace = TRUE, prob = c(prob_red, 1 - prob_red))
+
+set.seed(42)
+n = 100
+one_sample = sample(marbles, n)
+print(str_glue("Percentage of red marbles: {mean(one_sample == red_marble) * 100}%"))
+```
+
+. . .
+
+- How confident are we in the estimation?
+- How can we quantify our level of certainty?
+
+
+## Confidence Interval
+
+
+"The proportion of red marbles is exactly `r mean(one_sample == red_marble)*100`%."
+
+
+
+## Confidence Interval
+
+~~"The proportion of red marbles is exactly `r mean(one_sample == red_marble)*100`%."~~
+
+
+"I am 95% confident the proportion of red marbles in the bag is between
+`r mean(one_sample == red_marble)*100 - 10`% and  `r mean(one_sample == red_marble)*100 + 10`%, 
+which is also can be written as `r mean(one_sample == red_marble)*100`% $\pm$ 10%.”
+
+## Margin of Error
+
+. . .
+
+
+$$\text{Margin of Error} = \text{Critical Value} \times \text{Standard Error}$$
+
+
+
+## Critical Value ($z$-score)
+
+A $z$-score indicates how many standard deviations a data point is from 
+the mean of the dataset.
+
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+
+df = data.frame(z = seq(-4, 4, by = 0.01))
+df$y = dnorm(df$z)
+
+ggplot(df, aes(z, y)) +
+  geom_line() +
+  geom_area(data = subset(df, z > -1.96 & z < 1.96), aes(x = z, y = y), fill = "gray") +
+  geom_segment(aes(x = -1.96, y = 0, xend = -1.96, yend = dnorm(-1.96)), linetype="dashed") +
+  geom_segment(aes(x = +1.96, y = 0, xend = +1.96, yend = dnorm(+1.96)), linetype="dashed") +
+  annotate("text", x = +2.2, y = 0.015, label = "0.025") +
+  annotate("text", x = -2.2, y = 0.015, label = "0.025") +
+  annotate("text", x = 0, y = 0.15, label = "0.95") +
+  # annotate("text", x = 1.96, y = -0.01, label = "z-score") +
+  geom_point(aes(x = +1.96, y = -0.001), size = 2, color = "red") +
+  geom_point(aes(x = -1.96, y = -0.001), size = 2, color = "red") +
+  scale_x_continuous(breaks = seq(-4, 4)) +
+  labs(x = "",
+       y = "",
+       title = "") +
+  theme_minimal()
+
+```
+
+
+## Calculating $z$-score
+
+
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+
+df = data.frame(z = seq(-4, 4, by = 0.01))
+df$y = dnorm(df$z)
+
+ggplot(df, aes(z, y)) +
+  geom_line() +
+  # geom_area(data = subset(df, z > -1.96 & z < 1.96), aes(x = z, y = y), fill = "gray") +
+  geom_area(data = subset(df,z < 1.96), aes(x = z, y = y), fill = "gray") +
+  # geom_segment(aes(x = -1.96, y = 0, xend = -1.96, yend = dnorm(-1.96)), linetype="dashed") +
+  geom_segment(aes(x = +1.96, y = 0, xend = +1.96, yend = dnorm(+1.96)), linetype="dashed") +
+  annotate("text", x = +2.2, y = 0.015, label = "0.025") +
+  # annotate("text", x = -2.2, y = 0.015, label = "0.025") +
+  annotate("text", x = 0, y = 0.15, label = "0.975") +
+  scale_x_continuous(breaks = seq(-4, 4)) +
+  labs(x = "",
+       y = "",
+       title = "") +
+  theme_minimal()
+
+
+```
+
+
+```{r}
+#| echo: true
+
+z_95 = qnorm(1 - 0.05 / 2)
+print(str_glue("z score for 95% confidence level: {round(z_95, 2)}"))
+```
+
+
+## Standard Error
+
+**Population Variance Known**
+
+$$SE = \frac{\sigma}{\sqrt{n}}$$
+
+. . . 
+
+**Population Variance Unknown**
+
+
+$$SE_{\hat p} = \sqrt{\frac{\hat p (1 - \hat p)}{n}}$$
+
+where $\hat p$ is the sample proportion.
+
+. . .
+
+```{r}
+#| echo: true
+
+p_hat = mean(one_sample == red_marble)
+print(str_glue("Sample Proportion: {p_hat}"))
+
+se = sqrt(p_hat * (1 - p_hat) / n)
+print(str_glue("Standard Error: {round(se, 3)}"))
+```
+
+
+
+## Margin of Error (MOE)
+
+$$MOE = z \times SE$$
+
+
+```{r}
+#| echo: true
+moe = z_95 * se
+print(str_glue("Margin of Error: {round(moe, 3)}"))
+```
+
+
+
+## 95% Confidence Interval
+
+$$CI = (\hat p - MOE, \hat p + MOE)$$
+
+
+```{r}
+#| echo: true
+lower_limit = p_hat - moe
+upper_limit = p_hat + moe
+print(str_glue("95% CI: [{round(lower_limit, 3)}, {round(upper_limit, 3)}]"))
+```
+
+## 99% Confidence Interval
+
+```{r}
+#| echo: true
+
+z_99 = qnorm(1 - 0.01 / 2)
+moe = z_99 * se
+lower_limit = p_hat - moe
+upper_limit = p_hat + moe
+print(str_glue("99% CI: [{round(lower_limit, 3)}, {round(upper_limit, 3)}]"))
+```
+
+
+## How it works?
+
+
+```{r}
+
+pop_sd = sqrt(prob_red * (1 - prob_red))
+sd = sqrt(prob_red * (1 - prob_red) / n)
+df = data.frame(x = seq(prob_red - 4*sd, prob_red + 4*sd, by = 0.001))
+df$y = dnorm(df$x, mean = prob_red, sd = sd)
+
+lower_limit = prob_red - 1.96 * sd
+upper_limit = prob_red + 1.96 * sd
+
+
+ggplot(df, aes(x, y)) +
+  geom_line() +
+  geom_area(data = subset(df, x > lower_limit & x < upper_limit), aes(x = x, y = y), fill = "gray") +
+  geom_segment(aes(x = lower_limit, y = 0, xend = lower_limit, yend = dnorm(lower_limit, prob_red, sd)), linetype="dashed") +
+  geom_segment(aes(x = upper_limit, y = 0, xend = upper_limit, yend = dnorm(upper_limit, prob_red, sd)), linetype="dashed") +
+  geom_segment(aes(x = prob_red, y = 0, xend = prob_red, yend = dnorm(prob_red, prob_red, sd)), linetype="dashed") +
+  annotate("text", x = 0.66, y = 2, label = "0.95") +
+  scale_x_continuous(breaks = seq(prob_red - 4*sd, prob_red + 4*sd, by = 0.05)) +
+  labs(x = "",
+       y = "",
+       title = "Distribution of Sample Means") +
+  theme_minimal()
+
+
+```
+
+## How it works?
+
+
+```{r}
+
+p1 = ggplot(df, aes(x, y)) +
+  geom_line() +
+  geom_area(data = subset(df, x > lower_limit & x < upper_limit), aes(x = x, y = y), fill = "gray") +
+  geom_segment(aes(x = lower_limit, y = 0, xend = lower_limit, yend = dnorm(lower_limit, prob_red, sd)), linetype="dashed") +
+  geom_segment(aes(x = upper_limit, y = 0, xend = upper_limit, yend = dnorm(upper_limit, prob_red, sd)), linetype="dashed") +
+  geom_segment(aes(x = prob_red, y = 0, xend = prob_red, yend = dnorm(prob_red, prob_red, sd)), linetype="dashed") +
+  annotate("text", x = 0.66, y = 2, label = "0.95") +
+  geom_point(x = p_hat, y = 0, color = "blue", size = 2) + 
+  geom_segment(aes(x = p_hat - 1.96 * se, y = 0, xend = p_hat + 1.96 * se, yend = 0), color = "blue") +
+  scale_x_continuous(breaks = seq(prob_red - 4*sd, prob_red + 4*sd, by = 0.05)) +
+  labs(x = "",
+       y = "",
+       title = "Distribution of Sample Means") +
+  theme_minimal()
+
+
+p_est = 0.52
+p2 = ggplot(df, aes(x, y)) +
+  geom_line() +
+  geom_area(data = subset(df, x > lower_limit & x < upper_limit), aes(x = x, y = y), fill = "gray") +
+  geom_segment(aes(x = lower_limit, y = 0, xend = lower_limit, yend = dnorm(lower_limit, prob_red, sd)), linetype="dashed") +
+  geom_segment(aes(x = upper_limit, y = 0, xend = upper_limit, yend = dnorm(upper_limit, prob_red, sd)), linetype="dashed") +
+  geom_segment(aes(x = prob_red, y = 0, xend = prob_red, yend = dnorm(prob_red, prob_red, sd)), linetype="dashed") +
+  annotate("text", x = 0.66, y = 2, label = "0.95") +
+  geom_point(x = p_est, y = 0, color = "red", size = 2) + 
+  geom_segment(aes(x = p_est - 1.96 * se, y = 0, xend = p_est + 1.96 * se, yend = 0), color = "red") +
+  scale_x_continuous(breaks = seq(prob_red - 4*sd, prob_red + 4*sd, by = 0.05)) +
+  labs(x = "",
+       y = "",
+       title = "Distribution of Sample Means") +
+  theme_minimal()
+
+grid.arrange(p1, p2, ncol=2)
+
+```
+
+## Confidence Level
+
+A 95% confidence level means that if we were to take the samples and construct 
+a confidence interval from each sample, we are expecting that the intervals 
+would capture the true population mean about 95% of the time. 
+
+
+## 95% Confidence Level
+
+```{r}
+#| echo: false
+sd = sqrt(prob_red * (1 - prob_red) / n)
+
+intervals = simulate_intervals(pop_mean = prob_red, 
+                               pop_sd = sd, 
+                               number_of_samples = 100, 
+                               confidence_level = 0.95)
+
+plot_confidence_intervals(intervals, prob_red)
+```
+
+
+## Steps for Constructing CI 
+
+- Compute the sample proportion, $\hat p$
+- Find critical value, $z$, corresponding to the confidence level
+- Compute the standard error, $SE = \sqrt{\hat p (1 - \hat p) / n}$
+- Compute the Margin of Error, $MOE = z\times SE$
+- Construct confidence interval, $\hat p \pm MOE$
+
+
+## Question
+
+"Half of the marbles in the bag are red!”
+
+
+
+
+
+

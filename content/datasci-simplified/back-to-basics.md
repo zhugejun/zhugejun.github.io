@@ -10,7 +10,7 @@ draft: false
 - Probability Distributions:
 - Bayes Theorem:
 - Central Limit Theorem: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/central-limit-theorem/index.qmd) | [Slides](/datasci-simplified/central-limit-theorem/index.html) | [Video](https://www.youtube.com/watch?v=zUXJMzoiqlE)
-- Confidence Interval:
+- Confidence Interval: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/confidence-interval/index.qmd) | [Slides](/datasci-simplified/confidence-interval/index.html) | [Video](https://youtu.be/WRDQeb-5Ly0?si=hWHVBO5UogpOYp6O)
 - Hypothesis Testing:
 - p-value:
 - Type I and Type II Errors:

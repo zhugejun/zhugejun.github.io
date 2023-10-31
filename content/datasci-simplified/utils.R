@@ -27,10 +27,8 @@ plot_samples_and_averages = function(samples, true_value) {
   x_min = floor(min(samples$sample_value))
   x_max = ceiling(max(samples$sample_value))
 
-  # split x to 10 bins
   x_breaks = seq(x_min, x_max, (x_max - x_min) / 10)
   
-  # Calculating average of red marbles in each sample
   sample_means = samples |>
     group_by(sample_number) |>
     summarise(average = mean(sample_value))
@@ -55,7 +53,6 @@ plot_samples_and_averages = function(samples, true_value) {
     labs(x = "Sample mean", y = "Density", title = "Sampling Distribution of the Sample Means") +
     theme_minimal()
   
-  # Combining the plots vertically
   grid.arrange(p1, p2, ncol = 1)
   
 }
@@ -101,10 +98,174 @@ plot_sample_means = function(samples, size, true_prop, include_title = TRUE) {
     geom_vline(xintercept = true_prop, color = "blue", linetype = "dashed") +
     scale_x_continuous(limits = c(x_min, x_max), breaks =  seq(x_min, x_max, (x_max - x_min) / 10)) +
     labs(x = "Sample mean", y = "Density", title = title) +
-    ylim(0, 15) +
+    # ylim(0, 15) +
     theme_minimal() + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
   
   return(p)
+}
+
+standard_normal_curve = function() {
+  x = seq(-4, 4, by=0.01)
+  y = dnorm(x)
+  df = tibble(x, y)
+  
+  ggplot(df, aes(x, y)) +
+    geom_line(color="black") +
+    stat_function(fun=dnorm, xlim=c(-4,4), fill="gray", geom="area") +
+    scale_x_continuous(breaks = c(-4, -3, -2, -1, 0, 1, 2, 3, 4),
+                       labels = c("-4σ", "-3σ", "-2σ", "-1σ", "0", "1σ", "2σ", "3σ", "4σ")) + 
+    labs(x="", y="") +
+    theme_minimal() + 
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.text.y = element_blank())
+  
+}
+
+
+normal_plot = function(mean = 0, sd = 1) {
+  x = seq(mean - 4 * sd, mean + 4 * sd, by=0.001)
+  y = dnorm(x, mean, sd)
+  df = tibble(x, y)
+  
+  breaks = c(round(mean-4*sd, 2),
+             round(mean-3*sd, 2),
+             round(mean-2*sd, 2), 
+             round(mean-sd, 2),
+             round(mean, 2), 
+             round(mean+sd, 2),
+             round(mean+2*sd, 2),
+             round(mean+3*sd, 2),
+             round(mean+4*sd, 2))
+
+  ggplot(df, aes(x, y)) +
+    geom_line(color="black") + 
+    scale_x_continuous(breaks = breaks) +
+    stat_function(fun=function(x) dnorm(x, mean, sd),
+                  xlim=c(mean-sd,mean), fill="dodgerblue3", geom="area") + 
+    stat_function(fun=function(x) dnorm(x, mean, sd), 
+                  xlim=c(mean,mean+sd), fill="dodgerblue3", geom="area") +
+    stat_function(fun=function(x) dnorm(x, mean, sd),
+                  xlim=c(mean-2*sd,mean-sd), fill="dodgerblue", geom="area") +
+    stat_function(fun=function(x) dnorm(x, mean, sd),
+                  xlim=c(mean+sd, mean+2*sd), fill="dodgerblue", geom="area") +
+    labs(x="", y="") +
+    theme_minimal()
+}
+
+
+
+
+
+
+
+normal_dist_plot = function(mean=0, sd=1) {
+  x = seq(-4, 4, by=0.01)
+  y = dnorm(x)
+  df = tibble(x, y)
+  
+  
+  ggplot(df, aes(x, y)) +
+    geom_line(color="black") +
+    stat_function(fun=dnorm, xlim=c(-3,-2), fill="deepskyblue", geom="area") +
+    stat_function(fun=dnorm, xlim=c(2,3), fill="deepskyblue", geom="area") +
+    stat_function(fun=dnorm, xlim=c(-2,-1), fill="dodgerblue", geom="area") +
+    stat_function(fun=dnorm, xlim=c(1,2), fill="dodgerblue", geom="area") +
+    stat_function(fun=dnorm, xlim=c(-1,1), fill="dodgerblue3", geom="area") +
+    annotate("text", x = c(-0.5, 0.5), y = 0.2, color = "white", 
+             label = c("34.1%", "34.1%"), size = 5) +
+    annotate("text", x = c(-1.5, 1.5), y = 0.05, color = "white", 
+             label = c("13.6%", "13.6%"), size = 5) +
+    annotate("text", x = c(-2.25, 2.25), y = 0.0125, color = "white", 
+             label = c("2.1%", "2.1%"), size = 3) +
+    geom_segment(aes(x = -3, y = 0, xend = -3, yend = dnorm(-3)), linetype="dashed") + 
+    geom_segment(aes(x = -2, y = 0, xend = -2, yend = dnorm(-2)), linetype="dashed") +
+    geom_segment(aes(x = -1, y = 0, xend = -1, yend = dnorm(-1)), linetype="dashed") +
+    geom_segment(aes(x = 0, y = 0, xend = 0, yend = dnorm(0)), linetype="dashed") +
+    geom_segment(aes(x = 1, y = 0, xend = 1, yend = dnorm(1)), linetype="dashed") +
+    geom_segment(aes(x = 2, y = 0, xend = 2, yend = dnorm(2)), linetype="dashed") +
+    geom_segment(aes(x = 3, y = 0, xend = 3, yend = dnorm(3)), linetype="dashed") +
+    scale_x_continuous(breaks = c(-4, -3, -2, -1, 0, 1, 2, 3, 4),
+                       labels = c("-4σ", "-3σ", "-2σ", "-1σ", "0", "1σ", "2σ", "3σ", "4σ")) + 
+    labs(x="", y="") +
+    theme_minimal() + 
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.text.y = element_blank())
+  
+}
+
+
+# confidence interval simulation
+simulate_intervals = function(pop_mean = 0.65, 
+                              pop_sd = 0.15,
+                              number_of_samples = 100, 
+                              confidence_level = 0.95) {
+
+  alpha = 1 - confidence_level
+  z = qnorm(1 - alpha / 2)
+
+  included = tibble(lower = numeric(), upper = numeric())
+  excluded = tibble(lower = numeric(), upper = numeric())
+
+  n_included = number_of_samples * confidence_level
+  n_excluded = number_of_samples * (1 - confidence_level)
+
+  while (nrow(included) < n_included | nrow(excluded) < n_excluded){
+    sample = rnorm(100, pop_mean, pop_sd)
+    sample_mean = mean(sample)
+    sample_sd = sd(sample)
+    lower = sample_mean - z * sample_sd / sqrt(100)
+    upper = sample_mean + z * sample_sd / sqrt(100)
+
+    if (lower < pop_mean & upper > pop_mean) {
+      if (nrow(included) < n_included){
+        included = bind_rows(included, tibble(lower, upper))
+      }
+    } else {
+      if (nrow(excluded) < n_excluded){
+        excluded = bind_rows(excluded, tibble(lower, upper))
+      }
+    }
+  }
+
+  included = included |> 
+    slice(1:n_included) |> 
+    mutate(is_included = TRUE)
+  excluded = excluded |> 
+    slice(1:n_excluded) |> 
+    mutate(is_included = FALSE)
+  
+  intervals = bind_rows(included, excluded) |> 
+    sample_frac(1) |>
+    mutate(sample_number = row_number()) |>
+    select(sample_number, lower, upper, is_included)
+
+  return(intervals)
+}
+
+# plot confidence intervals
+plot_confidence_intervals = function(intervals, pop_mean) {
+  
+  ggplot(intervals, aes(x = sample_number, ymin = lower, ymax = upper)) +
+    geom_pointrange(aes(y = (lower + upper) / 2, color = is_included),
+                    fatten = 2,
+                    position = position_dodge(0.5)) +
+    scale_color_manual(values = c("TRUE" = "black", "FALSE" = "red")) + 
+    geom_hline(yintercept = pop_mean, color = "blue", linetype = "dashed") +
+    coord_flip() +
+    # scale_y_continuous(breaks = seq(pop_mean - 3 * pop_sd, pop_mean + 3 * pop_sd, pop_sd)) +
+    labs(
+      x = "Sample #",
+      y = "Value",
+      title = "Confidence Intervals and True Population Mean"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "none")
 }
