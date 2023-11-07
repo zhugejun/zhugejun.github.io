@@ -87,13 +87,13 @@ plot_sample_means = function(samples, size, true_prop, include_title = TRUE) {
     summarise(average = mean(sample_value))
   
   if (include_title) {
-    title = str_glue("Sampling Distribution of the Sample Means (size={size})")
+    title = str_glue("Distribution of the Sample Means (size={size})")
   } else {
     title = NULL
   }
 
   p = ggplot(sample_means, aes(x = average)) +
-    geom_histogram(aes(y = after_stat(density)), fill = "orange", color = "white", breaks = seq(x_min, x_max, (x_max - x_min) / 50)) +
+    geom_histogram(aes(y = after_stat(density)), fill = "orange", color = "white", breaks = seq(x_min, x_max, (x_max - x_min) / 100)) +
     geom_density(aes(y = after_stat(density)), color = "red") +
     geom_vline(xintercept = true_prop, color = "blue", linetype = "dashed") +
     scale_x_continuous(limits = c(x_min, x_max), breaks =  seq(x_min, x_max, (x_max - x_min) / 10)) +
@@ -153,17 +153,22 @@ normal_plot = function(mean = 0, sd = 1) {
                   xlim=c(mean-2*sd,mean-sd), fill="dodgerblue", geom="area") +
     stat_function(fun=function(x) dnorm(x, mean, sd),
                   xlim=c(mean+sd, mean+2*sd), fill="dodgerblue", geom="area") +
+    stat_function(fun=function(x) dnorm(x, mean, sd),
+                  xlim=c(mean-3*sd,mean-2*sd), fill="deepskyblue", geom="area") +
+    stat_function(fun=function(x) dnorm(x, mean, sd),
+                  xlim=c(mean+2*sd, mean+3*sd), fill="deepskyblue", geom="area") +
+    annotate("text", x = c(mean - 0.5*sd, mean + 0.5*sd), y = 2, color = "white", 
+             label = c("34.1%", "34.1%"), size = 5) +
+    annotate("text", x = c(mean - 1.5*sd, (mean + 1.5*sd)), y = 1, color = "white", 
+             label = c("13.6%", "13.6%"), size = 4) +
+    annotate("text", x = c(mean - 2.25*sd, mean+2.25*sd), y = 0.25, color = "white", 
+             label = c("2.1%", "2.1%"), size = 3) +
     labs(x="", y="") +
     theme_minimal()
 }
 
 
-
-
-
-
-
-normal_dist_plot = function(mean=0, sd=1) {
+normal_dist_plot = function() {
   x = seq(-4, 4, by=0.01)
   y = dnorm(x)
   df = tibble(x, y)
@@ -202,6 +207,7 @@ normal_dist_plot = function(mean=0, sd=1) {
 }
 
 
+#----------------- confidence interval --------------------#
 # confidence interval simulation
 simulate_intervals = function(pop_mean = 0.65, 
                               pop_sd = 0.15,

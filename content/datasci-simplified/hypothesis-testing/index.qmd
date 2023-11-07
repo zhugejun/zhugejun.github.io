@@ -1,0 +1,401 @@
+---
+title: "Unmasking the Truth: Diving into Hypothesis Testing"
+subtitle: "How to verify your friend's claim?"
+format: 
+  revealjs:
+    slide-number: true
+    smaller: true
+    chalkboard: false
+    scrollable: false
+editor: source
+---
+
+## Red Marble Proportion Estimation
+
+```{r}
+#| echo: true
+
+library(tidyverse)
+source("../utils.R")
+
+red_marble = "🔴"
+blue_marble = "🔵"
+
+prob_red = 0.64
+num_marbles = 5000
+
+set.seed(42)
+marbles = sample(c(red_marble, blue_marble), size = num_marbles, 
+                 replace = TRUE, prob = c(prob_red, 1 - prob_red))
+
+set.seed(42)
+n = 100
+one_sample = sample(marbles, n)
+p_hat = mean(one_sample == red_marble)
+print(str_glue("Percentage of red marbles: {p_hat * 100}%"))
+```
+
+- "Half of the marbles in the bag are red!"
+
+## Null and Alternative Hypothesis
+
+:::{.incremental}
+- **Null Hypothesis** $H_0$: the parameter is equal to a specific value, $p = 0.5$
+- **Alternative Hypothesis** $H_a$/$H_1$: the parameter differs from the value specified by $H_0$
+  - Left-tailed: the parameter is <u>less</u> than the value specified by $H_0$, $p < 0.5$
+  - Right-tailed: the parameter is <u>greater</u> than the value specified by $H_0$, $p > 0.5$
+  - Two-tailed: the parameter is <u>not equal to</u> the value specified by $H_0$, $p \neq 0.5$
+:::
+
+## Understanding Hypothesis Testing
+
+
+:::{.incremental}
+- Assume the defendant is innocent.
+- The evidence is presented.
+- If the evidence strongly indicates guilt, we abandon the presumption of innocence and declare the defendant guilty.
+- If not, we maintain the presumption of innocence.
+:::
+
+
+## Assuming Null Hypothesis Is True
+
+
+```{r}
+#| echo: true
+
+p_red = 0.5
+n_marbles = 5000
+
+set.seed(42)
+m = sample(c(red_marble, blue_marble), size = n_marbles, 
+            replace = TRUE, prob = c(p_red, 1 - p_red))
+
+samples = get_samples(m, n, 1000, is_red)
+plot_sample_means(samples, n, p_red)
+
+```
+
+
+## 68-95-99.7 Rule
+
+
+```{r}
+#| echo: true
+
+normal_plot(mean = p_red, sd = sqrt(p_red * (1 - p_red) / n))
+```
+
+
+## Methods
+
+- Critical value method
+- $p$-value method
+
+## Significance Level
+
+
+:::{.incremental}
+- The significance level ($\alpha$) is the probability that we use to determine 
+whether an event is unusual or statistically significant.
+- The most common significance levels are $0.05$ and $0.01$.
+- If our test result has a probability less than or equal to this level, 
+under the assumption that the null hypothesis is true, 
+then the result is sufficiently unusual for us to doubt the null hypothesis.
+:::
+
+## Critical Value Method
+
+
+```{r}
+#| echo: false
+
+
+x = seq(-4, 4, by=0.01)
+y = dnorm(x)
+df = tibble(x, y)
+
+
+p1 = ggplot(df, aes(x, y)) +
+  geom_line(color="black") +
+  stat_function(fun=dnorm, xlim=c(-4,-1.96), fill="red", geom="area") +
+  geom_segment(aes(x = -1.96, y = 0, xend = -1.96, yend = dnorm(-1.96)), color = "red") +
+  annotate("text", x = -2.2, y = 0.0125, color = "white",
+         label = "alpha", size = 3, parse=TRUE) +
+  annotate("text", x = -1.96, y = -0.01, color = "black",
+         label = "-z[alpha]", size = 3, parse=TRUE) +
+  labs(x="", y="", title="Left-tailed Critical Region") +
+  theme_minimal() + 
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
+
+
+p2 = ggplot(df, aes(x, y)) +
+  geom_line(color="black") +
+  stat_function(fun=dnorm, xlim=c(+1.96, +4), fill="red", geom="area") +
+  geom_segment(aes(x = +1.96, y = 0, xend = +1.96, yend = dnorm(+1.96)), color = "red") +
+  annotate("text", x = 2.2, y = 0.0125, color = "white",
+         label = "alpha", size = 3, parse=TRUE) +
+  annotate("text", x = 1.96, y = -0.01, color = "black",
+         label = "z[alpha]", size = 3, parse=TRUE) +
+  labs(x="", y="", title = "Right-tailed Critical Region") +
+  theme_minimal() + 
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
+
+p3 = ggplot(df, aes(x, y)) +
+  geom_line(color="black") +
+  stat_function(fun=dnorm, xlim=c(-4,-1.96), fill="red", geom="area") +
+  stat_function(fun=dnorm, xlim=c(+1.96, +4), fill="red", geom="area") +
+  geom_segment(aes(x = -1.96, y = 0, xend = -1.96, yend = dnorm(-1.96)), color = "red") +
+  geom_segment(aes(x = +1.96, y = 0, xend = +1.96, yend = dnorm(+1.96)), color = "red") +
+  annotate("text", x = -2.25, y = 0.0125, color = "white",
+         label = "alpha/2", size = 3, parse=TRUE) +
+  annotate("text", x = 2.25, y = 0.0125, color = "white",
+         label = "alpha/2", size = 3, parse=TRUE) +
+  annotate("text", x = -1.96, y = -0.01, color = "black",
+         label = "-z[alpha/2]", size = 3, parse=TRUE) +
+  annotate("text", x = 1.96, y = -0.01, color = "black",
+         label = "z[alpha/2]", size = 3, parse=TRUE) +
+  labs(x="", y="", title = "Two-tailed Crigical Region") +
+  theme_minimal() + 
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
+
+grid.arrange(p1, p2, p3, ncol = 3)
+
+```
+
+## Test Statistic Calculation
+
+```{r}
+#| echo: true
+alpha = 0.05
+cv = qnorm(1 - alpha / 2)
+print(str_glue("Critical Values are {-round(cv, 3)} and {round(cv, 3)}."))
+
+```
+
+. . .
+
+
+```{r}
+#| echo: true
+z_score = (p_hat - p_red) / sqrt(p_red * (1 - p_red) / n)
+print(str_glue("z-score: {round(z_score, 3)}"))
+```
+
+. . . 
+
+Since $3.8 > 1.96$, we reject the null hypothesis at the 0.05 level 
+and conclude that the proportion of red marbles is not 50%.
+
+
+## $p$-value Method
+
+When using the p-value method in hypothesis testing, we calculate the p-value,
+which is the probability of observing a test statistic as extreme as, 
+or more extreme than, the one calculated from our sample data, 
+assuming that the null hypothesis is true.
+
+
+## $p$-value Method
+
+
+```{r}
+#| echo: false
+
+
+x = seq(-4, 4, by=0.01)
+y = dnorm(x)
+df = tibble(x, y)
+
+
+p1 = ggplot(df, aes(x, y)) +
+  geom_line(color="black") +
+  stat_function(fun=dnorm, xlim=c(-4,-2.96), fill="gray39", geom="area") +
+  geom_segment(aes(x = -2.96, y = 0, xend = -2.96, yend = dnorm(-2.96))) +
+  labs(x="", y="", title="Left-tailed") +
+  theme_minimal() + 
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
+
+
+p2 = ggplot(df, aes(x, y)) +
+  geom_line(color="black") +
+  stat_function(fun=dnorm, xlim=c(+1.46, +4), fill="gray39", geom="area") +
+  geom_segment(aes(x = +1.46, y = 0, xend = +1.46, yend = dnorm(+1.46))) +
+  labs(x="", y="", title = "Right-tailed") +
+  theme_minimal() + 
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
+
+p3 = ggplot(df, aes(x, y)) +
+  geom_line(color="black") +
+  stat_function(fun=dnorm, xlim=c(-4,-2.25), fill="gray39", geom="area") +
+  stat_function(fun=dnorm, xlim=c(+2.25, +4), fill="gray39", geom="area") +
+  geom_segment(aes(x = -2.25, y = 0, xend = -2.25, yend = dnorm(-2.25))) +
+  geom_segment(aes(x = +2.25, y = 0, xend = +2.25, yend = dnorm(+2.25))) +
+  labs(x="", y="", title = "Two-tailed") +
+  theme_minimal() + 
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank())
+
+grid.arrange(p1, p2, p3, ncol = 3)
+
+```
+
+## $p$-value Calculation
+
+$$X \sim N(0.5, 0.0025)$$
+
+. . .
+
+$$Prob(x >= 0.69) = ?$$
+
+. . .
+
+```{r}
+#| echo: true
+p_val = (1 - pnorm(p_hat, mean = 0.5, sd = 0.05)) * 2
+print(str_glue("p-value: {p_val}"))
+
+```
+
+. . .
+
+Since $0.00014 < 0.05$, we reject the null hypothesis at the 0.05 level 
+and conclude that the proportion of red marbles is not 50%.
+
+## Making Mistakes
+    
+```{r}
+#| echo: true
+
+set.seed(7595)
+n = 100
+one_sample = sample(marbles, n)
+p_hat = mean(one_sample == red_marble)
+print(str_glue("Percentage of red marbles: {p_hat * 100}%"))
+```
+
+. . .
+
+```{r}
+#| echo: true
+
+z_score = (p_hat - p_red) / sqrt(p_red * (1 - p_red) / n)
+print(str_glue("z-score: {round(z_score, 3)}"))
+
+p_val = (1 - pnorm(p_hat, mean = 0.5, sd = 0.05)) * 2
+print(str_glue("p-value: {round(p_val, 3)}"))
+
+```
+
+. . . 
+
+Since $-1.96 < 1.6 < 1.96$ or $0.11 > 0.5$, we fail to reject the null hypothesis at the 0.05 level 
+and conclude that the proportion of red marbles is 50%.
+
+. . . 
+
+**Type II error**: fail to reject the null hypothesis when it is false.
+
+## Type I and II Errors
+
+| | $H_0$ is true | $H_0$ is false |
+| --- | --- | --- |
+| Reject $H_0$ | Type I error | Correct decision |
+| Fail to reject $H_0$ | Correct decision | Type II error |
+
+
+## Interview Questions
+
+[**Facebook**: Say you flip a coin 10 times and observe only one head.
+What would be your null hypothesis and $p$-value for testing whether
+the coin is fair or not.]{style="color: blue"}
+
+. . . 
+
+Let $p$ be the probability of getting a head.
+
+$H_0$: $p = 0.5$; $H_a$: $p \neq 0.5$
+
+. . .
+
+[CLT does not apply because the sample size is less than 30.]{style="color: red"}
+
+. . . 
+
+$p$-value: probability of observing an outcome as extreme as or more extreme than
+the observed data, assuming the null hypothesis is true.
+
+. . .
+
+$X\sim \text{Binomial}(n=10, p=0.5)$
+
+$$Porb(x=0) + Prob(x = 1) + Prob(x=9) + Prob(x=10)$$
+
+. . . 
+
+```{r}
+#| echo: true
+p_val = (choose(10, 1) * 0.5^1 * 0.5^9 + choose(10, 0) * 0.5^0 * 0.5^10) * 2
+print(str_glue("p-value: {p_val}"))
+```
+
+. . .
+
+Since `r round(p_val, 3)` < 0.05, we reject the null hypothesis at the 0.05 level
+and conclude that the coin is not fair.
+
+
+
+## Interview Questions
+
+[**D.E. Shaw**: A coin was flipped 1,000 times, and 550 times it showed heads. Do you
+think the coin is biased? Why or why not?]{style="color: blue"}
+
+. . .
+
+
+Let $p$ be the probability of getting a head.
+
+$H_0$: $p = 0.5$; $H_a$: $p \neq 0.5$
+
+. . .
+
+
+```{r}
+#| echo: true
+
+z_score = (0.55 - 0.5) / sqrt(0.5 * (1 - 0.5) / 1000)
+print(str_glue("z-score: {round(z_score, 3)}"))
+
+
+p_val = (1 - pnorm(0.55, 0.5, sqrt(0.5 * (1 - 0.5) / 1000)))
+print(str_glue("p-value: {round(p_val, 3)}"))
+```
+
+. . .
+
+Because `r z_score` > 1.96 and `r p_val` < 0.05, we reject the null hypothesis at 
+the 0.05 level and conclude that the coin is not fair.
+
+
+
+
+
+
+
+
+
+
+
+
