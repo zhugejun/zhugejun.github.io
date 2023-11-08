@@ -9,8 +9,8 @@ draft: false
 - Introduction to Probability:
 - Probability Distributions:
 - Bayes Theorem:
-- Central Limit Theorem: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/central-limit-theorem/index.qmd) | [Slides](/datasci-simplified/central-limit-theorem/index.html) | [Video](https://www.youtube.com/watch?v=zUXJMzoiqlE)
-- Confidence Interval: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/confidence-interval/index.qmd) | [Slides](/datasci-simplified/confidence-interval/index.html) | [Video](https://youtu.be/WRDQeb-5Ly0?si=hWHVBO5UogpOYp6O)
+- Central Limit Theorem: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/central-limit-theorem/index.qmd) | [Slides](/datasci-simplified/central-limit-theorem/index.html) | [Video](https://youtu.be/zUXJMzoiqlE)
+- Confidence Interval: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/confidence-interval/index.qmd) | [Slides](/datasci-simplified/confidence-interval/index.html) | [Video](https://youtu.be/WRDQeb-5Ly0)
 - Hypothesis Testing: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/hypothesis-testing/index.qmd) | [Slides](/datasci-simplified/hypothesis-testing/index.html) | [Video](https://youtu.be/u2XEk6zTL5c)
 - p-value:
 - Type I and Type II Errors:
