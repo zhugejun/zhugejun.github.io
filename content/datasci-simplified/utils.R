@@ -168,6 +168,45 @@ normal_plot = function(mean = 0, sd = 1) {
 }
 
 
+critical_region_plot = function(mean = 0, sd = 1, alpha = 0.05, tailed = "two") {
+  x = seq(mean - 4 * sd, mean + 4 * sd, by=0.001)
+  y = dnorm(x, mean, sd)
+  df = tibble(x, y)
+  
+  breaks = c(round(mean-4*sd, 2),
+             round(mean-3*sd, 2),
+             round(mean-2*sd, 2), 
+             round(mean-sd, 2),
+             round(mean, 2), 
+             round(mean+sd, 2),
+             round(mean+2*sd, 2),
+             round(mean+3*sd, 2),
+             round(mean+4*sd, 2))
+
+  # Calculate critical z-scores
+  if (tailed == "two") {
+    z_critical = qnorm(c(alpha / 2, 1 - alpha / 2))
+  } else if (tailed == "left") {
+    z_critical = qnorm(alpha)
+  } else if (tailed == "right") {
+    z_critical = qnorm(1 - alpha)
+  }
+  
+  # Calculate critical values
+  critical_values = mean + z_critical * sd
+
+  ggplot(df, aes(x, y)) +
+    geom_line(color="black") + 
+    scale_x_continuous(breaks = breaks) +
+    stat_function(fun=function(x) dnorm(x, mean, sd),
+                  xlim=c(min(x), critical_values[1]), fill="red", geom="area") + 
+    stat_function(fun=function(x) dnorm(x, mean, sd), 
+                  xlim=c(critical_values[2], max(x)), fill="red", geom="area") +
+    labs(x="", y="") +
+    theme_minimal()
+}
+
+
 normal_dist_plot = function() {
   x = seq(-4, 4, by=0.01)
   y = dnorm(x)
