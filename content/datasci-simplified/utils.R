@@ -183,7 +183,6 @@ critical_region_plot = function(mean = 0, sd = 1, alpha = 0.05, tailed = "two") 
              round(mean+3*sd, 2),
              round(mean+4*sd, 2))
 
-  # Calculate critical z-scores
   if (tailed == "two") {
     z_critical = qnorm(c(alpha / 2, 1 - alpha / 2))
   } else if (tailed == "left") {
@@ -192,7 +191,6 @@ critical_region_plot = function(mean = 0, sd = 1, alpha = 0.05, tailed = "two") 
     z_critical = qnorm(1 - alpha)
   }
   
-  # Calculate critical values
   critical_values = mean + z_critical * sd
 
   ggplot(df, aes(x, y)) +
