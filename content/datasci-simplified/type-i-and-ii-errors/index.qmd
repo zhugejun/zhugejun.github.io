@@ -1,0 +1,285 @@
+---
+title: "To Err is Human: Decoding Type I and Type II Error"
+subtitle: "Unveiling the Truth Behind Statistical Decisions"
+format: 
+  revealjs:
+    slide-number: true
+    smaller: true
+    chalkboard: true
+    scrollable: true
+editor: source
+---
+
+
+
+## Red Marble Proportion Estimation
+
+
+$$H_0: p = 0.5$$
+$$H_a: p \neq 0.5$$
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+source("../utils.R")
+
+red_marble = "🔴"
+blue_marble = "🔵"
+
+prob_red = 0.64
+num_marbles = 5000
+
+set.seed(42)
+marbles = sample(c(red_marble, blue_marble), size = num_marbles, 
+                 replace = TRUE, prob = c(prob_red, 1 - prob_red)) 
+```
+
+
+
+```{r}
+#| echo: true
+
+set.seed(7595)
+n = 100
+one_sample = sample(marbles, n)
+p_hat = mean(one_sample == red_marble)
+print(str_glue("Percentage of red marbles: {p_hat * 100}%"))
+
+z_score = (p_hat - 0.5) / sqrt(0.5 * (1 - 0.5) / n)
+print(str_glue("z-score: {round(z_score, 3)}"))
+
+p_val = (1 - pnorm(p_hat, mean = 0.5, sd = 0.05)) * 2
+print(str_glue("p-value: {round(p_val, 3)}"))
+```
+
+
+Since $-1.96 < 1.6 < 1.96$ or $0.11 > 0.05$, we fail to reject the null hypothesis at the 0.05 level 
+and conclude that the proportion of red marbles is 50%.
+
+## Type I and II Errors
+
+| | $H_0$ is true | $H_0$ is false |
+| --- | --- | --- |
+| Reject $H_0$ | Type I error | Correct decision |
+| Fail to reject $H_0$ | Correct decision | Type II error |
+
+
+## Practice (1)
+:::{.incremental}
+- $H_0$ : the beverage is fine to drink
+- $H_a$ : the beverage is too hot to drink
+- **Type I error**: You think the beverage is too hot so you decide to wait, but by the time you drink it, it's too cold.
+- **Type II error**: You decide the beverage is fine to drink now, but it's too hot and you burn your tongue.
+:::
+
+## Practice (2)
+:::{.incremental}
+- $H_0$: the new drug has no effect on the disease
+- $H_a$: the new drug has effect on the disease
+- **Type I error**: the results of the experiment wrongly suggest that the drug is effective.
+- **Type II error**: the results shows no effect on the disease while the drug is effective.
+:::
+
+
+## Practice (3)
+:::{.incremental}
+- $H_0$: The patient does not have the condition.
+- $H_a$: The patient has the condition.
+- **Type I error**: A healthy patient is diagnosed with the condition (False Positive).
+- **Type II error**: A sick patient is diagnosed as healthy (False Negative).
+:::
+
+
+## Type I Error Probability
+
+$$\text{Prob}(\text{Reject } H_0 \mid H_0 \text{ is true}) = \alpha$$
+
+```{r}
+#| echo: true
+critical_region_plot(0.5, 0.05)
+```
+
+
+
+
+
+## Type II Error Probability
+
+$$\text{Prob}(\text{Do not reject } H_0 \mid \mu = \hat p)$$
+
+```{r}
+#| echo: false
+p = critical_region_plot(0.5, 0.05) + 
+  geom_vline(xintercept = 0.5, color = "black", linetype="dashed")
+
+p1 = p + 
+  geom_point(x = p_hat, y = 0, color = "blue", size = 3)
+```
+
+
+## Type II Error Probability
+
+
+```{r}
+#| echo: true
+
+se = sqrt(p_hat * (1 - p_hat) / n)
+p1 +
+  stat_function(fun = dnorm, args = list(mean = p_hat, sd = se), color = "blue") +
+  geom_vline(xintercept = p_hat, color = "blue", linetype = "dashed") +
+  geom_point(x = p_hat, y = 0, color = "blue", size = 3)
+  
+
+```
+
+
+
+## Type II Error Probability
+
+```{r}
+#| echo: true
+
+ls = 0.5 - 1.96 * 0.05
+rs = 0.5 + 1.96 * 0.05
+
+p2=p1 + stat_function(fun = dnorm, args = list(mean = p_hat, sd = se), color = "blue") +
+  stat_function(fun = function(x) dnorm(x, p_hat, se), 
+                xlim = c(ls, rs), fill = "gray50", geom = "area") +
+  geom_vline(xintercept = p_hat, color = "blue", linetype = "dashed") +
+  geom_point(x = p_hat, y = 0, color = "blue", size = 3) + 
+  annotate("text", x = 0.545, y = 2, label = "Type II Error", color = "white")
+p2
+```
+
+. . .
+
+```{r}
+#| echo: true
+
+prob = pnorm(rs, mean = p_hat, sd = se) - pnorm(ls, mean = p_hat, sd = se)
+print(str_glue("Prob(Type II Error) = {round(prob, 3)}"))
+
+```
+
+## Statistical Power
+
+The Power of a test is the probability of rejecting a false null hypothesis.
+
+$$\text{Power} = \text{Prob}(\text{Reject } H_0 \mid \mu = \hat p) = 1 - \text{Prob(Type II Error)}$$
+
+
+```{r}
+#| echo: true
+power = 1 - prob
+print(str_glue("Power = {round(power, 3)}"))
+```
+
+## Another Example
+
+
+```{r}
+#| echo: true
+
+p_hat = 0.69; se = sqrt(p_hat * (1 - p_hat) / n)
+p3 = p + stat_function(fun = dnorm, args = list(mean = p_hat, sd = se), color = "blue") +
+  stat_function(fun = function(x) dnorm(x, p_hat, se), 
+                xlim = c(ls, rs), fill = "gray50", geom = "area") +
+  geom_vline(xintercept = 0.69, color = "blue", linetype = "dashed") +
+  geom_point(x = 0.69, y = 0, color = "blue", size = 3)
+p3
+```
+
+
+
+```{r}
+#| echo: true
+
+prob = pnorm(rs, mean = p_hat, sd = se) - pnorm(ls, mean = p_hat, sd = se)
+power = 1 - prob
+print(str_glue("Prob(Type II Error) = {round(prob, 3)}; Power = {round(power, 3)}"))
+```
+
+
+## Power and Sample Size
+
+$$\bar X \sim \mathcal{N}(\mu, \frac{\sigma^2}{n})$$
+
+```{r}
+#| echo: true
+
+n = 100
+se = sqrt(0.5 * (1 - 0.5) / n)
+print(str_glue("Standard Error (n = {n}) = {round(se, 3)}"))
+
+n = 400
+se = sqrt(0.5 * (1 - 0.5) / n)
+print(str_glue("Standard Error (n = {n}) = {round(se, 3)}"))
+
+```
+
+
+
+## Power and Sample Size
+
+
+```{r}
+#| echo: true
+
+n = 400
+p_hat = 0.58
+se = sqrt(p_hat * (1 - p_hat) / n)
+
+ls = 0.5 - 1.96 * sqrt(0.5 * (1 - 0.5) / n)
+rs = 0.5 + 1.96 * sqrt(0.5 * (1 - 0.5) / n)
+
+p4 = critical_region_plot(0.5, sqrt(0.5 * (1 - 0.5) / n)) + 
+  geom_vline(xintercept = 0.5, color = "black", linetype="dashed") +
+  geom_point(x = 0.58, y = 0, color = "blue", size = 3) + 
+  stat_function(fun = dnorm, args = list(mean = p_hat, sd = se), color = "blue") +
+  stat_function(fun = function(x) dnorm(x, p_hat, se), 
+                xlim = c(ls, rs), fill = "gray50", geom = "area") +
+  geom_vline(xintercept = p_hat, color = "blue", linetype = "dashed") +
+  geom_point(x = p_hat, y = 0, color = "blue", size = 3) + 
+  annotate("text", x = 0.535, y = 0.5, label = "Type II Error", color = "white")
+p4
+```
+
+## Power and Sample Size
+
+```{r}
+#| echo: true
+
+prob = pnorm(rs, mean = p_hat, sd = se) - pnorm(ls, mean = p_hat, sd = se)
+power = 1 - prob
+print(str_glue("Prob(Type II Error) = {round(prob, 3)}; Power = {round(power, 3)}"))
+```
+
+
+
+## Trade-off between Type I and II Errors
+
+- $\alpha$ is set before the experiment.
+- Typical values for $\alpha$ are 0.05 and 0.01.
+
+## Trade-off between Type I and II Errors
+
+- Decreasing $\alpha$ increases $\beta$.
+
+```{r}
+p4
+```
+
+
+
+## Trade-off between Type I and II Errors
+
+- Increasing sample size decreases $\beta$.
+- Typical values for $\beta$ are 0.2 and 0.1.
+
+```{r}
+grid.arrange(p2, p4, ncol=2)
+```
+
+
+

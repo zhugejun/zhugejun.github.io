@@ -13,7 +13,7 @@ draft: false
 - Confidence Interval: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/confidence-interval/index.qmd) | [Slides](/datasci-simplified/confidence-interval/index.html) | [Video](https://youtu.be/WRDQeb-5Ly0)
 - Hypothesis Testing: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/hypothesis-testing/index.qmd) | [Slides](/datasci-simplified/hypothesis-testing/index.html) | [Video](https://youtu.be/u2XEk6zTL5c)
 - p-value:
-- Type I and Type II Errors:
+- Type I and Type II Errors: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/type-i-and-ii-errors/index.qmd) | [Slides](/datasci-simplified/type-i-and-ii-errors/index.html) | [Video](https://youtu.be/uK9wtfUXZU0)
 - Power of a Test:
 - t-test:
 - ANOVA:
