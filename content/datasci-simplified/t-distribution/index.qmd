@@ -1,0 +1,311 @@
+---
+title: "Decoding the Student's $t$-Distribution"
+subtitle: "Mastering Statistical Analysis with Small Sample Sizes"
+format: 
+  revealjs:
+    slide-number: true
+    smaller: true
+    chalkboard: true
+    scrollable: true
+editor: source
+---
+
+```{r}
+#| echo: false
+#| message: false
+
+library(tidyverse)
+source("../utils.R")
+```
+
+## Hypothesis Testing ($z$-Test)
+
+### Assumptions
+
+- Independent random samples 
+- Sample size is large enough (> 30) and/or Population variance is known
+
+
+$$z = \frac{\bar x - \mu}{\sigma / \sqrt{n}} \sim N(0, 1)$$
+
+where $\sigma$ is the population standard deviation.
+
+
+## Student's $t$-Distribution
+
+$$t = \frac{\bar x - \mu}{{s}/{\sqrt{n}}} \sim t(n-1)$$
+
+where $s = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (x_i - \bar x)^2}$ is the sample standard deviation, 
+and $n-1$ is the degrees of freedom (df).
+
+. . . 
+
+**Why $n-1$ degrees of freedom?**
+
+
+$$\bar x = \frac{x_1 + x_2 + ... + x_n}{n}$$
+
+
+. . . 
+
+$$x_1 + x_2 + ... + \color{red}{x_n} = n \cdot \bar x$$
+
+. . . 
+
+**Degrees of freedom** also refers to the number of independent observations in a sample of data.
+
+## Student's $t$-Distribution
+
+The $t$-distribution is a continuous probability distribution 
+that generalizes the standard normal distribution with a heavier tail.
+
+
+```{r}
+#| echo: true
+
+ggplot(data.frame(x = c(-5, 5)), aes(x = x)) +
+  stat_function(fun = dt, args = list(df = 10)) +
+  labs(x = "Value", y = "Density", title="t-distribution with 10 degrees of freedom") +
+  theme_minimal()
+``` 
+
+
+## $t$-Distribution vs. Normal Distribution
+
+
+```{r}
+#| echo: true
+
+ggplot(data.frame(x = c(-5, 5)), aes(x = x)) +
+  stat_function(fun = dt, args = list(df = 1), color = "orange") +
+  stat_function(fun = dt, args = list(df = 2), color = "purple") +
+  stat_function(fun = dt, args = list(df = 5), color = "blue") +
+  stat_function(fun = dt, args = list(df = Inf), color = "black") +
+  stat_function(fun = dnorm, color = "red", linewidth = 1, linetype="dashed") +
+  labs(x = "Value", y = "Density", title="t-distribution (solid) vs. z-distribution (dashed)") +
+  scale_color_manual(name = "Distribution", 
+                     values = c("df = 1" = "orange", "df = 2" = "purple", "df = 5" = "blue",
+                                "df = Inf" = "black", "Normal (z)" = "red")) + 
+  theme_minimal()
+
+```
+
+
+
+## `sd` Function in R
+
+![](imgs/sd.png){width=50%}
+
+
+## Steps for Hypothesis Testing
+
+- State the null ($H_0$) and alternative ($H_a$) hypotheses
+- Specify the significance level, $\alpha$
+- Compute the test statistic $t$ (critical value method)
+- Compute the $p$-value ($p$-value method)
+- State the conclusion
+
+
+## Types of $t$-Tests
+
+- One-sample $t$-test: verify a claim about the population mean
+- Two-sample $t$-test: compare two population means
+- Paired $t$-test: compare two population means with paired data
+
+## One-Sample $t$-Test
+
+A computer software company claims that a new version of its operating system will
+crash fewer than six times per year on average. A system administrator installs
+the operating system on [a random sample of 41 computers]{style="color:blue"}. At the end of year, 
+[the sample mean number of crashes is 7.1, with a standard deviation of 3.6. ]{style="color:blue"}
+Can you conclude that the vendor's claim is false? Use the $\alpha = 0.05$ significance level.
+
+
+. . .
+
+- $H_0$: $\mu = 6$
+- $H_a$: $\mu > 6$
+
+## One-Sample $t$-Test
+
+```{r}
+#| echo: true
+
+x_bar = 7.1 
+s = 3.6
+
+mu = 6
+n = 41
+
+t = (x_bar - mu) / (s / sqrt(n))
+t_cv = qt(0.95, n - 1)
+p_value = pt(t, n - 1, lower.tail = FALSE) # default is lower.tail = TRUE
+
+lower_ci = x_bar - t_cv * s / sqrt(n)
+upper_ci = x_bar + t_cv * s / sqrt(n)
+
+print(str_glue("t = {round(t, 3)}, t_cv = {round(t_cv, 3)}"))
+print(str_glue("p-value = {round(p_value, 3)}"))
+print(str_glue("CI = ({round(lower_ci, 3)}, {round(upper_ci, 3)})"))
+```
+
+. . .
+
+Since `r round(t, 3)` >  `r round(t_cv, 3)` and
+`r round(p_value, 3)` < $0.05$, we reject $H_0$ and 
+conclude that the vendor's claim is false.
+
+## One-Sample $t$-Test
+
+Suppose you have a batch of batteries, and the manufacturer claims 
+that these batteries last an average of 300 hours. 
+You want to test this claim by taking a sample of batteries and 
+testing their lifespan.
+$$310, 298, 305, 280, 315, 290, 300, 305, 295, 320$$
+
+. . . 
+
+
+- $H_0$: $\mu = 300$
+- $H_a$: $\mu \neq 300$
+
+. . .
+
+```{r}
+#| echo: true
+
+batteries = c(310, 298, 305, 280, 315, 290, 300, 305, 295, 320)
+print(str_glue("Sample mean: {mean(batteries)}, Sample standard deviation: {round(sd(batteries), 3)}"))
+```
+
+## One-Sample $t$-Test
+
+```{r}
+#| echo: true
+
+result = t.test(batteries, mu = 300, alternative = "two.sided", conf.level = 0.95)
+print(result)
+```
+
+. . .
+
+- We fail to reject $H_0$ at $\alpha = 0.05$ and conclude that there is 
+no enough evidence to conclude that the mean lifespan of the batteries is different from 300 hours.
+
+
+
+## Pooled Variance
+
+:::{.incremental}
+- When the population variances are equal, we can pool the sample variances.
+- The pooled variance is a weighted average of the sample variances.
+$$s_p^2 = \frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}$$
+- `leveneTest` from `car` package can be used to test the equality of variances.
+- A common rule of thumb is that if the largest sample standard deviation is not 
+more than twice the smallest standard deviation, then the variances are considered equal.
+- `var.equal = TRUE` in `t.test()` function.
+:::
+
+. . .
+
+
+$$t = \frac{\bar x_1 - \bar x_2}{s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
+
+
+
+## Two-Sample $t$-Test
+
+Suppose you want to compare the average lifespan of two different brands of batteries.
+$$\begin{aligned}
+\text{Brand A: } & 310, 298, 305, 280, 315, 290, 300, 305, 295, 320 \\
+\text{Brand B: } & 295, 290, 285, 305, 290, 285, 280, 300, 295, 305, 292, 285
+\end{aligned}$$
+
+
+. . .
+
+- $H_0$: $\mu_A = \mu_B$ or $\mu_A - \mu_B = 0$
+- $H_a$: $\mu_A \neq \mu_B$ or $\mu_A - \mu_B \neq 0$
+
+. . .
+
+```{r}
+#| echo: true
+
+batteries_A = c(310, 298, 305, 280, 315, 290, 300, 305, 295, 320)
+batteries_B = c(295, 290, 285, 305, 290, 285, 280, 300, 295, 305, 292, 285)
+
+print(str_glue("Sample mean of Brand A: {mean(batteries_A)}, Sample mean of Brand B: {mean(batteries_B)}"))
+print(str_glue("Sample standard deviation of Brand A: {round(sd(batteries_A), 3)}, Sample standard deviation of Brand B: {round(sd(batteries_B), 3)}"))
+```
+
+## Two-Sample $t$-Test
+
+```{r}
+#| echo: true
+
+result = t.test(batteries_A, batteries_B, alternative = "two.sided", var.equal = TRUE)
+print(result)
+
+```
+
+. . .
+
+- We reject $H_0$ at $\alpha = 0.05$ and conclude that the mean lifespan of the 
+batteries is different between the two brands.
+
+
+## Paired $t$-Test
+
+You are testing the effectiveness of a new diet program. 
+A group of individuals' weights are recorded before starting the program 
+and after completing the program.
+
+$$\begin{aligned}
+\text{Before: } & 181, 183, 175, 163, 192, 201, 196, 181, 207, 189 \\
+\text{After: } & 166, 163, 178, 180, 175, 166, 172, 176, 172, 172
+\end{aligned}$$
+
+. . .
+
+- $H_0$: $\mu_{\text{before}} - \mu_{\text{after}} = 0$
+- $H_a$: $\mu_{\text{before}} - \mu_{\text{after}} > 0 \text{ or } \mu_{\text{after}} - \mu_{\text{before}} < 0$
+
+. . .
+
+```{r}
+#| echo: true
+
+before = c(181, 183, 175, 163, 192, 201, 196, 181, 207, 189)
+after = c(166, 163, 178, 180, 175, 166, 172, 176, 172, 172)
+print(str_glue("Sample mean of before: {mean(before)}, Sample mean of after: {mean(after)}"))
+```
+
+
+## Paired $t$-Test
+
+```{r}
+#| echo: true
+
+# right-tailed test
+result = t.test(before, after, alternative = "greater", paired = TRUE)
+
+# left-tailed test
+# result = t.test(after, before, alternative = "less", paired = TRUE)
+print(result)
+```
+
+. . .
+
+- We reject $H_0$ at $\alpha = 0.05$ and conclude that the mean weight 
+before and after the diet program is different.
+
+
+## Questions
+
+- What if we have more than two groups?
+- How do we detect if there is a difference between the groups?
+- ANOVA (Analysis of Variance)
+
+
+
