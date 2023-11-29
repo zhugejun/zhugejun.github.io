@@ -16,7 +16,7 @@ draft: false
 - Type I and Type II Errors: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/type-i-and-ii-errors/index.qmd) | [Slides](/datasci-simplified/type-i-and-ii-errors/index.html) | [Video](https://youtu.be/uK9wtfUXZU0)
 - Power of a Test:
 - t-test: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/t-distribution/index.qmd) | [Slides](/datasci-simplified/t-distribution/index.html) | [Video](https://youtu.be/r9EWJWz2UZg)
-- ANOVA:
+- ANOVA: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/ANOVA/index.qmd) | [Slides](/datasci-simplified/ANOVA/index.html) | [Video](https://youtu.be/XkUV2jvEOlc)
 - Chi-Square Test:
 - Linear Regression:
 
