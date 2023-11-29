@@ -1,0 +1,346 @@
+---
+title: "Analysis of Variance (ANOVA)"
+subtitle: "How to compare means of more than two groups?"
+format: 
+  revealjs:
+    slide-number: true
+    smaller: true
+    chalkboard: true
+    scrollable: true
+editor: source
+---
+
+
+
+```{r}
+#| echo: false
+#| message: false
+
+library(tidyverse)
+source("../utils.R")
+
+```
+
+## $t$-Test
+
+- Sample size is small ($n < 30$) and/or population standard deviation is unknown.
+
+
+$$t = \frac{\bar x - \mu}{s / \sqrt{n}} \sim t(n-1)$$
+
+. . .
+
+[**Three types of $t$-tests:**]{style="color: blue"}
+
+- One-sample $t$-test
+- Two-sample $t$-test
+- Paired $t$-test
+
+. . .
+
+[**Question:**]{style="color: blue"}
+
+- What if we want to compare the means of more than two groups?
+
+
+
+## Issues with Multiple $t$-Tests
+
+
+:::{.incremental}
+- $k \choose 2$ $=\frac{k(k-1)}{2}$ pairwise $t$-tests
+
+- The probability of making **at least one** Type I error is:
+$$P(\text{at least one Type I error}) = 1 - (1 - \alpha)^k$$
+where $k$ is the number of tests.
+:::
+
+## Issues with Multiple $t$-Tests
+
+```{r}
+#| echo: false
+
+ks = seq(1, 100, 1)
+ps = 1 - (1 - 0.05)^ks
+
+ggplot(data.frame(ks, ps), aes(ks, ps)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Probability of Making at Least One Type I Error",
+       x = "Number of Tests",
+       y = "Probability") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 15))
+
+```
+
+
+## Ways to Fix the Issues
+
+:::{.incremental}
+- Bonferroni correction ($\alpha_{new} = \frac{\alpha}{k}$, but can be overly conservative)
+- Analysis of Variance (ANOVA)
+:::
+
+
+
+## Variance
+
+:::{.incremental}
+- Variance measures the dispersion of a set of data points around their mean.
+- Two kinds of variance in ANOVA:
+  - Variance *within* groups: dispersion within each group
+  - Variance *between* groups: dispersion between the group means 
+- ANOVA essentially compares the variation *within* groups against the variation *between* groups.
+:::
+
+## Intuition
+
+In which scenario are the means of the two groups significantly different?
+
+```{r}
+#| echo: false
+
+# Scenario 1
+m1 = 8
+sd1 = 0.5
+m2 = 11
+sd2 = 0.5
+
+x1 = seq(m1 - 4 * sd1, m1 + 4 * sd1, length.out = 100)
+x2 = seq(m2 - 4 * sd2, m2 + 4 * sd2, length.out = 100)
+
+y1 = dnorm(x1, m1, sd1)
+y2 = dnorm(x2, m2, sd2)
+
+df = rbind(tibble(x = x1, y = y1, group = str_glue("mean={m1}, sd={sd1}")),
+           tibble(x = x2, y = y2, group = str_glue("mean={m2}, sd={sd2}")))
+
+
+p1 = ggplot(df, aes(x, y, fill = group)) +
+  geom_line() +
+  stat_function(fun = dnorm, args = list(mean = m1, sd = sd1), 
+                fill = "orange", geom = "area", alpha = 0.5) +
+  stat_function(fun = dnorm, args = list(mean = m2, sd = sd2), 
+                fill = "purple", geom = "area", alpha = 0.5) +
+  geom_vline(xintercept = (m1 + m2) / 2, linetype = "dashed") +
+  xlim(0, 20) +
+  labs(title = str_glue("mean={m1}, sd={sd1} vs. mean={m2}, sd={sd2}"),
+       x = "x",
+       y = "Density") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 15))
+
+# Scenario 2
+
+m1 = 8
+m2 = 9
+sd1 = 0.5
+sd2 = 0.5
+
+
+x1 = seq(m1 - 4 * sd1, m1 + 4 * sd1, length.out = 100)
+x2 = seq(m2 - 4 * sd2, m2 + 4 * sd2, length.out = 100)
+
+y1 = dnorm(x1, m1, sd1)
+y2 = dnorm(x2, m2, sd2)
+
+df = rbind(tibble(x = x1, y = y1, group = str_glue("mean={m1}, sd={sd1}")),
+           tibble(x = x2, y = y2, group = str_glue("mean={m2}, sd={sd2}")))
+
+p2 = ggplot(df, aes(x, y, fill = group)) +
+  geom_line() +
+  stat_function(fun = dnorm, args = list(mean = m1, sd = sd1), 
+                fill = "orange", geom = "area", alpha = 0.5) +
+  stat_function(fun = dnorm, args = list(mean = m2, sd = sd2), 
+                fill = "green", geom = "area", alpha = 0.5) +
+  geom_vline(xintercept = (m1 + m2) / 2, linetype = "dashed") +
+  xlim(0, 20) +
+  labs(title = str_glue("mean={m1}, sd={sd1} vs. mean={m2}, sd={sd2}"),
+       x = "x",
+       y = "Density") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 15))
+
+# Scenario 3
+m1 = 8
+m2 = 11
+sd1 = 2
+sd2 = 2
+
+x1 = seq(m1 - 4 * sd1, m1 + 4 * sd1, length.out = 1000)
+x2 = seq(m2 - 4 * sd2, m2 + 4 * sd2, length.out = 1000)
+
+y1 = dnorm(x1, m1, sd1)
+y2 = dnorm(x2, m2, sd2)
+
+df = rbind(tibble(x = x1, y = y1, group = str_glue("mean={m1}, sd={sd1}")),
+           tibble(x = x2, y = y2, group = str_glue("mean={m2}, sd={sd2}")))
+
+
+p3 = ggplot(df, aes(x, y, fill = group)) +
+  geom_line() +
+  stat_function(fun = dnorm, args = list(mean = m1, sd = sd1), 
+                fill = "orange", geom = "area", alpha = 0.5) +
+  stat_function(fun = dnorm, args = list(mean = m2, sd = sd2), 
+                fill = "purple", geom = "area", alpha = 0.5) +
+  geom_vline(xintercept = (m1 + m2) / 2, linetype = "dashed") +
+  xlim(0, 20) +
+  labs(title = str_glue("mean={m1}, sd={sd1} vs. mean={m2}, sd={sd2}"),
+       x = "x",
+       y = "Density") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 15))
+
+grid.arrange(p1, p2, p3)
+```
+## Intuition
+
+### Between-group Variability
+
+- The **smaller** the distance between sample means, the **less** likely population means will differ significantly. (Scenario 1 vs. Scenario 2)
+
+### Within-group Variability
+
+- The **greater** the distance between sample means, the **less** likely population means will differ significantly. (Scenario 1 vs. Scenario 3)
+
+
+## Variance Between Groups
+
+### Sum of Squares Between
+
+$$SS_{between} = \sum_{i=1}^{k} n_i (\bar{X}_i - \bar{X})^2$$
+where:
+
+- $k$ is the number of groups
+- $n_i$ is the number of observations in group $i$
+- $\bar{X}_i$ is the mean of group $i$
+- $\bar{X}$ is the overall mean
+
+## Variance Within Groups
+
+### Sum of Squares Within
+
+$$SS_{within} = \sum_{i=1}^{k} \sum_{j=1}^{n_i} (X_{ij} - \bar{X}_i)^2$$
+
+where:
+
+- $k$ is the number of groups
+- $n_i$ is the number of observations in group $i$
+- $\bar{X}_i$ is the mean of group $i$
+- $X_{ij}$ is the $j$th observation in group $i$
+
+
+
+## F-statistic
+
+
+$$F = \frac{SS_{between} / (k - 1)}{SS_{within} / (N - k)} = \frac{MS_{between}}{MS_{within}}  \sim F(k-1, N-k)$$
+
+where $N$ is the total number of observations and $MS$ is the mean square.
+
+
+## F-Distibution
+
+
+```{r}
+#| echo: false
+
+x = seq(0, 5, length.out = 1000)
+y1 = df(x, df1 = 1, df2 = 1)
+y2 = df(x, df1 = 2, df2 = 1)
+y3 = df(x, df1 = 5, df2 = 2)
+y4 = df(x, df1 = 10, df2 = 10)
+y5 = df(x, df1 = 100, df2 = 100)
+
+
+df = tibble(x = x, y1 = y1, y2 = y2, y3 = y3, y4 = y4)
+
+ggplot(df, aes(x, y1)) +
+  geom_line(aes(color = "df1=1, df2=1"), linewidth = 1) +
+  geom_line(aes(x, y = y2, color = "df1=2, df2=1"), linewidth = 1) +
+  geom_line(aes(x, y = y3, color = "df1=5, df2=2"), linewidth = 1) +
+  geom_line(aes(x, y = y4, color = "df1=10, df2=10"), linewidth = 1) +
+  geom_line(aes(x, y = y5, color = "df1=100, df2=100"), linewidth = 1) +
+  scale_color_manual(name = "Degrees of Freedom",
+                     values = c("df1=1, df2=1" = "orange",
+                                "df1=2, df2=1" = "green", 
+                                "df1=5, df2=2" = "purple", 
+                                "df1=10, df2=10" = "blue",
+                                "df1=100, df2=100" = "gray")) +
+  ylim(0, 2.5) +
+  labs(title = "",
+       x = "x",
+       y = "Density") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 15))
+
+```
+
+
+## Assumptions of ANOVA
+
+- Independent and random samples
+- Approximately normal population distribution
+- Equal population variances (rule of thumb: $\frac{\text{largest variance}}{\text{smallest variance}} < 2$)
+
+
+## Example
+
+You're testing the effect of three different call-to-action (CTA) button designs 
+on your e-commerce website. The metric of interest is the click-through rate (CTR), 
+which is the percentage of visitors who click the button. You randomly assign 
+visitors to one of the three designs (A, B, or C) and record their CTRs.
+
+- Design A: $n_1 = 50, \bar x = 6.2, s = 0.5$
+- Design B: $n_2 = 50, \bar x = 7.0, s = 0.5$
+- Design C: $n_3 = 50, \bar x = 6.5, s = 0.5$
+
+
+
+## Example
+
+- $H_0$: $\mu_1 = \mu_2 = \mu_3$
+- $H_a$: At least one $\mu_i$ is different
+
+. . .
+
+```{r}
+#| echo: true
+
+set.seed(12345)
+df = tibble(design_a = rnorm(50, 6.2, 0.5),
+            design_b = rnorm(50, 7.0, 0.5),
+            design_c = rnorm(50, 6.5, 0.5)) |>
+  pivot_longer(cols = everything(), names_to = "design", values_to = "percentage")
+
+result = aov(percentage ~ design, data = df)
+summary(result)
+```
+
+. . .
+
+- Reject $H_0$ at $\alpha = 0.05$ significance level. 
+- We conclude that at least one of the designs has a different CTR.
+
+
+## Tukey's HSD Test
+
+- It can be used to determine which groups are different from each other.
+- The test statistic is $q = \frac{\bar x_i - \bar x_j}{\sqrt{MS_{within} / n}}$.
+- The critical value is $q_{\alpha, k, n-k}$.
+- If $|q| > q_{\alpha, k, n-k}$, then we reject $H_0$ for the pair of groups.
+
+
+```{r}
+#| echo: true
+
+TukeyHSD(result)
+```
+
+. . .
+
+- We reject $H_0$ for the pair of groups (A, B) and (B, C).
+- We fail to reject $H_0$ for the pair of groups (A, C).
+
+
