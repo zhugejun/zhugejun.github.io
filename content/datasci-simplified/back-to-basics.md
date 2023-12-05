@@ -8,6 +8,7 @@ draft: false
 
 - Introduction to Probability:
 - Probability Distributions:
+- Expected Value: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/expected-value/index.qmd) | [Slides](/datasci-simplified/expected-value/index.html) | [Video](https://youtu.be/iIud96cQGxE)
 - Bayes Theorem:
 - Central Limit Theorem: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/central-limit-theorem/index.qmd) | [Slides](/datasci-simplified/central-limit-theorem/index.html) | [Video](https://youtu.be/zUXJMzoiqlE)
 - Confidence Interval: [Code](https://github.com/zhugejun/zhugejun.github.io/blob/main/content/datasci-simplified/confidence-interval/index.qmd) | [Slides](/datasci-simplified/confidence-interval/index.html) | [Video](https://youtu.be/WRDQeb-5Ly0)
