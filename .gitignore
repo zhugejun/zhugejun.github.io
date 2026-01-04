@@ -22,3 +22,6 @@ hugo.linux
 **/speaker-view.html
 
 **/reveal-chalkboard/README.md
+
+
+.venv/
