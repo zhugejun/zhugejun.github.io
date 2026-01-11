@@ -93,13 +93,12 @@ params:
     homeInfoParams:
         Title: "👋 Hi, I'm Gejun Zhu"
         Content: >
-            Welcome to my blog. I'm transitioning from analytics to analytics engineering,
-            building data pipelines and infrastructure that power data-driven decisions.
-            I'm passionate about AI, machine learning, and deep learning, constantly learning and experimenting with new techniques.
-            This blog is my learning journal where I break down complex concepts and share practical implementations.
+            Welcome to my learning journal. I learn by doing, building projects in analytics engineering,
+            data pipelines, AI, and machine learning to truly understand how things work.
             Inspired by Feynman's insight, "What I cannot create, I don't understand,"
-            I believe the best way to truly learn is by building and teaching.
-            Join me as I document my journey from analyst to engineer, one pipeline and model at a time.
+            I document what I build, what I break, and what I learn along the way.
+            Currently transitioning from analyst to analytics engineer while exploring the world of LLMs and AI agents.
+            If you believe in learning through hands-on experimentation, you're in the right place.
     
     mainSections:
         - blog
