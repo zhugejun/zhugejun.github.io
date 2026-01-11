@@ -95,7 +95,7 @@ params:
         Content: >
             Welcome to my blog. I'm transitioning from analytics to analytics engineering,
             building data pipelines and infrastructure that power data-driven decisions.
-            I'm passionate about AI, machine learning, and deep learning—constantly learning and experimenting with new techniques.
+            I'm passionate about AI, machine learning, and deep learning, constantly learning and experimenting with new techniques.
             This blog is my learning journal where I break down complex concepts and share practical implementations.
             Inspired by Feynman's insight, "What I cannot create, I don't understand,"
             I believe the best way to truly learn is by building and teaching.
@@ -118,8 +118,8 @@ params:
 
 
     socialIcons:
-        # - name: linkedin
-          # url: "https://www.linkedin.com/in/gejunzhu/"
+        - name: linkedin
+          url: "https://www.linkedin.com/in/zhugejun/"
         - name: github
           url: "https://github.com/zhugejun"
         - name: KoFi
