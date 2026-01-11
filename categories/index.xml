@@ -6,65 +6,54 @@
     <description>Recent content in Categories on Gejun&#39;s Blog</description>
     <image>
       <title>Gejun&#39;s Blog</title>
-      <url>https://gejun.name</url>
-      <link>https://gejun.name</link>
+      <url>https://gejun.name/</url>
+      <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <lastBuildDate>Wed, 15 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/categories/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- 0.154.4</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 15 Mar 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://gejun.name/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NLP</title>
       <link>https://gejun.name/categories/nlp/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/categories/nlp/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Python</title>
       <link>https://gejun.name/categories/python/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/categories/python/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Transformer</title>
       <link>https://gejun.name/categories/transformer/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/categories/transformer/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>MOOC</title>
       <link>https://gejun.name/categories/mooc/</link>
       <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/categories/mooc/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Neural Network</title>
       <link>https://gejun.name/categories/neural-network/</link>
       <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/categories/neural-network/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Perceptron</title>
       <link>https://gejun.name/categories/perceptron/</link>
       <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/categories/perceptron/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

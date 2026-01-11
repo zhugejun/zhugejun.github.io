@@ -6,83 +6,68 @@
     <description>Recent content in Tags on Gejun&#39;s Blog</description>
     <image>
       <title>Gejun&#39;s Blog</title>
-      <url>https://gejun.name</url>
-      <link>https://gejun.name</link>
+      <url>https://gejun.name/</url>
+      <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <lastBuildDate>Wed, 15 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://gejun.name/tags/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- 0.154.4</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 15 Mar 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://gejun.name/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>attention</title>
+      <title>Attention</title>
       <link>https://gejun.name/tags/attention/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/attention/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>docoder</title>
+      <title>Docoder</title>
       <link>https://gejun.name/tags/docoder/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/docoder/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>encoder</title>
+      <title>Encoder</title>
       <link>https://gejun.name/tags/encoder/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/encoder/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>pytorch</title>
+      <title>Pytorch</title>
       <link>https://gejun.name/tags/pytorch/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/pytorch/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>transformers</title>
+      <title>Transformers</title>
       <link>https://gejun.name/tags/transformers/</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/transformers/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>embedding</title>
+      <title>Embedding</title>
       <link>https://gejun.name/tags/embedding/</link>
       <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/embedding/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>n-gram</title>
+      <title>N-Gram</title>
       <link>https://gejun.name/tags/n-gram/</link>
       <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/n-gram/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>bigram</title>
+      <title>Bigram</title>
       <link>https://gejun.name/tags/bigram/</link>
       <pubDate>Sat, 04 Mar 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://gejun.name/tags/bigram/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

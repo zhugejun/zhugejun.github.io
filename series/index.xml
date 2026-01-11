@@ -6,10 +6,11 @@
     <description>Recent content in Series on Gejun&#39;s Blog</description>
     <image>
       <title>Gejun&#39;s Blog</title>
-      <url>https://gejun.name</url>
-      <link>https://gejun.name</link>
+      <url>https://gejun.name/</url>
+      <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en</language><atom:link href="https://gejun.name/series/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- 0.154.4</generator>
+    <language>en-us</language>
+    <atom:link href="https://gejun.name/series/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
