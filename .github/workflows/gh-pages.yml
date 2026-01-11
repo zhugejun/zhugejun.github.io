@@ -19,7 +19,7 @@ jobs:
           hugo-version: "${{ github.event.inputs.hugoVersion }}"
 
       - name: Build
-        run: hugo -D --gc --verbose --minify
+        run: hugo -D --gc --logLevel info --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
