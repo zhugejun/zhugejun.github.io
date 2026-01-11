@@ -110,6 +110,7 @@ params:
         - deep-learning
         - natural-language-processing
         - llm
+        - python
         - agent
         - leetcode
         - portfolio
