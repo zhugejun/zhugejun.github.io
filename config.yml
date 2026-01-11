@@ -103,12 +103,16 @@ params:
     
     mainSections:
         - blog
+        - analytics-engineering
+        - data-engineering
         - machine-learning
         - mlops
         - computer-vision
         - deep-learning
-        - leetcode
         - natural-language-processing
+        - llm
+        - agent
+        - leetcode
         - portfolio
         - datasci-simplified
 
