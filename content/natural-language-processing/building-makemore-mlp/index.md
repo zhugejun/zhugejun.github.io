@@ -15,7 +15,7 @@ math: true
 jupyter: python3
 ---
 
-In [Part1]({{< ref "../building-makemore.indexmd" >}}), we learned how to build a neural network with one hidden layer to generate words.
+In [Part1]({{< ref "../building-makemore/index.md" >}}), we learned how to build a neural network with one hidden layer to generate words.
 The model we built performed fairly well as we got the exact words generated based on counting.
 However, the bigram model suffers from the limitation that it assumes that each character only depends on its previous character.
 Suppose there is only one bigram starting with a particular character.
