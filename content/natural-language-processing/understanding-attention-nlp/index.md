@@ -1,6 +1,7 @@
 ---
-title: Understanding Transformer Architecture by Building GPT
+title: "📌 Understanding Transformer Architecture by Building GPT"
 date: "2023-03-15"
+weight: 1
 categories: 
   - NLP
   - Python
