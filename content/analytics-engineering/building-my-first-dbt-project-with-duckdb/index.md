@@ -208,13 +208,13 @@ It is a star schema design where a central fact table is connected to multiple d
 dim_products ← fct_orders → dim_dates
 ```
 
-**Dimension**
+#### Dimension
 
 A dimension is a descriptive attribute or set of attributes that provide context to the facts in your fact tables.
 Each row in a dimension table represents a unique entity.
 For example, a `customer` dimension might include attributes like `customer_id`, `name`, `email`, and `signup_date`.
 
-**Fact**
+#### Fact
 
 A fact is a quantitative measure that represents a business process.
 Each row in a fact table represents a unique event or transaction.
