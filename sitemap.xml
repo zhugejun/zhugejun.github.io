@@ -2,19 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://gejun.name/tags/attention/</loc>
+    <loc>https://gejun.name/natural-language-processing/understanding-attention-nlp/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://gejun.name/tags/analytics/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/analytics-engineering/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/analytics-engineering/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/analytics-engineering/building-my-first-dbt-project-with-duckdb/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://gejun.name/categories/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/data-engineering/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/data-engineering/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/dbt/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/dbt/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/duckdb/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/hands-on/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/pipeline/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/</loc>
+    <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/attention/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/tags/docoder/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/tags/encoder/</loc>
-    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://gejun.name/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/natural-language-processing/</loc>
@@ -29,16 +68,10 @@
     <loc>https://gejun.name/tags/pytorch/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://gejun.name/tags/</loc>
-    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://gejun.name/categories/transformer/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/tags/transformers/</loc>
-    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://gejun.name/natural-language-processing/understanding-attention-nlp/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/tags/embedding/</loc>

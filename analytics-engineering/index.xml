@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Analytics-Engineerings on Gejun&#39;s Blog</title>
+    <link>https://gejun.name/analytics-engineering/</link>
+    <description>Recent content in Analytics-Engineerings on Gejun&#39;s Blog</description>
+    <image>
+      <title>Gejun&#39;s Blog</title>
+      <url>https://gejun.name/</url>
+      <link>https://gejun.name/</link>
+    </image>
+    <generator>Hugo -- 0.154.5</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 11 Jan 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://gejun.name/analytics-engineering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Building My First dbt Project with DuckDB</title>
+      <link>https://gejun.name/analytics-engineering/building-my-first-dbt-project-with-duckdb/</link>
+      <pubDate>Sun, 11 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/analytics-engineering/building-my-first-dbt-project-with-duckdb/</guid>
+      <description>&lt;h2 id=&#34;why-im-learning-dbt-as-an-analyst&#34;&gt;Why I’m Learning dbt as an Analyst&lt;/h2&gt;
+&lt;p&gt;You can find the project on GitHub here: &lt;a href=&#34;https://github.com/zhugejun/learn-dbt-by-building&#34;&gt;zhugejun/learn-dbt-by-building&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve been an Institutional Research Analyst in higher education for almost a decade.
+For my day-to-day job, I can wrangle enrollment with SQL, automate reports with R, build prediction models with Python, and visualize data with Power BI.
+There are times that I need to run queries to pull data from CAMS directly, download data from ZogoTech (our third-party OLAP vendor), save it as CSV, and load it to R for aggregation, visualization, and further analysis.
+Sometimes, I need to ingest the enrollment history data from National Student Clearinghouse (NSC) and combine it with data from multiple resources to create a superintendent report.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
