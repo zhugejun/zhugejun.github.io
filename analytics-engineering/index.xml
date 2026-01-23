@@ -11,8 +11,19 @@
     </image>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 11 Jan 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 21 Jan 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://gejun.name/analytics-engineering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fundamentals of dbt</title>
+      <link>https://gejun.name/analytics-engineering/fundamentals-of-dbt/</link>
+      <pubDate>Wed, 21 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/analytics-engineering/fundamentals-of-dbt/</guid>
+      <description>&lt;p&gt;This cheat sheet covers the fundamentals of &lt;strong&gt;dbt (data build tool)&lt;/strong&gt;—a popular data transformation tool used in modern data engineering and analytics workflows. It includes key concepts, commands, and best practices to get you started with dbt.&lt;/p&gt;
+&lt;h2 id=&#34;fundamentals-must-know&#34;&gt;Fundamentals (Must Know)&lt;/h2&gt;
+&lt;h3 id=&#34;what-is-dbt&#34;&gt;What is dbt?&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;dbt (data build tool)&lt;/strong&gt; is a transformation tool that enables analysts and engineers to transform data in their warehouse using SQL.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Key concept:&lt;/strong&gt; dbt handles the &lt;strong&gt;T&lt;/strong&gt; in ELT (Extract, Load, Transform). It doesn&amp;rsquo;t extract or load data—it transforms data that&amp;rsquo;s already in your warehouse.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Building My First dbt Project with DuckDB</title>
       <link>https://gejun.name/analytics-engineering/building-my-first-dbt-project-with-duckdb/</link>
