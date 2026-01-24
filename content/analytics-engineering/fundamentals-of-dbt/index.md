@@ -195,8 +195,8 @@ sources:
         
         # Table-level tests
         data_tests: 
-	        - dbt_utils.at_least_one: 
-		          column_name: payment_id
+          - dbt_utils.at_least_one: 
+              column_name: payment_id
 
       - name: customers
         freshness: null  # disable freshness check for this table
@@ -262,7 +262,7 @@ models:
 
 ### What is the dbt project structure?
 
-```
+```txt
 my_dbt_project/
 ├── dbt_project.yml        # Project configuration
 ├── profiles.yml           # Connection credentials (usually in ~/.dbt/)
@@ -608,7 +608,7 @@ FROM {{ ref('stg_orders') }}
 
 Seeds are **CSV files** that dbt loads into your warehouse as tables. Good for small, static reference data.
 
-```
+```txt
 seeds/
 └── country_codes.csv
 ```
@@ -683,7 +683,7 @@ models:
 
 The DAG (Directed Acyclic Graph) represents **dependencies between all models**.
 
-```
+```txt
 sources → staging → intermediate → marts
                                       ↓
                                   exposures
