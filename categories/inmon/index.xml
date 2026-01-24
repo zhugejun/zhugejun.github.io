@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Inmon on Gejun&#39;s Blog</title>
+    <link>https://gejun.name/categories/inmon/</link>
+    <description>Recent content in Inmon on Gejun&#39;s Blog</description>
+    <image>
+      <title>Gejun&#39;s Blog</title>
+      <url>https://gejun.name/</url>
+      <link>https://gejun.name/</link>
+    </image>
+    <generator>Hugo -- 0.154.5</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 24 Jan 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://gejun.name/categories/inmon/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kimball vs Inmon: Why Kimball is Better for Analytics</title>
+      <link>https://gejun.name/analytics-engineering/kimball-vs-inmon/</link>
+      <pubDate>Sat, 24 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/analytics-engineering/kimball-vs-inmon/</guid>
+      <description>&lt;p&gt;I have been learning dbt recently and wanted to get a better understanding of data warehousing methodologies.
+Two of the most well-known ones are the Kimball and Inmon approaches.
+In this post, I will explain the key differences between the two and why Kimball is generally considered better for analytics.&lt;/p&gt;
+&lt;h2 id=&#34;kimball-dimensional-modeling&#34;&gt;Kimball (Dimensional Modeling)&lt;/h2&gt;
+&lt;p&gt;Kimball&amp;rsquo;s approach uses a &lt;strong&gt;star schema&lt;/strong&gt; with two main types of tables:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Fact Tables&lt;/strong&gt;: Store measurable events (sales amount, quantity sold, order totals). These are the &amp;ldquo;what happened&amp;rdquo; of your business.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Dimension Tables&lt;/strong&gt;: Store descriptive context (customer info, product details, dates). These answer &amp;ldquo;who, what, where, when.&amp;rdquo;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The star schema looks like this:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
