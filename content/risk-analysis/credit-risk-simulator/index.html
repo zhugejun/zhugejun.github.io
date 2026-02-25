@@ -1,0 +1,1504 @@
+---
+title: 'Credit Risk Simulator'
+date: '2026-02-24'
+layout: 'raw'
+categories:
+  - Risk Analysis
+tags:
+  - credit-risk
+  - simulator
+  - interactive
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credit Risk Simulator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          'DM Sans',
+          -apple-system,
+          sans-serif;
+        background: #f8fafc;
+        color: #1e293b;
+        min-height: 100vh;
+      }
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(
+          135deg,
+          #1e1b4b 0%,
+          #312e81 50%,
+          #3730a3 100%
+        );
+        padding: 28px 24px 20px;
+        color: #fff;
+        text-align: center;
+        border-bottom: 3px solid #6366f1;
+      }
+      .header .eyebrow {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: #a5b4fc;
+        margin-bottom: 6px;
+        font-weight: 700;
+      }
+      .header h1 {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+      }
+      .header p {
+        font-size: 12px;
+        color: #c7d2fe;
+        margin-top: 4px;
+      }
+
+      /* Layout */
+      .layout {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 16px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Panel */
+      .panel {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        position: sticky;
+        top: 16px;
+      }
+      .panel-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .panel-sub {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-bottom: 18px;
+      }
+
+      /* Sliders */
+      .slider-group {
+        margin-bottom: 16px;
+      }
+      .slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 6px;
+      }
+      .slider-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+      }
+      .slider-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e293b;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .slider-track {
+        position: relative;
+        height: 24px;
+      }
+      .slider-bg {
+        position: absolute;
+        top: 10px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #e2e8f0;
+        border-radius: 2px;
+      }
+      .slider-fill {
+        position: absolute;
+        top: 10px;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+        border-radius: 2px;
+        transition: width 0.05s;
+      }
+      input[type='range'] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 24px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+        margin: 0;
+      }
+      input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #6366f1;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+        cursor: pointer;
+      }
+      input[type='range']::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #6366f1;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+        cursor: pointer;
+      }
+
+      /* FICO badge */
+      .fico-badge {
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-top: -8px;
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      /* Toggle */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .toggle-btn {
+        width: 40px;
+        height: 22px;
+        border-radius: 11px;
+        border: none;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+      }
+      .toggle-knob {
+        width: 16px;
+        height: 16px;
+        border-radius: 8px;
+        background: #fff;
+        position: absolute;
+        top: 3px;
+        transition: all 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      .toggle-label {
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* Presets */
+      .preset-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+      .preset-btn {
+        display: block;
+        width: 100%;
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+        cursor: pointer;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        transition: all 0.15s;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .preset-btn:hover {
+        border-color: #6366f1;
+        background: #eef2ff;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 4px;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+      }
+      .tab-btn {
+        padding: 8px 16px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: #94a3b8;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .tab-btn.active {
+        color: #6366f1;
+        border-bottom-color: #6366f1;
+      }
+      .tab-btn:hover {
+        color: #6366f1;
+      }
+
+      /* Cards */
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s;
+      }
+      .card:hover {
+        border-color: #6366f1;
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1);
+      }
+
+      /* Gauges row */
+      .gauges {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+      }
+      .gauge {
+        text-align: center;
+      }
+      .gauge-label {
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+      }
+      .gauge-value {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.1;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .gauge-severity {
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 2px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+      }
+
+      /* Metric cards grid */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      .m-badge {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .m-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+      }
+      .m-formula {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: #6366f1;
+        background: #eef2ff;
+        padding: 4px 10px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .m-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #1e293b;
+        font-family: 'JetBrains Mono', monospace;
+        margin: 4px 0;
+      }
+      .m-explain {
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.6;
+      }
+
+      /* 5 C's */
+      .five-cs {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .c-item {
+        text-align: center;
+        padding: 12px;
+        border-radius: 10px;
+      }
+      .c-icon {
+        font-size: 22px;
+      }
+      .c-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 4px;
+      }
+      .c-score {
+        font-size: 12px;
+        font-weight: 700;
+        margin-top: 2px;
+      }
+      .c-detail {
+        font-size: 10px;
+        color: #94a3b8;
+        margin-top: 2px;
+      }
+
+      /* Chart */
+      .chart-container {
+        position: relative;
+        width: 100%;
+        height: 320px;
+      }
+
+      /* Snapshots */
+      .snapshots {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #f1f5f9;
+      }
+      .snap {
+        text-align: center;
+      }
+      .snap-label {
+        font-size: 10px;
+        color: #94a3b8;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .snap-bal {
+        font-size: 11px;
+        color: #3b82f6;
+      }
+      .snap-val {
+        font-size: 11px;
+        color: #22c55e;
+      }
+      .snap-eq {
+        font-size: 12px;
+        font-weight: 700;
+        color: #1e293b;
+      }
+
+      /* Default scenario */
+      .scenario-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .scenario-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px;
+      }
+      .scenario-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #1e293b;
+      }
+      .scenario-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 12px;
+      }
+      .scenario-row + .scenario-row {
+        border-top: 1px solid #f1f5f9;
+      }
+      .scenario-row-label {
+        color: #64748b;
+      }
+      .scenario-row-value {
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* Portfolio */
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .portfolio-item {
+        text-align: center;
+        padding: 14px;
+        border-radius: 10px;
+      }
+      .portfolio-label {
+        font-size: 10px;
+        color: #94a3b8;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .portfolio-value {
+        font-size: 22px;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .portfolio-sub {
+        font-size: 10px;
+        color: #94a3b8;
+      }
+
+      /* Divider */
+      .divider {
+        border-top: 1px solid #e2e8f0;
+        padding-top: 14px;
+        margin-top: 8px;
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        padding: 24px 16px;
+        color: #94a3b8;
+        font-size: 11px;
+        border-top: 1px solid #e2e8f0;
+        margin-top: 20px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 700px) {
+        .gauges {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .metrics-grid {
+          grid-template-columns: 1fr;
+        }
+        .five-cs {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .scenario-grid {
+          grid-template-columns: 1fr;
+        }
+        .portfolio-grid {
+          grid-template-columns: 1fr;
+        }
+        .snapshots {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="eyebrow">Interactive</div>
+      <h1>Credit Risk Simulator</h1>
+      <p>Adjust the sliders and watch every metric react in real-time</p>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT PANEL -->
+      <div class="panel" id="controls">
+        <div class="panel-title">
+          <span style="font-size: 16px">🎛️</span> Loan Parameters
+        </div>
+        <div class="panel-sub">Drag the sliders to build your scenario</div>
+
+        <div class="slider-group" id="sg-vehicleValue"></div>
+        <div class="slider-group" id="sg-loanAmount"></div>
+        <div class="slider-group" id="sg-downPayment"></div>
+        <div class="slider-group" id="sg-term"></div>
+        <div class="slider-group" id="sg-fico"></div>
+
+        <div class="fico-badge" id="ficoBadge"></div>
+
+        <div class="slider-group" id="sg-monthlyIncome"></div>
+        <div class="slider-group" id="sg-depRate"></div>
+
+        <div class="divider">
+          <div class="toggle-row">
+            <button
+              class="toggle-btn"
+              id="defaultToggle"
+              style="background: #6366f1"
+            >
+              <div
+                class="toggle-knob"
+                id="defaultKnob"
+                style="left: 21px"
+              ></div>
+            </button>
+            <span
+              class="toggle-label"
+              id="defaultToggleLabel"
+              style="color: #dc2626"
+              >Simulate Default</span
+            >
+          </div>
+          <div class="slider-group" id="sg-defaultMonth"></div>
+        </div>
+
+        <div class="divider">
+          <div class="preset-title">Quick Scenarios</div>
+          <button class="preset-btn" onclick="applyPreset('risky')">
+            😬 Risky
+          </button>
+          <button class="preset-btn" onclick="applyPreset('typical')">
+            😐 Typical
+          </button>
+          <button class="preset-btn" onclick="applyPreset('strong')">
+            😎 Strong
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div>
+        <div class="tabs">
+          <button
+            class="tab-btn active"
+            data-tab="dashboard"
+            onclick="switchTab('dashboard', this)"
+          >
+            Dashboard
+          </button>
+          <button
+            class="tab-btn"
+            data-tab="timeline"
+            onclick="switchTab('timeline', this)"
+          >
+            Equity Timeline
+          </button>
+          <button
+            class="tab-btn"
+            data-tab="default"
+            onclick="switchTab('default', this)"
+          >
+            Default Scenario
+          </button>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard">
+          <div class="gauges" id="gaugesRow"></div>
+          <div class="metrics-grid" id="metricsGrid"></div>
+          <div class="card" style="padding: 20px">
+            <div style="font-size: 15px; font-weight: 700; margin-bottom: 14px">
+              5 C's Assessment for This Scenario
+            </div>
+            <div class="five-cs" id="fiveCsRow"></div>
+          </div>
+        </div>
+
+        <!-- TIMELINE TAB -->
+        <div id="tab-timeline" class="hidden">
+          <div class="card" style="padding: 24px">
+            <div style="font-size: 15px; font-weight: 700; margin-bottom: 4px">
+              Loan Balance vs. Vehicle Value Over Time
+            </div>
+            <div
+              id="chartSubtitle"
+              style="font-size: 12px; color: #64748b; margin-bottom: 16px"
+            ></div>
+            <div class="chart-container">
+              <canvas id="equityChart"></canvas>
+            </div>
+            <div class="snapshots" id="snapshots"></div>
+          </div>
+        </div>
+
+        <!-- DEFAULT TAB -->
+        <div id="tab-default" class="hidden">
+          <div id="defaultContent"></div>
+          <div
+            id="defaultOff"
+            class="hidden"
+            style="
+              background: #fff;
+              border-radius: 14px;
+              padding: 40px;
+              border: 1px solid #e2e8f0;
+              text-align: center;
+              color: #94a3b8;
+            "
+          >
+            <div style="font-size: 40px; margin-bottom: 12px">🛡️</div>
+            <div style="font-size: 15px; font-weight: 600">
+              Default simulation is off
+            </div>
+            <div style="font-size: 12px; margin-top: 4px">
+              Toggle "Simulate Default" in the left panel to explore loss
+              scenarios
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Credit Risk Simulator · GM Financial Risk Analyst II Study Tool · February
+      2026
+    </div>
+
+    <script>
+      // ─── STATE ───
+      const S = {
+        vehicleValue: 35000,
+        loanAmount: 35000,
+        downPayment: 0,
+        term: 72,
+        fico: 695,
+        monthlyIncome: 4500,
+        depRate: 15,
+        defaultMonth: 18,
+        showDefault: true,
+      };
+
+      // ─── FICO TIERS ───
+      const TIERS = [
+        { min: 750, label: 'Super-Prime', color: '#16a34a', rate: 5.2 },
+        { min: 720, label: 'Prime', color: '#22c55e', rate: 6.8 },
+        { min: 660, label: 'Near-Prime', color: '#eab308', rate: 9.5 },
+        { min: 580, label: 'Subprime', color: '#f97316', rate: 14.2 },
+        { min: 300, label: 'Deep Sub', color: '#dc2626', rate: 19.9 },
+      ];
+      function getTier(score) {
+        return TIERS.find((t) => score >= t.min) || TIERS[TIERS.length - 1];
+      }
+
+      // ─── FORMATTERS ───
+      const fmt = (n) =>
+        n.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 0,
+        });
+      const fmtPct = (n) => (n * 100).toFixed(1) + '%';
+      const fmtPct0 = (n) => (n * 100).toFixed(0) + '%';
+
+      // ─── CALC ───
+      function calcPayment(P, apr, n) {
+        const r = apr / 100 / 12;
+        if (r === 0) return P / n;
+        return (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+      }
+      function calcAmort(P, apr, n, vv, dep) {
+        const pmt = calcPayment(P, apr, n);
+        const r = apr / 100 / 12;
+        const md = dep / 100 / 12;
+        const pts = [];
+        let bal = P,
+          val = vv;
+        for (let m = 0; m <= n; m++) {
+          pts.push({
+            month: m,
+            balance: Math.max(0, bal),
+            value: val,
+            equity: val - bal,
+          });
+          if (m < n) {
+            const int = bal * r;
+            bal -= pmt - int;
+            val *= 1 - md;
+          }
+        }
+        return { points: pts, monthly: pmt };
+      }
+
+      // ─── SLIDER BUILDER ───
+      function buildSlider(containerId, label, key, min, max, step, formatter) {
+        const el = document.getElementById(containerId);
+        el.innerHTML = `
+    <div class="slider-header">
+      <span class="slider-label">${label}</span>
+      <span class="slider-value" id="val-${key}"></span>
+    </div>
+    <div class="slider-track">
+      <div class="slider-bg"></div>
+      <div class="slider-fill" id="fill-${key}"></div>
+      <input type="range" min="${min}" max="${max}" step="${step}" value="${S[key]}" id="input-${key}">
+    </div>`;
+        const input = document.getElementById(`input-${key}`);
+        input.addEventListener('input', () => {
+          S[key] = Number(input.value);
+          // Clamp down payment
+          if (key === 'loanAmount') {
+            const dpInput = document.getElementById('input-downPayment');
+            if (dpInput) {
+              dpInput.max = Math.min(20000, S.loanAmount);
+              if (S.downPayment > dpInput.max) {
+                S.downPayment = Number(dpInput.max);
+                dpInput.value = S.downPayment;
+              }
+            }
+          }
+          if (key === 'term') {
+            const dmInput = document.getElementById('input-defaultMonth');
+            if (dmInput) {
+              dmInput.max = S.term;
+              if (S.defaultMonth > S.term) {
+                S.defaultMonth = S.term;
+                dmInput.value = S.defaultMonth;
+              }
+            }
+          }
+          render();
+        });
+        // Store formatter
+        el._fmt = formatter;
+        el._key = key;
+      }
+      function updateSliderDisplay(key) {
+        const el =
+          document.querySelector(
+            `[id="sg-${key === 'depRate' ? 'depRate' : key}"]`,
+          ) ||
+          document.querySelector(`[id$="-${key}"]`)?.closest('.slider-group');
+        const input = document.getElementById(`input-${key}`);
+        const valEl = document.getElementById(`val-${key}`);
+        const fillEl = document.getElementById(`fill-${key}`);
+        if (!input || !valEl || !fillEl) return;
+        input.value = S[key];
+        const pct =
+          ((S[key] - Number(input.min)) /
+            (Number(input.max) - Number(input.min))) *
+          100;
+        fillEl.style.width = pct + '%';
+      }
+
+      const sliderFormatters = {};
+      function fmtSlider(key, v) {
+        return sliderFormatters[key] ? sliderFormatters[key](v) : v;
+      }
+
+      // ─── CHART ───
+      let chart = null;
+      function renderChart(points, defMonth, showDef) {
+        const canvas = document.getElementById('equityChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        const step = points.length <= 37 ? 1 : points.length <= 61 ? 2 : 3;
+        const sampled = [];
+        for (let i = 0; i < points.length; i += step) sampled.push(points[i]);
+        if (
+          sampled[sampled.length - 1].month !== points[points.length - 1].month
+        )
+          sampled.push(points[points.length - 1]);
+
+        const labels = sampled.map((d) => d.month);
+        const balData = sampled.map((d) => Math.round(d.balance));
+        const valData = sampled.map((d) => Math.round(d.value));
+        // Negative equity fill: use balance where underwater, null otherwise
+        const negData = sampled.map((d) =>
+          d.equity < 0 ? Math.round(d.balance) : null,
+        );
+
+        if (chart) chart.destroy();
+
+        const defaultLine =
+          showDef && defMonth > 0 && defMonth <= points[points.length - 1].month
+            ? {
+                type: 'line',
+                borderColor: '#dc2626',
+                borderWidth: 2,
+                borderDash: [6, 4],
+                xMin: defMonth,
+                xMax: defMonth,
+                label: {
+                  display: true,
+                  content: `DEFAULT Mo ${defMonth}`,
+                  position: 'start',
+                  color: '#dc2626',
+                  font: {
+                    size: 11,
+                    weight: 'bold',
+                    family: "'JetBrains Mono', monospace",
+                  },
+                  backgroundColor: 'transparent',
+                },
+              }
+            : null;
+
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Loan Balance',
+                data: balData,
+                borderColor: '#3b82f6',
+                borderWidth: 2.5,
+                fill: true,
+                backgroundColor: 'rgba(59,130,246,0.08)',
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: '#3b82f6',
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 2,
+                tension: 0.2,
+              },
+              {
+                label: 'Vehicle Value',
+                data: valData,
+                borderColor: '#22c55e',
+                borderWidth: 2.5,
+                borderDash: [6, 3],
+                fill: true,
+                backgroundColor: 'rgba(34,197,94,0.06)',
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: '#22c55e',
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 2,
+                tension: 0.2,
+              },
+              {
+                label: 'Negative Equity Zone',
+                data: negData,
+                borderColor: 'transparent',
+                borderWidth: 0,
+                fill: {
+                  target: 1,
+                  above: 'rgba(220,38,38,0.12)',
+                  below: 'transparent',
+                },
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                spanGaps: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: 'line',
+                  font: {
+                    size: 12,
+                    weight: '600',
+                    family: "'DM Sans', sans-serif",
+                  },
+                  filter: (item) => item.text !== 'Negative Equity Zone',
+                },
+              },
+              tooltip: {
+                backgroundColor: '#1e293b',
+                titleFont: { size: 11, weight: '600' },
+                bodyFont: { size: 12 },
+                padding: 12,
+                cornerRadius: 8,
+                callbacks: {
+                  title: (ctx) => 'Month ' + ctx[0].label,
+                  label: (ctx) => {
+                    if (ctx.datasetIndex === 2) return null;
+                    return ctx.dataset.label + ': ' + fmt(ctx.parsed.y);
+                  },
+                  afterBody: (ctx) => {
+                    const bal = ctx[0]?.parsed.y || 0;
+                    const val = ctx[1]?.parsed.y || 0;
+                    const eq = val - bal;
+                    return (eq < 0 ? '⚠️ ' : '✅ ') + 'Equity: ' + fmt(eq);
+                  },
+                },
+              },
+              annotation: defaultLine
+                ? { annotations: { defaultLine } }
+                : undefined,
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Month',
+                  font: { size: 11, weight: '500' },
+                  color: '#94a3b8',
+                },
+                grid: { display: false },
+                ticks: { font: { size: 11 }, color: '#94a3b8' },
+              },
+              y: {
+                title: { display: false },
+                grid: { color: '#f1f5f9' },
+                ticks: {
+                  font: { size: 11 },
+                  color: '#94a3b8',
+                  callback: (v) => '$' + (v / 1000).toFixed(0) + 'k',
+                },
+              },
+            },
+          },
+          plugins: defaultLine ? [] : [],
+        });
+      }
+
+      // ─── TAB SWITCHING ───
+      let activeTab = 'dashboard';
+      function switchTab(id, btn) {
+        activeTab = id;
+        document
+          .querySelectorAll('.tab-btn')
+          .forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['dashboard', 'timeline', 'default'].forEach((t) => {
+          document
+            .getElementById('tab-' + t)
+            .classList.toggle('hidden', t !== id);
+        });
+        if (id === 'timeline') {
+          setTimeout(
+            () => renderChart(lastPoints, S.defaultMonth, S.showDefault),
+            50,
+          );
+        }
+      }
+
+      // ─── DEFAULT TOGGLE ───
+      document.getElementById('defaultToggle').addEventListener('click', () => {
+        S.showDefault = !S.showDefault;
+        render();
+      });
+
+      // ─── PRESETS ───
+      function applyPreset(name) {
+        if (name === 'risky')
+          Object.assign(S, {
+            vehicleValue: 30000,
+            loanAmount: 38000,
+            downPayment: 0,
+            term: 84,
+            fico: 580,
+            monthlyIncome: 3000,
+            defaultMonth: 18,
+            showDefault: true,
+            depRate: 18,
+          });
+        if (name === 'typical')
+          Object.assign(S, {
+            vehicleValue: 35000,
+            loanAmount: 35000,
+            downPayment: 3000,
+            term: 72,
+            fico: 695,
+            monthlyIncome: 4500,
+            defaultMonth: 24,
+            showDefault: true,
+            depRate: 15,
+          });
+        if (name === 'strong')
+          Object.assign(S, {
+            vehicleValue: 40000,
+            loanAmount: 36000,
+            downPayment: 8000,
+            term: 48,
+            fico: 780,
+            monthlyIncome: 8000,
+            defaultMonth: 12,
+            showDefault: true,
+            depRate: 12,
+          });
+        // Update slider inputs
+        [
+          'vehicleValue',
+          'loanAmount',
+          'downPayment',
+          'term',
+          'fico',
+          'monthlyIncome',
+          'depRate',
+          'defaultMonth',
+        ].forEach((k) => {
+          const inp = document.getElementById('input-' + k);
+          if (inp) inp.value = S[k];
+        });
+        render();
+      }
+
+      // ─── RISK GAUGE HTML ───
+      function gaugeHTML(label, value, thresholds, format, invert) {
+        let color, sev;
+        const [lo, mi, hi] = thresholds;
+        if (invert) {
+          if (value >= hi) {
+            color = '#16a34a';
+            sev = 'Low Risk';
+          } else if (value >= mi) {
+            color = '#eab308';
+            sev = 'Moderate';
+          } else {
+            color = '#dc2626';
+            sev = 'High Risk';
+          }
+        } else {
+          if (value <= lo) {
+            color = '#16a34a';
+            sev = 'Low Risk';
+          } else if (value <= mi) {
+            color = '#eab308';
+            sev = 'Moderate';
+          } else {
+            color = '#dc2626';
+            sev = 'High Risk';
+          }
+        }
+        const disp =
+          format === 'pct'
+            ? fmtPct(value)
+            : format === 'raw'
+              ? value
+              : fmt(value);
+        return `<div class="gauge">
+    <div class="gauge-label">${label}</div>
+    <div class="gauge-value" style="color:${color}">${disp}</div>
+    <div class="gauge-severity" style="color:${color};background:${color}18">${sev}</div>
+  </div>`;
+      }
+
+      // ─── MAIN RENDER ───
+      let lastPoints = [];
+      function render() {
+        const tier = getTier(S.fico);
+        const apr = tier.rate;
+        const effLoan = S.loanAmount - S.downPayment;
+        const { points, monthly } = calcAmort(
+          effLoan,
+          apr,
+          S.term,
+          S.vehicleValue,
+          S.depRate,
+        );
+        lastPoints = points;
+
+        const ltv = S.vehicleValue > 0 ? effLoan / S.vehicleValue : 0;
+        const pti = S.monthlyIncome > 0 ? monthly / S.monthlyIncome : 0;
+
+        // Update all slider displays
+        const sliders = [
+          ['vehicleValue', (v) => fmt(v)],
+          ['loanAmount', (v) => fmt(v)],
+          ['downPayment', (v) => fmt(v)],
+          ['term', (v) => v + ' mo'],
+          ['fico', (v) => v],
+          ['monthlyIncome', (v) => fmt(v)],
+          ['depRate', (v) => v + '%'],
+          ['defaultMonth', (v) => v + ' mo'],
+        ];
+        sliders.forEach(([key, f]) => {
+          const valEl = document.getElementById('val-' + key);
+          const fillEl = document.getElementById('fill-' + key);
+          const inp = document.getElementById('input-' + key);
+          if (!valEl || !fillEl || !inp) return;
+          valEl.textContent = f(S[key]);
+          const pct =
+            ((S[key] - Number(inp.min)) / (Number(inp.max) - Number(inp.min))) *
+            100;
+          fillEl.style.width = pct + '%';
+        });
+
+        // FICO badge
+        const fb = document.getElementById('ficoBadge');
+        fb.style.background = tier.color + '15';
+        fb.style.border = `1px solid ${tier.color}40`;
+        fb.innerHTML = `<span style="color:${tier.color}">${tier.label}</span><span class="mono" style="color:${tier.color}">APR: ${tier.rate}%</span>`;
+
+        // Default toggle
+        const tb = document.getElementById('defaultToggle');
+        const tk = document.getElementById('defaultKnob');
+        const tl = document.getElementById('defaultToggleLabel');
+        tb.style.background = S.showDefault ? '#6366f1' : '#cbd5e1';
+        tk.style.left = S.showDefault ? '21px' : '3px';
+        tl.style.color = S.showDefault ? '#dc2626' : '#94a3b8';
+        document
+          .getElementById('sg-defaultMonth')
+          .classList.toggle('hidden', !S.showDefault);
+
+        // === DASHBOARD ===
+        const totalInterest = Math.max(0, monthly * S.term - effLoan);
+        const endEquity = points[points.length - 1]?.equity || 0;
+        const crossover = points.findIndex((p) => p.equity >= 0 && p.month > 0);
+        const alwaysUnder = crossover === -1 && endEquity < 0;
+        const startsUnder = ltv > 1;
+
+        // Gauges
+        document.getElementById('gaugesRow').innerHTML =
+          gaugeHTML('LTV', ltv, [0.9, 1.0, 1.2], 'pct', false) +
+          gaugeHTML('PTI', pti, [0.12, 0.18, 0.25], 'pct', false) +
+          gaugeHTML('FICO', S.fico, [750, 660, 580], 'raw', true) +
+          `<div class="gauge">
+      <div class="gauge-label">Monthly Pmt</div>
+      <div class="gauge-value" style="color:#1e293b">${fmt(monthly)}</div>
+      <div class="gauge-severity" style="color:#6366f1;background:#eef2ff">${apr}% APR</div>
+    </div>`;
+
+        // Metric cards
+        const ltvExplain =
+          ltv > 1
+            ? `⚠️ Borrower is ${fmt(effLoan - S.vehicleValue)} underwater from Day 1. Negative equity = high loss risk on default.`
+            : ltv > 0.9
+              ? `Near the danger zone. Only ${fmt(S.vehicleValue - effLoan)} in equity cushion.`
+              : `Healthy LTV. ${fmt(S.vehicleValue - effLoan)} equity cushion protects against loss.`;
+        const ptiExplain =
+          pti > 0.2
+            ? `Borrower spends ${fmtPct0(pti)} of income on this payment alone. Add insurance + gas and they're stretched thin.`
+            : pti > 0.15
+              ? `Moderate strain. Factor in insurance (~$150/mo) and fuel for full affordability picture.`
+              : `Comfortable affordability. Payment is manageable relative to income.`;
+        const eqBadge = endEquity >= 0 ? 'Positive' : 'Negative';
+        const eqColor = endEquity >= 0 ? '#16a34a' : '#dc2626';
+        const eqExplain = `Vehicle worth ${fmt(points[points.length - 1]?.value || 0)} vs. $0 remaining balance. ${startsUnder && alwaysUnder ? '⚠️ Never builds positive equity with these terms.' : startsUnder ? `Breaks even around Month ${crossover}.` : 'Starts with positive equity.'}`;
+
+        document.getElementById('metricsGrid').innerHTML = `
+    <div class="card">
+      <div class="m-badge" style="background:#dc262620;color:#dc2626">Risk</div>
+      <div class="m-title">Loan-to-Value (LTV)</div>
+      <div class="m-formula">${fmt(effLoan)} ÷ ${fmt(S.vehicleValue)}</div>
+      <div class="m-value">${fmtPct(ltv)}</div>
+      <div class="m-explain">${ltvExplain}</div>
+    </div>
+    <div class="card">
+      <div class="m-badge" style="background:#dc262620;color:#dc2626">Risk</div>
+      <div class="m-title">Payment-to-Income (PTI)</div>
+      <div class="m-formula">${fmt(monthly)} ÷ ${fmt(S.monthlyIncome)}</div>
+      <div class="m-value">${fmtPct(pti)}</div>
+      <div class="m-explain">${ptiExplain}</div>
+    </div>
+    <div class="card">
+      <div class="m-badge" style="background:#6366f120;color:#6366f1">Cost</div>
+      <div class="m-title">Total Interest Paid</div>
+      <div class="m-formula">(${fmt(monthly)} × ${S.term}) − ${fmt(effLoan)}</div>
+      <div class="m-value">${fmt(totalInterest)}</div>
+      <div class="m-explain">Over ${S.term} months at ${apr}% APR. That's ${fmtPct(totalInterest / effLoan)} of the financed amount.</div>
+    </div>
+    <div class="card">
+      <div class="m-badge" style="background:${eqColor}20;color:${eqColor}">${eqBadge}</div>
+      <div class="m-title">Equity at Term End</div>
+      <div class="m-value">${fmt(endEquity)}</div>
+      <div class="m-explain">${eqExplain}</div>
+    </div>`;
+
+        // 5 C's
+        const cs = [
+          {
+            name: 'Character',
+            icon: '👤',
+            score: S.fico >= 750 ? 'Strong' : S.fico >= 660 ? 'Fair' : 'Weak',
+            color:
+              S.fico >= 750 ? '#16a34a' : S.fico >= 660 ? '#eab308' : '#dc2626',
+            detail: `FICO ${S.fico}`,
+          },
+          {
+            name: 'Capacity',
+            icon: '💪',
+            score: pti <= 0.12 ? 'Strong' : pti <= 0.18 ? 'Fair' : 'Weak',
+            color:
+              pti <= 0.12 ? '#16a34a' : pti <= 0.18 ? '#eab308' : '#dc2626',
+            detail: `PTI ${fmtPct(pti)}`,
+          },
+          {
+            name: 'Capital',
+            icon: '🏦',
+            score:
+              S.downPayment >= 5000
+                ? 'Strong'
+                : S.downPayment >= 2000
+                  ? 'Fair'
+                  : 'Weak',
+            color:
+              S.downPayment >= 5000
+                ? '#16a34a'
+                : S.downPayment >= 2000
+                  ? '#eab308'
+                  : '#dc2626',
+            detail: `${fmt(S.downPayment)} down`,
+          },
+          {
+            name: 'Collateral',
+            icon: '🚗',
+            score: ltv <= 0.9 ? 'Strong' : ltv <= 1.05 ? 'Fair' : 'Weak',
+            color: ltv <= 0.9 ? '#16a34a' : ltv <= 1.05 ? '#eab308' : '#dc2626',
+            detail: `LTV ${fmtPct(ltv)}`,
+          },
+          {
+            name: 'Conditions',
+            icon: '📋',
+            score: S.term <= 48 ? 'Strong' : S.term <= 66 ? 'Fair' : 'Weak',
+            color:
+              S.term <= 48 ? '#16a34a' : S.term <= 66 ? '#eab308' : '#dc2626',
+            detail: `${S.term}mo term`,
+          },
+        ];
+        document.getElementById('fiveCsRow').innerHTML = cs
+          .map(
+            (c) => `
+    <div class="c-item" style="background:${c.color}08;border:1px solid ${c.color}25">
+      <div class="c-icon">${c.icon}</div>
+      <div class="c-name">${c.name}</div>
+      <div class="c-score" style="color:${c.color}">${c.score}</div>
+      <div class="c-detail">${c.detail}</div>
+    </div>`,
+          )
+          .join('');
+
+        // === TIMELINE ===
+        const sub = document.getElementById('chartSubtitle');
+        if (sub)
+          sub.textContent = startsUnder
+            ? `⚠️ Starts underwater (LTV ${fmtPct(ltv)}). ${alwaysUnder ? 'Never reaches positive equity.' : `Breaks even around Month ${crossover}.`}`
+            : 'Healthy start. The shaded red area shows any period of negative equity.';
+
+        const snapMonths = [
+          0,
+          Math.min(12, S.term),
+          Math.min(Math.round(S.term / 2), S.term),
+          S.term,
+        ];
+        const snapEl = document.getElementById('snapshots');
+        if (snapEl)
+          snapEl.innerHTML = snapMonths
+            .map((m) => {
+              const p = points[m] || { balance: 0, value: 0, equity: 0 };
+              return `<div class="snap">
+      <div class="snap-label">Month ${m}</div>
+      <div class="snap-bal">Bal: ${fmt(p.balance)}</div>
+      <div class="snap-val">Val: ${fmt(p.value)}</div>
+      <div class="snap-eq">Eq: ${fmt(p.equity)}</div>
+    </div>`;
+            })
+            .join('');
+
+        if (activeTab === 'timeline')
+          renderChart(points, S.defaultMonth, S.showDefault);
+
+        // === DEFAULT ===
+        const dc = document.getElementById('defaultContent');
+        const dOff = document.getElementById('defaultOff');
+        if (S.showDefault && S.defaultMonth <= S.term) {
+          const pt = points[S.defaultMonth];
+          if (pt) {
+            const bal = pt.balance,
+              val = pt.value;
+            const repoCost = 2000,
+              auctDisc = 0.1;
+            const auctVal = val * (1 - auctDisc);
+            const netRec = Math.max(0, auctVal - repoCost);
+            const loss = Math.max(0, bal - netRec);
+            const sev = bal > 0 ? loss / bal : 0;
+            const eq = pt.equity;
+
+            const sevColor =
+              sev > 0.4 ? '#dc2626' : sev > 0.2 ? '#eab308' : '#16a34a';
+            const isLoss = loss > 0;
+            const portLoss = loss * 500;
+            const portTotal = effLoan * 10000;
+            const nco = portTotal > 0 ? portLoss / portTotal : 0;
+            const ncoAnn = S.defaultMonth > 0 ? nco * (12 / S.defaultMonth) : 0;
+
+            let narrative = '';
+            if (isLoss) {
+              narrative = `If this borrower defaults at Month ${S.defaultMonth}, GMF repossesses the vehicle and sells at auction for roughly ${fmt(auctVal)}. After ${fmt(repoCost)} in costs, the net recovery is ${fmt(netRec)} — leaving a <strong style="color:#dc2626">${fmt(loss)} loss</strong> (${fmtPct(sev)} severity).`;
+              if (sev > 0.4)
+                narrative +=
+                  ' This is a high-severity loss. The combination of negative equity, depreciation, and auction haircut compounds rapidly.';
+              if (S.term >= 72)
+                narrative +=
+                  ' Long terms (72+ months) are a major contributor — the loan pays down slowly while the vehicle depreciates fast.';
+              if (ltv > 1)
+                narrative +=
+                  ' Starting above 100% LTV meant the borrower was underwater from Day 1.';
+            } else {
+              narrative =
+                'Even in default, the vehicle value exceeds the remaining balance. GMF would recover the full amount. This is the power of a strong down payment, short term, and reasonable LTV.';
+            }
+
+            dc.innerHTML = `
+        <div class="scenario-grid">
+          <div class="scenario-card" style="border:1px solid #dc262630;border-top:3px solid #dc2626">
+            <div class="scenario-title">💥 Default at Month ${S.defaultMonth}</div>
+            <div class="scenario-row"><span class="scenario-row-label">Remaining Balance</span><span class="scenario-row-value">${fmt(bal)}</span></div>
+            <div class="scenario-row"><span class="scenario-row-label">Vehicle Value</span><span class="scenario-row-value">${fmt(val)}</span></div>
+            <div class="scenario-row"><span class="scenario-row-label">Equity Position</span><span class="scenario-row-value" style="color:${eq < 0 ? '#dc2626' : '#16a34a'}">${fmt(eq)}</span></div>
+          </div>
+          <div class="scenario-card" style="border:1px solid #f9731630;border-top:3px solid #f97316">
+            <div class="scenario-title">🔨 Recovery & Loss</div>
+            <div class="scenario-row"><span class="scenario-row-label">Auction Value (−10%)</span><span class="scenario-row-value">${fmt(auctVal)}</span></div>
+            <div class="scenario-row"><span class="scenario-row-label">Repo/Auction Costs</span><span class="scenario-row-value" style="color:#dc2626">${fmt(repoCost)}</span></div>
+            <div class="scenario-row"><span class="scenario-row-label">Net Recovery</span><span class="scenario-row-value" style="color:#22c55e">${fmt(netRec)}</span></div>
+            <div class="scenario-row"><span class="scenario-row-label">Loss Amount</span><span class="scenario-row-value" style="color:#dc2626">${fmt(loss)}</span></div>
+            <div class="scenario-row"><span class="scenario-row-label">Loss Severity</span><span class="scenario-row-value" style="color:${sevColor}">${fmtPct(sev)}</span></div>
+          </div>
+          <div style="grid-column:1/-1;background:${isLoss ? '#fef2f2' : '#f0fdf4'};border:1px solid ${isLoss ? '#fecaca' : '#bbf7d0'};border-radius:12px;padding:18px">
+            <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:8px">${isLoss ? '📉 What This Means' : '✅ Good News'}</div>
+            <div style="font-size:12px;color:#475569;line-height:1.7">${narrative}</div>
+          </div>
+          <div style="grid-column:1/-1" class="card">
+            <div style="font-size:14px;font-weight:700;margin-bottom:8px">📊 Scale It: Portfolio Impact</div>
+            <div style="font-size:12px;color:#64748b;line-height:1.7">Imagine GMF has <strong>10,000 loans</strong> with this exact profile and a <strong>5% default rate</strong> (500 defaults).</div>
+            <div class="portfolio-grid">
+              <div class="portfolio-item" style="background:#fef2f2">
+                <div class="portfolio-label">Portfolio Loss</div>
+                <div class="portfolio-value" style="color:#dc2626">${fmt(portLoss)}</div>
+                <div class="portfolio-sub">500 defaults × ${fmt(loss)}</div>
+              </div>
+              <div class="portfolio-item" style="background:#eff6ff">
+                <div class="portfolio-label">Total Portfolio</div>
+                <div class="portfolio-value" style="color:#3b82f6">${fmt(portTotal)}</div>
+                <div class="portfolio-sub">10,000 × ${fmt(effLoan)}</div>
+              </div>
+              <div class="portfolio-item" style="background:#fefce8">
+                <div class="portfolio-label">NCO Rate</div>
+                <div class="portfolio-value" style="color:#eab308">${fmtPct(nco)}</div>
+                <div class="portfolio-sub">Annualized ≈ ${fmtPct(ncoAnn)}</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+            dc.classList.remove('hidden');
+            dOff.classList.add('hidden');
+          }
+        } else {
+          dc.classList.add('hidden');
+          dOff.classList.remove('hidden');
+        }
+      }
+
+      // ─── INIT ───
+      buildSlider(
+        'sg-vehicleValue',
+        'Vehicle Value',
+        'vehicleValue',
+        10000,
+        80000,
+        1000,
+        fmt,
+      );
+      buildSlider(
+        'sg-loanAmount',
+        'Loan Amount',
+        'loanAmount',
+        5000,
+        80000,
+        1000,
+        fmt,
+      );
+      buildSlider(
+        'sg-downPayment',
+        'Down Payment',
+        'downPayment',
+        0,
+        20000,
+        500,
+        fmt,
+      );
+      buildSlider('sg-term', 'Term', 'term', 24, 84, 6, (v) => v + ' mo');
+      buildSlider('sg-fico', 'FICO Score', 'fico', 350, 850, 5, (v) => v);
+      buildSlider(
+        'sg-monthlyIncome',
+        'Monthly Income',
+        'monthlyIncome',
+        2000,
+        15000,
+        100,
+        fmt,
+      );
+      buildSlider(
+        'sg-depRate',
+        'Annual Depreciation',
+        'depRate',
+        5,
+        30,
+        1,
+        (v) => v + '%',
+      );
+      buildSlider(
+        'sg-defaultMonth',
+        'Default at Month',
+        'defaultMonth',
+        1,
+        84,
+        1,
+        (v) => v + ' mo',
+      );
+
+      render();
+    </script>
+  </body>
+</html>
