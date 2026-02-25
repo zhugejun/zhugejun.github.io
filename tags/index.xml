@@ -9,10 +9,59 @@
       <url>https://gejun.name/</url>
       <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- 0.154.5</generator>
+    <generator>Hugo -- 0.156.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 24 Jan 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 24 Feb 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://gejun.name/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Auto-Finance</title>
+      <link>https://gejun.name/tags/auto-finance/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/auto-finance/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Credit-Risk</title>
+      <link>https://gejun.name/tags/credit-risk/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/credit-risk/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Mindmap</title>
+      <link>https://gejun.name/tags/mindmap/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/mindmap/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Postgresql</title>
+      <link>https://gejun.name/tags/postgresql/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/postgresql/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Sql</title>
+      <link>https://gejun.name/tags/sql/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/sql/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Storytelling</title>
+      <link>https://gejun.name/tags/storytelling/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/storytelling/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Study-Guide</title>
+      <link>https://gejun.name/tags/study-guide/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/study-guide/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Analytics</title>
       <link>https://gejun.name/tags/analytics/</link>

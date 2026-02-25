@@ -89,8 +89,8 @@ Key concept: dbt handles the T in ELT (Extract, Load, Transform). It doesn&rsquo
 </span></span></span><span class=line><span class=cl><span class=w>        
 </span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c># Table-level tests</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>data_tests</span><span class=p>:</span><span class=w> 
-</span></span></span><span class=line><span class=cl><span class=w>	        </span>- <span class=nt>dbt_utils.at_least_one</span><span class=p>:</span><span class=w> 
-</span></span></span><span class=line><span class=cl><span class=w>		          </span><span class=nt>column_name</span><span class=p>:</span><span class=w> </span><span class=l>payment_id</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span>- <span class=nt>dbt_utils.at_least_one</span><span class=p>:</span><span class=w> 
+</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=nt>column_name</span><span class=p>:</span><span class=w> </span><span class=l>payment_id</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>customers</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>freshness</span><span class=p>:</span><span class=w> </span><span class=kc>null</span><span class=w>  </span><span class=c># disable freshness check for this table</span><span class=w>
@@ -104,26 +104,26 @@ Key concept: dbt handles the T in ELT (Extract, Load, Transform). It doesn&rsquo
 </span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>+materialized</span><span class=p>:</span><span class=w> </span><span class=l>view</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>marts</span><span class=p>:</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>+materialized</span><span class=p>:</span><span class=w> </span><span class=l>table</span><span class=w>
-</span></span></span></code></pre></div><hr><h3 id=what-is-the-dbt-project-structure>What is the dbt project structure?<a hidden class=anchor aria-hidden=true href=#what-is-the-dbt-project-structure>#</a></h3><pre tabindex=0><code>my_dbt_project/
-├── dbt_project.yml        # Project configuration
-├── profiles.yml           # Connection credentials (usually in ~/.dbt/)
-├── models/
-│   ├── staging/           # Staging models
-│   │   ├── stg_customers.sql
-│   │   ├── stg_orders.sql
-│   │   └── sources.yml
-│   ├── intermediate/      # Intermediate models
-│   │   └── int_orders_grouped.sql
-│   └── marts/             # Final models
-│       ├── dim_customers.sql
-│       ├── fct_orders.sql
-│       └── schema.yml     # Tests and docs
-├── tests/                 # Custom tests
-├── macros/                # Reusable SQL/Jinja
-├── seeds/                 # CSV files to load
-├── snapshots/             # SCD Type 2 snapshots
-└── analyses/              # Ad-hoc queries (not materialized)
-</code></pre><hr><h3 id=what-are-dbt-tests>What are dbt tests?<a hidden class=anchor aria-hidden=true href=#what-are-dbt-tests>#</a></h3><p>Tests are <strong>assertions about your data</strong>. dbt runs them after building models and alerts you to failures.</p><p><strong>Built-in generic tests:</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># models/schema.yml</span><span class=w>
+</span></span></span></code></pre></div><hr><h3 id=what-is-the-dbt-project-structure>What is the dbt project structure?<a hidden class=anchor aria-hidden=true href=#what-is-the-dbt-project-structure>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=cl>my_dbt_project/
+</span></span><span class=line><span class=cl>├── dbt_project.yml        # Project configuration
+</span></span><span class=line><span class=cl>├── profiles.yml           # Connection credentials (usually in ~/.dbt/)
+</span></span><span class=line><span class=cl>├── models/
+</span></span><span class=line><span class=cl>│   ├── staging/           # Staging models
+</span></span><span class=line><span class=cl>│   │   ├── stg_customers.sql
+</span></span><span class=line><span class=cl>│   │   ├── stg_orders.sql
+</span></span><span class=line><span class=cl>│   │   └── sources.yml
+</span></span><span class=line><span class=cl>│   ├── intermediate/      # Intermediate models
+</span></span><span class=line><span class=cl>│   │   └── int_orders_grouped.sql
+</span></span><span class=line><span class=cl>│   └── marts/             # Final models
+</span></span><span class=line><span class=cl>│       ├── dim_customers.sql
+</span></span><span class=line><span class=cl>│       ├── fct_orders.sql
+</span></span><span class=line><span class=cl>│       └── schema.yml     # Tests and docs
+</span></span><span class=line><span class=cl>├── tests/                 # Custom tests
+</span></span><span class=line><span class=cl>├── macros/                # Reusable SQL/Jinja
+</span></span><span class=line><span class=cl>├── seeds/                 # CSV files to load
+</span></span><span class=line><span class=cl>├── snapshots/             # SCD Type 2 snapshots
+</span></span><span class=line><span class=cl>└── analyses/              # Ad-hoc queries (not materialized)
+</span></span></code></pre></div><hr><h3 id=what-are-dbt-tests>What are dbt tests?<a hidden class=anchor aria-hidden=true href=#what-are-dbt-tests>#</a></h3><p>Tests are <strong>assertions about your data</strong>. dbt runs them after building models and alerts you to failures.</p><p><strong>Built-in generic tests:</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># models/schema.yml</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=m>2</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>
 </span></span></span><span class=line><span class=cl><span class=nt>models</span><span class=p>:</span><span class=w>
@@ -263,9 +263,9 @@ Key concept: dbt handles the T in ELT (Extract, Load, Transform). It doesn&rsquo
 </span></span></span><span class=line><span class=cl><span class=w>    </span><span class=err>{{</span><span class=w> </span><span class=n>dbt_utils</span><span class=p>.</span><span class=n>generate_surrogate_key</span><span class=p>([</span><span class=s1>&#39;customer_id&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;order_date&#39;</span><span class=p>])</span><span class=w> </span><span class=err>}}</span><span class=w> </span><span class=k>AS</span><span class=w> </span><span class=n>order_key</span><span class=p>,</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>    </span><span class=o>*</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=k>FROM</span><span class=w> </span><span class=err>{{</span><span class=w> </span><span class=k>ref</span><span class=p>(</span><span class=s1>&#39;stg_orders&#39;</span><span class=p>)</span><span class=w> </span><span class=err>}}</span><span class=w>
-</span></span></span></code></pre></div><hr><h3 id=what-are-seeds>What are seeds?<a hidden class=anchor aria-hidden=true href=#what-are-seeds>#</a></h3><p>Seeds are <strong>CSV files</strong> that dbt loads into your warehouse as tables. Good for small, static reference data.</p><pre tabindex=0><code>seeds/
-└── country_codes.csv
-</code></pre><div class=highlight><pre tabindex=0 class=chroma><code class=language-csv data-lang=csv><span class=line><span class=cl><span class=s>country_code</span><span class=p>,</span><span class=s>country_name</span><span class=p>,</span><span class=s>region</span><span class=p>
+</span></span></span></code></pre></div><hr><h3 id=what-are-seeds>What are seeds?<a hidden class=anchor aria-hidden=true href=#what-are-seeds>#</a></h3><p>Seeds are <strong>CSV files</strong> that dbt loads into your warehouse as tables. Good for small, static reference data.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=cl>seeds/
+</span></span><span class=line><span class=cl>└── country_codes.csv
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-csv data-lang=csv><span class=line><span class=cl><span class=s>country_code</span><span class=p>,</span><span class=s>country_name</span><span class=p>,</span><span class=s>region</span><span class=p>
 </span></span></span><span class=line><span class=cl><span class=s>US</span><span class=p>,</span><span class=s>United States</span><span class=p>,</span><span class=s>North America</span><span class=p>
 </span></span></span><span class=line><span class=cl><span class=s>CA</span><span class=p>,</span><span class=s>Canada</span><span class=p>,</span><span class=s>North America</span><span class=p>
 </span></span></span><span class=line><span class=cl><span class=s>UK</span><span class=p>,</span><span class=s>United Kingdom</span><span class=p>,</span><span class=s>Europe</span><span class=p>
@@ -288,10 +288,10 @@ Key concept: dbt handles the T in ELT (Extract, Load, Transform). It doesn&rsquo
 </span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>marts</span><span class=p>:</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>+post-hook</span><span class=p>:</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=s2>&#34;ANALYZE TABLE {{ this }}&#34;</span><span class=w>
-</span></span></span></code></pre></div><hr><h3 id=what-is-the-dbt-dag>What is the dbt DAG?<a hidden class=anchor aria-hidden=true href=#what-is-the-dbt-dag>#</a></h3><p>The DAG (Directed Acyclic Graph) represents <strong>dependencies between all models</strong>.</p><pre tabindex=0><code>sources → staging → intermediate → marts
-                                      ↓
-                                  exposures
-</code></pre><p>dbt builds the DAG by parsing <code>ref()</code> and <code>source()</code> functions.</p><p><strong>Why it matters:</strong></p><ul><li>Determines execution order</li><li>Enables selective runs (<code>dbt run -s model+</code> runs model and all downstream)</li><li>Powers lineage in documentation</li><li>Impact analysis (what breaks if I change this?)</li></ul><p><strong>Selection syntax:</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>dbt run -s my_model          <span class=c1># Just this model</span>
+</span></span></span></code></pre></div><hr><h3 id=what-is-the-dbt-dag>What is the dbt DAG?<a hidden class=anchor aria-hidden=true href=#what-is-the-dbt-dag>#</a></h3><p>The DAG (Directed Acyclic Graph) represents <strong>dependencies between all models</strong>.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=cl>sources → staging → intermediate → marts
+</span></span><span class=line><span class=cl>                                      ↓
+</span></span><span class=line><span class=cl>                                  exposures
+</span></span></code></pre></div><p>dbt builds the DAG by parsing <code>ref()</code> and <code>source()</code> functions.</p><p><strong>Why it matters:</strong></p><ul><li>Determines execution order</li><li>Enables selective runs (<code>dbt run -s model+</code> runs model and all downstream)</li><li>Powers lineage in documentation</li><li>Impact analysis (what breaks if I change this?)</li></ul><p><strong>Selection syntax:</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>dbt run -s my_model          <span class=c1># Just this model</span>
 </span></span><span class=line><span class=cl>dbt run -s my_model+         <span class=c1># Model and all downstream</span>
 </span></span><span class=line><span class=cl>dbt run -s +my_model         <span class=c1># Model and all upstream</span>
 </span></span><span class=line><span class=cl>dbt run -s +my_model+        <span class=c1># Model, upstream, and downstream</span>

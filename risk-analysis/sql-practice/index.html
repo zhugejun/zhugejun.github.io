@@ -1,0 +1,288 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>SQL Practice — Credit Risk Analytics (PostgreSQL)</title><style>@import 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap';*{margin:0;padding:0;box-sizing:border-box}body{font-family:dm sans,sans-serif;background:#0a1628;color:#e2e8f0;min-height:100vh;line-height:1.6}.header{text-align:center;padding:48px 20px 12px}.header h1{font-size:32px;font-weight:700;background:linear-gradient(135deg,#60a5fa,#38bdf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}.header p{color:#64748b;font-size:14px}.container{max-width:900px;margin:0 auto;padding:20px}.schema-section{margin:32px 0;background:linear-gradient(135deg,#0f172a,#1a2332);border:1px solid #1e3a5f;border-radius:16px;overflow:hidden}.schema-header{padding:16px 24px;background:#1e293b;border-bottom:1px solid #334155;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}.schema-header h2{font-size:16px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;gap:10px}.schema-toggle{font-size:12px;color:#64748b;padding:4px 12px;border:1px solid #334155;border-radius:6px;transition:all .2s}.schema-header:hover .schema-toggle{border-color:#60a5fa;color:#60a5fa}.schema-body{padding:20px 24px;display:none}.schema-body.open{display:block}.schema-table{margin-bottom:16px}.schema-table .table-name{font-family:jetbrains mono,monospace;font-size:14px;font-weight:600;color:#60a5fa;margin-bottom:4px}.schema-table .table-cols{font-family:jetbrains mono,monospace;font-size:12px;color:#94a3b8;padding-left:20px;line-height:1.8}.schema-table .pk{color:#fbbf24}.schema-table .fk{color:#a78bfa}.question-card{margin:24px 0;background:#0f172a;border:1px solid #1e293b;border-radius:16px;overflow:hidden;transition:border-color .3s}.question-card:hover{border-color:#334155}.q-header{padding:20px 24px;display:flex;align-items:flex-start;gap:14px}.q-number{font-family:jetbrains mono,monospace;font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px;white-space:nowrap;flex-shrink:0}.difficulty-easy{background:#22c55e22;color:#86efac;border:1px solid #22c55e44}.difficulty-medium{background:#f59e0b22;color:#fcd34d;border:1px solid #f59e0b44}.difficulty-hard{background:#ef444422;color:#fca5a5;border:1px solid #ef444444}.q-content{flex:1}.q-title{font-size:16px;font-weight:700;color:#e2e8f0;margin-bottom:6px}.q-prompt{font-size:13px;color:#94a3b8;line-height:1.6}.q-tags{display:flex;gap:6px;flex-wrap:wrap;padding:0 24px 16px}.q-tag{font-family:jetbrains mono,monospace;font-size:10px;padding:2px 8px;border-radius:4px;background:#1e293b;color:#64748b;border:1px solid #334155}.answer-toggle{display:block;width:calc(100% - 48px);margin:0 24px 20px;padding:10px;background:linear-gradient(135deg,#1e293b,#263548);border:1px solid #334155;border-radius:10px;color:#60a5fa;font-family:dm sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}.answer-toggle:hover{background:linear-gradient(135deg,#263548,#2d4a5e);border-color:#60a5fa}.answer-toggle.active{background:linear-gradient(135deg,#1e3a5f,#1a2d4a);border-color:#3b82f6;color:#93c5fd}.answer-block{display:none;margin:0 24px 20px;background:#0a0f1a;border:1px solid #1e293b;border-radius:12px;overflow:hidden}.answer-block.open{display:block}.code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#111827;border-bottom:1px solid #1e293b;font-family:jetbrains mono,monospace;font-size:11px;color:#9ca3af}.copy-btn{background:#1e293b;color:#60a5fa;border:1px solid #334155;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:10px;font-weight:600;transition:all .2s}.copy-btn:hover{background:#334155;border-color:#60a5fa}.copy-btn.copied{background:#22c55e;border-color:#22c55e;color:#fff}.code-body{padding:16px;overflow-x:auto}.code-body pre{font-family:jetbrains mono,monospace;font-size:13px;line-height:1.7;color:#cbd5e1;white-space:pre}.kw{color:#c792ea;font-weight:600}.fn{color:#82aaff}.str{color:#c3e88d}.num{color:#f78c6c}.cmt{color:#546e7a;font-style:italic}.explanation{padding:14px 16px;background:#111827;border-top:1px solid #1e293b;font-size:12px;color:#94a3b8;line-height:1.7}.explanation strong{color:#60a5fa;font-weight:600}.footer{text-align:center;padding:40px 20px;font-size:12px;color:#475569}@media(max-width:768px){.q-header{flex-direction:column;gap:10px}.q-number{align-self:flex-start}}</style></head><body><div class=header><h1>SQL Practice — Credit Risk Analytics</h1><p>PostgreSQL Edition · Updated February 2026</p></div><div class=container><div class=schema-section><div class=schema-header onclick=toggleSchema()><h2>📊 Database Schema</h2><span class=schema-toggle id=schemaToggleLabel>Show Tables</span></div><div class=schema-body id=schemaBody><div class=schema-table><div class=table-name>APPLICATIONS</div><div class=table-cols><span class=pk>app_id</span> (PK), app_date,
+<span class=fk>customer_id</span> (FK),
+<span class=fk>dealer_id</span> (FK),<br>loan_amount, term_months, interest_rate, fico_score, decision</div></div><div class=schema-table><div class=table-name>ACCOUNTS</div><div class=table-cols><span class=pk>account_id</span> (PK),
+<span class=fk>app_id</span> (FK), disbursement_date,
+outstanding_balance</div></div><div class=schema-table><div class=table-name>PAYMENTS</div><div class=table-cols><span class=pk>payment_id</span> (PK),
+<span class=fk>account_id</span> (FK), payment_date,
+payment_amount, days_past_due</div></div><div class=schema-table><div class=table-name>CUSTOMERS</div><div class=table-cols><span class=pk>customer_id</span> (PK), first_name, last_name,
+state, zip_code, dob</div></div><div class=schema-table><div class=table-name>DEALERS</div><div class=table-cols><span class=pk>dealer_id</span> (PK), dealer_name, region, city,
+state</div></div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-easy">Q1 · Easy</span><div class=q-content><div class=q-title>Applications by Decision Status</div><div class=q-prompt>Count the number of applications by decision status (Approved,
+Denied, Pending). Include the percentage of total applications for
+each status.</div></div></div><div class=q-tags><span class=q-tag>GROUP BY</span>
+<span class=q-tag>Aggregation</span>
+<span class=q-tag>ROUND</span>
+<span class=q-tag>Subquery</span></div><button class=answer-toggle onclick=toggleAnswer(1)>
+Show Answer</button><div class=answer-block id=answer-1><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(1)>Copy</button></div><div class=code-body><pre id=code-1><span class=kw>SELECT</span>
+    decision,
+    <span class=fn>COUNT</span>(*) <span class=kw>AS</span> app_count,
+    <span class=fn>ROUND</span>(
+        <span class=num>100.0</span> * <span class=fn>COUNT</span>(*)::NUMERIC / (<span class=kw>SELECT</span> <span class=fn>COUNT</span>(*) <span class=kw>FROM</span> APPLICATIONS), 
+        <span class=num>2</span>
+    ) <span class=kw>AS</span> pct_of_total
+<span class=kw>FROM</span> APPLICATIONS
+<span class=kw>GROUP BY</span> decision
+<span class=kw>ORDER BY</span> app_count <span class=kw>DESC</span>;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Used ::NUMERIC to explicitly cast
+COUNT(*) to numeric type for proper decimal division in ROUND(). In
+PostgreSQL, you must cast at least one operand to NUMERIC or DECIMAL
+to get decimal results.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-easy">Q2 · Easy</span><div class=q-content><div class=q-title>Top 5 Dealers by Approved Volume</div><div class=q-prompt>Find the top 5 dealers by total approved loan amount. Include
+dealer name and region.</div></div></div><div class=q-tags><span class=q-tag>JOIN</span>
+<span class=q-tag>WHERE Filter</span>
+<span class=q-tag>LIMIT</span>
+<span class=q-tag>ORDER BY</span></div><button class=answer-toggle onclick=toggleAnswer(2)>
+Show Answer</button><div class=answer-block id=answer-2><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(2)>Copy</button></div><div class=code-body><pre id=code-2><span class=kw>SELECT</span>
+    d.dealer_name,
+    d.region,
+    <span class=fn>SUM</span>(a.loan_amount) <span class=kw>AS</span> total_approved_amount
+<span class=kw>FROM</span> APPLICATIONS a
+<span class=kw>JOIN</span> DEALERS d <span class=kw>ON</span> a.dealer_id = d.dealer_id
+<span class=kw>WHERE</span> a.decision = <span class=str>'Approved'</span>
+<span class=kw>GROUP BY</span> d.dealer_name, d.region
+<span class=kw>ORDER BY</span> total_approved_amount <span class=kw>DESC</span>
+<span class=kw>LIMIT</span> <span class=num>5</span>;</pre></div><div class=explanation><strong>Concepts:</strong> JOIN between APPLICATIONS and DEALERS.
+Filtering by decision status. TOP N pattern using LIMIT (PostgreSQL
+standard).</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-easy">Q3 · Easy</span><div class=q-content><div class=q-title>Average FICO by Loan Amount Bucket</div><div class=q-prompt>Group approved applications into loan amount buckets: 0-10k,
+10k-20k, 20k-30k, 30k+. Calculate the average FICO score for each
+bucket.</div></div></div><div class=q-tags><span class=q-tag>CASE WHEN</span>
+<span class=q-tag>Bucketing</span>
+<span class=q-tag>AVG</span></div><button class=answer-toggle onclick=toggleAnswer(3)>
+Show Answer</button><div class=answer-block id=answer-3><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(3)>Copy</button></div><div class=code-body><pre id=code-3><span class=kw>SELECT</span>
+    <span class=kw>CASE</span>
+        <span class=kw>WHEN</span> loan_amount < <span class=num>10000</span> <span class=kw>THEN</span> <span class=str>'0-10k'</span>
+        <span class=kw>WHEN</span> loan_amount < <span class=num>20000</span> <span class=kw>THEN</span> <span class=str>'10k-20k'</span>
+        <span class=kw>WHEN</span> loan_amount < <span class=num>30000</span> <span class=kw>THEN</span> <span class=str>'20k-30k'</span>
+        <span class=kw>ELSE</span> <span class=str>'30k+'</span>
+    <span class=kw>END</span> <span class=kw>AS</span> loan_bucket,
+    <span class=fn>ROUND</span>(<span class=fn>AVG</span>(fico_score)::NUMERIC, <span class=num>1</span>) <span class=kw>AS</span> avg_fico,
+    <span class=fn>COUNT</span>(*) <span class=kw>AS</span> app_count
+<span class=kw>FROM</span> APPLICATIONS
+<span class=kw>WHERE</span> decision = <span class=str>'Approved'</span>
+<span class=kw>GROUP BY</span> loan_bucket
+<span class=kw>ORDER BY</span> 
+    <span class=kw>CASE</span> loan_bucket
+        <span class=kw>WHEN</span> <span class=str>'0-10k'</span> <span class=kw>THEN</span> <span class=num>1</span>
+        <span class=kw>WHEN</span> <span class=str>'10k-20k'</span> <span class=kw>THEN</span> <span class=num>2</span>
+        <span class=kw>WHEN</span> <span class=str>'20k-30k'</span> <span class=kw>THEN</span> <span class=num>3</span>
+        <span class=kw>ELSE</span> <span class=num>4</span>
+    <span class=kw>END</span>;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Used ::NUMERIC cast on
+AVG(fico_score) before ROUND(). This ensures proper decimal
+handling. The ORDER BY uses CASE to maintain logical bucket order.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-medium">Q4 · Medium</span><div class=q-content><div class=q-title>Delinquency Rate by Region</div><div class=q-prompt>Calculate the 30+ DPD delinquency rate by dealer region. Use the
+most recent payment record for each account. Show region, total
+accounts, delinquent accounts (30+ DPD), and delinquency rate as a
+percentage.</div></div></div><div class=q-tags><span class=q-tag>Window Function</span>
+<span class=q-tag>ROW_NUMBER</span>
+<span class=q-tag>Multi-table JOIN</span>
+<span class=q-tag>Conditional COUNT</span></div><button class=answer-toggle onclick=toggleAnswer(4)>
+Show Answer</button><div class=answer-block id=answer-4><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(4)>Copy</button></div><div class=code-body><pre id=code-4><span class=kw>WITH</span> latest_payment <span class=kw>AS</span> (
+    <span class=kw>SELECT</span>
+        account_id,
+        days_past_due,
+        <span class=fn>ROW_NUMBER</span>() <span class=kw>OVER</span> (
+            <span class=kw>PARTITION BY</span> account_id <span class=kw>ORDER BY</span> payment_date <span class=kw>DESC</span>
+        ) <span class=kw>AS</span> rn
+    <span class=kw>FROM</span> PAYMENTS
+)
+<span class=kw>SELECT</span>
+    d.region,
+    <span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> ac.account_id) <span class=kw>AS</span> total_accounts,
+    <span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> <span class=kw>CASE WHEN</span> lp.days_past_due >= <span class=num>30</span> 
+          <span class=kw>THEN</span> ac.account_id <span class=kw>END</span>) <span class=kw>AS</span> delinquent_accounts,
+    <span class=fn>ROUND</span>(
+        <span class=num>100.0</span> * <span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> <span class=kw>CASE WHEN</span> lp.days_past_due >= <span class=num>30</span> 
+              <span class=kw>THEN</span> ac.account_id <span class=kw>END</span>)::NUMERIC
+        / <span class=fn>NULLIF</span>(<span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> ac.account_id), <span class=num>0</span>), 
+        <span class=num>2</span>
+    ) <span class=kw>AS</span> delinquency_rate
+<span class=kw>FROM</span> ACCOUNTS ac
+<span class=kw>JOIN</span> APPLICATIONS app <span class=kw>ON</span> ac.app_id = app.app_id
+<span class=kw>JOIN</span> DEALERS d <span class=kw>ON</span> app.dealer_id = d.dealer_id
+<span class=kw>JOIN</span> latest_payment lp <span class=kw>ON</span> ac.account_id = lp.account_id <span class=kw>AND</span> lp.rn = <span class=num>1</span>
+<span class=kw>GROUP BY</span> d.region
+<span class=kw>ORDER BY</span> delinquency_rate <span class=kw>DESC</span>;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Used ::NUMERIC cast in the
+division and NULLIF() to handle potential division by zero.
+ROW_NUMBER() window function identifies the most recent payment per
+account.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-medium">Q5 · Medium</span><div class=q-content><div class=q-title>Customers with Multiple Applications</div><div class=q-prompt>Find customers who have submitted more than one application. Show
+customer name, number of applications, and the decision breakdown
+(Approved/Denied/Pending counts).</div></div></div><div class=q-tags><span class=q-tag>HAVING</span>
+<span class=q-tag>Conditional Aggregation</span>
+<span class=q-tag>JOIN</span></div><button class=answer-toggle onclick=toggleAnswer(5)>
+Show Answer</button><div class=answer-block id=answer-5><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(5)>Copy</button></div><div class=code-body><pre id=code-5><span class=kw>SELECT</span>
+    c.customer_id,
+    c.first_name || <span class=str>' '</span> || c.last_name <span class=kw>AS</span> customer_name,
+    <span class=fn>COUNT</span>(*) <span class=kw>AS</span> total_applications,
+    <span class=fn>COUNT</span>(<span class=kw>CASE WHEN</span> a.decision = <span class=str>'Approved'</span> <span class=kw>THEN</span> <span class=num>1</span> <span class=kw>END</span>) <span class=kw>AS</span> approved,
+    <span class=fn>COUNT</span>(<span class=kw>CASE WHEN</span> a.decision = <span class=str>'Denied'</span> <span class=kw>THEN</span> <span class=num>1</span> <span class=kw>END</span>) <span class=kw>AS</span> denied,
+    <span class=fn>COUNT</span>(<span class=kw>CASE WHEN</span> a.decision = <span class=str>'Pending'</span> <span class=kw>THEN</span> <span class=num>1</span> <span class=kw>END</span>) <span class=kw>AS</span> pending
+<span class=kw>FROM</span> CUSTOMERS c
+<span class=kw>JOIN</span> APPLICATIONS a <span class=kw>ON</span> c.customer_id = a.customer_id
+<span class=kw>GROUP BY</span> c.customer_id, c.first_name, c.last_name
+<span class=kw>HAVING</span> <span class=fn>COUNT</span>(*) > <span class=num>1</span>
+<span class=kw>ORDER BY</span> total_applications <span class=kw>DESC</span>;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> String concatenation uses ||
+operator. Conditional aggregation using COUNT(CASE WHEN...) pattern
+is standard across SQL databases.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-medium">Q6 · Medium</span><div class=q-content><div class=q-title>Payment Collection Rate (Last 30 Days)</div><div class=q-prompt>Calculate the collection rate over the past 30 days: (total
+payments received / total outstanding balance at the start of
+period) × 100. Assume outstanding balance is from the ACCOUNTS
+table.</div></div></div><div class=q-tags><span class=q-tag>Date Filtering</span>
+<span class=q-tag>Subquery</span>
+<span class=q-tag>Aggregation</span></div><button class=answer-toggle onclick=toggleAnswer(6)>
+Show Answer</button><div class=answer-block id=answer-6><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(6)>Copy</button></div><div class=code-body><pre id=code-6><span class=kw>SELECT</span>
+    <span class=fn>SUM</span>(payment_amount) <span class=kw>AS</span> total_payments_received,
+    (<span class=kw>SELECT</span> <span class=fn>SUM</span>(outstanding_balance) <span class=kw>FROM</span> ACCOUNTS) <span class=kw>AS</span> total_outstanding,
+    <span class=fn>ROUND</span>(
+        <span class=num>100.0</span> * <span class=fn>SUM</span>(payment_amount)::NUMERIC 
+        / <span class=fn>NULLIF</span>((<span class=kw>SELECT</span> <span class=fn>SUM</span>(outstanding_balance) <span class=kw>FROM</span> ACCOUNTS), <span class=num>0</span>), 
+        <span class=num>2</span>
+    ) <span class=kw>AS</span> collection_rate_pct
+<span class=kw>FROM</span> PAYMENTS
+<span class=kw>WHERE</span> payment_date >= <span class=fn>CURRENT_DATE</span> - <span class=kw>INTERVAL</span> <span class=str>'30 days'</span>;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Date arithmetic uses INTERVAL '30
+days' syntax. CURRENT_DATE is a PostgreSQL function that returns the
+current date. Cast payment sum to NUMERIC and use NULLIF for safe
+division.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-medium">Q7 · Medium</span><div class=q-content><div class=q-title>Approval Rate by FICO Score Range</div><div class=q-prompt>Calculate the approval rate for applications grouped by FICO score
+ranges: <600, 600-650, 651-700, 701-750, 751+. Show the count of
+applications, count of approvals, and approval rate percentage for
+each range.</div></div></div><div class=q-tags><span class=q-tag>CASE WHEN</span>
+<span class=q-tag>Bucketing</span>
+<span class=q-tag>Conditional Aggregation</span></div><button class=answer-toggle onclick=toggleAnswer(7)>
+Show Answer</button><div class=answer-block id=answer-7><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(7)>Copy</button></div><div class=code-body><pre id=code-7><span class=kw>SELECT</span>
+    <span class=kw>CASE</span>
+        <span class=kw>WHEN</span> fico_score < <span class=num>600</span> <span class=kw>THEN</span> <span class=str>'<600'</span>
+        <span class=kw>WHEN</span> fico_score <= <span class=num>650</span> <span class=kw>THEN</span> <span class=str>'600-650'</span>
+        <span class=kw>WHEN</span> fico_score <= <span class=num>700</span> <span class=kw>THEN</span> <span class=str>'651-700'</span>
+        <span class=kw>WHEN</span> fico_score <= <span class=num>750</span> <span class=kw>THEN</span> <span class=str>'701-750'</span>
+        <span class=kw>ELSE</span> <span class=str>'751+'</span>
+    <span class=kw>END</span> <span class=kw>AS</span> fico_range,
+    <span class=fn>COUNT</span>(*) <span class=kw>AS</span> total_apps,
+    <span class=fn>COUNT</span>(<span class=kw>CASE WHEN</span> decision = <span class=str>'Approved'</span> <span class=kw>THEN</span> <span class=num>1</span> <span class=kw>END</span>) <span class=kw>AS</span> approved_count,
+    <span class=fn>ROUND</span>(
+        <span class=num>100.0</span> * <span class=fn>COUNT</span>(<span class=kw>CASE WHEN</span> decision = <span class=str>'Approved'</span> <span class=kw>THEN</span> <span class=num>1</span> <span class=kw>END</span>)::NUMERIC
+        / <span class=fn>NULLIF</span>(<span class=fn>COUNT</span>(*), <span class=num>0</span>), 
+        <span class=num>2</span>
+    ) <span class=kw>AS</span> approval_rate
+<span class=kw>FROM</span> APPLICATIONS
+<span class=kw>GROUP BY</span> fico_range
+<span class=kw>ORDER BY</span>
+    <span class=kw>CASE</span>
+        <span class=kw>WHEN</span> fico_range = <span class=str>'<600'</span> <span class=kw>THEN</span> <span class=num>1</span>
+        <span class=kw>WHEN</span> fico_range = <span class=str>'600-650'</span> <span class=kw>THEN</span> <span class=num>2</span>
+        <span class=kw>WHEN</span> fico_range = <span class=str>'651-700'</span> <span class=kw>THEN</span> <span class=num>3</span>
+        <span class=kw>WHEN</span> fico_range = <span class=str>'701-750'</span> <span class=kw>THEN</span> <span class=num>4</span>
+        <span class=kw>ELSE</span> <span class=num>5</span>
+    <span class=kw>END</span>;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Used ::NUMERIC cast on the
+conditional count before division. NULLIF prevents division by zero
+errors.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-hard">Q8 · Hard</span><div class=q-content><div class=q-title>Top 3 Worst Dealers per Region (by Delinquency)</div><div class=q-prompt>For each dealer, calculate the 30+ DPD delinquency rate (using
+most recent payment per account). Then rank dealers within each
+region by their delinquency rate (highest = rank 1). Show the top
+3 worst dealers per region.</div></div></div><div class=q-tags><span class=q-tag>Multiple CTEs</span>
+<span class=q-tag>ROW_NUMBER</span>
+<span class=q-tag>RANK</span>
+<span class=q-tag>Multi-table JOIN</span></div><button class=answer-toggle onclick=toggleAnswer(8)>
+Show Answer</button><div class=answer-block id=answer-8><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(8)>Copy</button></div><div class=code-body><pre id=code-8><span class=kw>WITH</span> latest_payment <span class=kw>AS</span> (
+    <span class=kw>SELECT</span>
+        account_id, days_past_due,
+        <span class=fn>ROW_NUMBER</span>() <span class=kw>OVER</span> (
+            <span class=kw>PARTITION BY</span> account_id <span class=kw>ORDER BY</span> payment_date <span class=kw>DESC</span>
+        ) <span class=kw>AS</span> rn
+    <span class=kw>FROM</span> PAYMENTS
+),
+dealer_delinquency <span class=kw>AS</span> (
+    <span class=kw>SELECT</span>
+        d.region,
+        d.dealer_name,
+        <span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> ac.account_id) <span class=kw>AS</span> total_accounts,
+        <span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> <span class=kw>CASE WHEN</span> lp.days_past_due >= <span class=num>30</span>
+              <span class=kw>THEN</span> ac.account_id <span class=kw>END</span>) <span class=kw>AS</span> delinquent,
+        <span class=fn>ROUND</span>(
+            <span class=num>100.0</span> * <span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> <span class=kw>CASE WHEN</span> lp.days_past_due >= <span class=num>30</span>
+                  <span class=kw>THEN</span> ac.account_id <span class=kw>END</span>)::NUMERIC
+            / <span class=fn>NULLIF</span>(<span class=fn>COUNT</span>(<span class=kw>DISTINCT</span> ac.account_id), <span class=num>0</span>), <span class=num>2</span>
+        ) <span class=kw>AS</span> delinquency_rate
+    <span class=kw>FROM</span> ACCOUNTS ac
+    <span class=kw>JOIN</span> APPLICATIONS app <span class=kw>ON</span> ac.app_id = app.app_id
+    <span class=kw>JOIN</span> DEALERS d <span class=kw>ON</span> app.dealer_id = d.dealer_id
+    <span class=kw>JOIN</span> latest_payment lp <span class=kw>ON</span> ac.account_id = lp.account_id <span class=kw>AND</span> lp.rn = <span class=num>1</span>
+    <span class=kw>GROUP BY</span> d.region, d.dealer_name
+),
+ranked <span class=kw>AS</span> (
+    <span class=kw>SELECT</span>
+        *,
+        <span class=fn>RANK</span>() <span class=kw>OVER</span> (
+            <span class=kw>PARTITION BY</span> region <span class=kw>ORDER BY</span> delinquency_rate <span class=kw>DESC</span>
+        ) <span class=kw>AS</span> rank_in_region
+    <span class=kw>FROM</span> dealer_delinquency
+)
+<span class=kw>SELECT</span> * <span class=kw>FROM</span> ranked
+<span class=kw>WHERE</span> rank_in_region <= <span class=num>3</span>
+<span class=kw>ORDER BY</span> region, rank_in_region;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Used ::NUMERIC cast on the
+conditional count and NULLIF for safe division. Multiple CTEs chain
+together to build the analysis step by step.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-hard">Q9 · Hard</span><div class=q-content><div class=q-title>Roll Rate — Delinquency Bucket Transitions</div><div class=q-prompt>Build a roll rate matrix showing how accounts moved between
+delinquency buckets from December 2025 to January 2026. Buckets:
+Current (0 DPD), 1-29 DPD, 30-59 DPD, 60-89 DPD, 90+ DPD. Show the
+count of accounts for each transition (e.g., 30-59 → 60-89).</div></div></div><div class=q-tags><span class=q-tag>Self-Join Pattern</span>
+<span class=q-tag>CASE WHEN Bucketing</span>
+<span class=q-tag>Transition Matrix</span>
+<span class=q-tag>Real Credit Risk Task</span></div><button class=answer-toggle onclick=toggleAnswer(9)>
+Show Answer</button><div class=answer-block id=answer-9><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(9)>Copy</button></div><div class=code-body><pre id=code-9><span class=kw>WITH</span> monthly_status <span class=kw>AS</span> (
+    <span class=kw>SELECT</span>
+        account_id,
+        <span class=fn>TO_CHAR</span>(payment_date, <span class=str>'YYYY-MM'</span>) <span class=kw>AS</span> pay_month,
+        <span class=fn>MAX</span>(days_past_due) <span class=kw>AS</span> max_dpd
+    <span class=kw>FROM</span> PAYMENTS
+    <span class=kw>WHERE</span> payment_date >= <span class=str>'2025-12-01'</span>
+      <span class=kw>AND</span> payment_date < <span class=str>'2026-02-01'</span>
+    <span class=kw>GROUP BY</span> account_id, <span class=fn>TO_CHAR</span>(payment_date, <span class=str>'YYYY-MM'</span>)
+),
+bucketed <span class=kw>AS</span> (
+    <span class=kw>SELECT</span>
+        account_id,
+        pay_month,
+        <span class=kw>CASE</span>
+            <span class=kw>WHEN</span> max_dpd = <span class=num>0</span>  <span class=kw>THEN</span> <span class=str>'Current'</span>
+            <span class=kw>WHEN</span> max_dpd <= <span class=num>29</span> <span class=kw>THEN</span> <span class=str>'1-29 DPD'</span>
+            <span class=kw>WHEN</span> max_dpd <= <span class=num>59</span> <span class=kw>THEN</span> <span class=str>'30-59 DPD'</span>
+            <span class=kw>WHEN</span> max_dpd <= <span class=num>89</span> <span class=kw>THEN</span> <span class=str>'60-89 DPD'</span>
+            <span class=kw>ELSE</span> <span class=str>'90+ DPD'</span>
+        <span class=kw>END</span> <span class=kw>AS</span> dpd_bucket
+    <span class=kw>FROM</span> monthly_status
+)
+<span class=kw>SELECT</span>
+    b1.dpd_bucket <span class=kw>AS</span> dec_2025_bucket,
+    b2.dpd_bucket <span class=kw>AS</span> jan_2026_bucket,
+    <span class=fn>COUNT</span>(*) <span class=kw>AS</span> account_count
+<span class=kw>FROM</span> bucketed b1
+<span class=kw>JOIN</span> bucketed b2
+    <span class=kw>ON</span> b1.account_id = b2.account_id
+    <span class=kw>AND</span> b1.pay_month = <span class=str>'2025-12'</span>
+    <span class=kw>AND</span> b2.pay_month = <span class=str>'2026-01'</span>
+<span class=kw>GROUP BY</span> b1.dpd_bucket, b2.dpd_bucket
+<span class=kw>ORDER BY</span> b1.dpd_bucket, b2.dpd_bucket;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Used TO_CHAR(payment_date,
+'YYYY-MM') instead of strftime() for date formatting. TO_CHAR is
+PostgreSQL's standard date formatting function.</div></div></div><div class=question-card><div class=q-header><span class="q-number difficulty-hard">Q10 · Hard</span><div class=q-content><div class=q-title>Month-over-Month Origination Trend with Lag</div><div class=q-prompt>Calculate monthly origination volume (count of approved
+applications and total loan amount). Add columns for the prior
+month's values and the month-over-month percentage change. Use
+window functions — no self-join.</div></div></div><div class=q-tags><span class=q-tag>LAG</span>
+<span class=q-tag>Window Function</span>
+<span class=q-tag>MoM Change</span>
+<span class=q-tag>Trend Monitoring</span></div><button class=answer-toggle onclick=toggleAnswer(10)>
+Show Answer</button><div class=answer-block id=answer-10><div class=code-header><span>SQL</span><button class=copy-btn onclick=copyCode(10)>Copy</button></div><div class=code-body><pre id=code-10><span class=kw>WITH</span> monthly <span class=kw>AS</span> (
+    <span class=kw>SELECT</span>
+        <span class=fn>TO_CHAR</span>(app_date, <span class=str>'YYYY-MM'</span>) <span class=kw>AS</span> month,
+        <span class=fn>COUNT</span>(*) <span class=kw>AS</span> approved_count,
+        <span class=fn>SUM</span>(loan_amount) <span class=kw>AS</span> total_originated
+    <span class=kw>FROM</span> APPLICATIONS
+    <span class=kw>WHERE</span> decision = <span class=str>'Approved'</span>
+    <span class=kw>GROUP BY</span> <span class=fn>TO_CHAR</span>(app_date, <span class=str>'YYYY-MM'</span>)
+)
+<span class=kw>SELECT</span>
+    month,
+    approved_count,
+    total_originated,
+    <span class=fn>LAG</span>(approved_count, <span class=num>1</span>) <span class=kw>OVER</span> (<span class=kw>ORDER BY</span> month) <span class=kw>AS</span> prev_month_count,
+    <span class=fn>LAG</span>(total_originated, <span class=num>1</span>) <span class=kw>OVER</span> (<span class=kw>ORDER BY</span> month) <span class=kw>AS</span> prev_month_amount,
+    <span class=fn>ROUND</span>(
+        <span class=num>100.0</span> * (approved_count - <span class=fn>LAG</span>(approved_count, <span class=num>1</span>) <span class=kw>OVER</span> (<span class=kw>ORDER BY</span> month))::NUMERIC
+        / <span class=fn>NULLIF</span>(<span class=fn>LAG</span>(approved_count, <span class=num>1</span>) <span class=kw>OVER</span> (<span class=kw>ORDER BY</span> month), <span class=num>0</span>), <span class=num>2</span>
+    ) <span class=kw>AS</span> count_mom_change_pct
+<span class=kw>FROM</span> monthly
+<span class=kw>ORDER BY</span> month;</pre></div><div class=explanation><strong>PostgreSQL Note:</strong> Used TO_CHAR for date formatting
+and ::NUMERIC cast on the subtraction result before division. NULLIF
+handles division by zero for the first row where LAG returns NULL.</div></div></div></div><div class=footer>SQL Practice · GM Financial Risk Analyst II · PostgreSQL Edition ·
+February 2026</div><script>function toggleSchema(){const e=document.getElementById("schemaBody"),t=document.getElementById("schemaToggleLabel");e.classList.toggle("open"),t.textContent=e.classList.contains("open")?"Hide Tables":"Show Tables"}function toggleAnswer(e){const t=document.getElementById("answer-"+e),n=t.previousElementSibling;t.classList.toggle("open"),n.classList.toggle("active"),n.textContent=t.classList.contains("open")?"Hide Answer":"Show Answer"}function copyCode(e){const t=document.getElementById("code-"+e).textContent;navigator.clipboard.writeText(t).then(()=>{const t=document.querySelector("#answer-"+e+" .copy-btn");t.textContent="Copied!",t.classList.add("copied"),setTimeout(()=>{t.textContent="Copy",t.classList.remove("copied")},2e3)})}</script></body></html>
