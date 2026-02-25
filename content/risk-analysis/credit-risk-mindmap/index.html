@@ -1,0 +1,1300 @@
+---
+title: 'Credit Risk Analytics — Visual Study Guide'
+date: '2026-02-24'
+layout: 'raw'
+categories:
+  - Risk Analysis
+tags:
+  - credit-risk
+  - study-guide
+  - mindmap
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credit Risk Analytics — Visual Study Guide</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fraunces:wght@400;600;700&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: #f8f7f4;
+        color: #2d3748;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .header {
+        text-align: center;
+        padding: 48px 20px 24px;
+        background: linear-gradient(180deg, #ffffff, #f8f7f4);
+      }
+      .header h1 {
+        font-family: 'Fraunces', serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a2332;
+        margin-bottom: 6px;
+      }
+      .header p {
+        color: #718096;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* ===== SECTION TITLES ===== */
+      .section-title {
+        font-family: 'Fraunces', serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: #1a2332;
+        margin: 44px 0 18px;
+        padding-left: 16px;
+        border-left: 3px solid #3182ce;
+      }
+
+      /* ===== ORIGINATION FLOW ===== */
+      .flow-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 24px;
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin-bottom: 30px;
+      }
+      .flow-step {
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 18px;
+        text-align: center;
+        min-width: 130px;
+        transition: all 0.3s;
+      }
+      .flow-step:hover {
+        transform: translateY(-3px);
+        border-color: #3182ce;
+        box-shadow: 0 8px 24px rgba(49, 130, 206, 0.1);
+      }
+      .flow-step .icon {
+        font-size: 24px;
+        margin-bottom: 4px;
+      }
+      .flow-step .label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2b6cb0;
+      }
+      .flow-step .detail {
+        font-size: 10px;
+        color: #a0aec0;
+        margin-top: 2px;
+      }
+      .flow-arrow {
+        color: #3182ce;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      /* ===== 5 C's ===== */
+      .five-cs {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+      @media (max-width: 768px) {
+        .five-cs {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .c-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px 14px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .c-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+      }
+      .c-card:nth-child(1)::before {
+        background: #e53e6b;
+      }
+      .c-card:nth-child(2)::before {
+        background: #3182ce;
+      }
+      .c-card:nth-child(3)::before {
+        background: #38a169;
+      }
+      .c-card:nth-child(4)::before {
+        background: #d69e2e;
+      }
+      .c-card:nth-child(5)::before {
+        background: #805ad5;
+      }
+      .c-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+      }
+      .c-card .c-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+      .c-card .c-name {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .c-card:nth-child(1) .c-name {
+        color: #e53e6b;
+      }
+      .c-card:nth-child(2) .c-name {
+        color: #3182ce;
+      }
+      .c-card:nth-child(3) .c-name {
+        color: #38a169;
+      }
+      .c-card:nth-child(4) .c-name {
+        color: #d69e2e;
+      }
+      .c-card:nth-child(5) .c-name {
+        color: #805ad5;
+      }
+      .c-card .c-what {
+        font-size: 11px;
+        color: #718096;
+        margin-bottom: 4px;
+      }
+      .c-card .c-auto {
+        font-size: 10px;
+        color: #a0aec0;
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      .c-card .c-example {
+        font-size: 10px;
+        color: #4a5568;
+        background: #f7fafc;
+        border: 1px dashed #cbd5e0;
+        border-radius: 6px;
+        padding: 6px 8px;
+        margin-top: 6px;
+        text-align: left;
+        line-height: 1.5;
+      }
+      .c-card .c-example strong {
+        color: #2b6cb0;
+      }
+
+      /* ===== KEY METRICS ===== */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 14px;
+        margin-bottom: 30px;
+      }
+      .metric-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        transition: all 0.3s;
+      }
+      .metric-card:hover {
+        border-color: #3182ce;
+        box-shadow: 0 4px 16px rgba(49, 130, 206, 0.08);
+      }
+      .metric-card .m-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .metric-card .m-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
+      }
+      .badge-risk {
+        background: #fed7d7;
+        color: #c53030;
+        border: 1px solid #feb2b2;
+      }
+      .badge-volume {
+        background: #bee3f8;
+        color: #2b6cb0;
+        border: 1px solid #90cdf4;
+      }
+      .badge-quality {
+        background: #c6f6d5;
+        color: #276749;
+        border: 1px solid #9ae6b4;
+      }
+      .badge-lease {
+        background: #e9d8fd;
+        color: #6b46c1;
+        border: 1px solid #d6bcfa;
+      }
+      .badge-leading {
+        background: #fefcbf;
+        color: #975a16;
+        border: 1px solid #faf089;
+      }
+      .metric-card .m-name {
+        font-family: 'Fraunces', serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #1a2332;
+      }
+      .metric-card .m-formula {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: #2b6cb0;
+        background: #ebf4ff;
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        display: inline-block;
+      }
+      .metric-card .m-desc {
+        font-size: 12px;
+        color: #718096;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      .metric-card .m-example {
+        background: #f7fafc;
+        border: 1px dashed #cbd5e0;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 11px;
+        color: #4a5568;
+        line-height: 1.6;
+      }
+      .metric-card .m-example strong {
+        color: #2b6cb0;
+      }
+      .metric-card .m-example .ex-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 9px;
+        font-weight: 600;
+        color: #805ad5;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .metric-card .m-example .ex-math {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: #2b6cb0;
+        background: #ebf4ff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin: 4px 0;
+      }
+      .metric-card .m-example .ex-takeaway {
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px solid #e2e8f0;
+        font-weight: 600;
+        color: #2d3748;
+      }
+
+      /* ===== LOAN vs LEASE ===== */
+      .compare-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 30px;
+      }
+      @media (max-width: 600px) {
+        .compare-container {
+          grid-template-columns: 1fr;
+        }
+      }
+      .compare-card {
+        border-radius: 14px;
+        padding: 24px;
+        border: 1px solid;
+      }
+      .compare-card.loan {
+        background: linear-gradient(145deg, #ebf8ff, #f7fafc);
+        border-color: #bee3f8;
+      }
+      .compare-card.lease {
+        background: linear-gradient(145deg, #faf5ff, #f7fafc);
+        border-color: #e9d8fd;
+      }
+      .compare-card h3 {
+        font-family: 'Fraunces', serif;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .compare-card.loan h3 {
+        color: #2b6cb0;
+      }
+      .compare-card.lease h3 {
+        color: #6b46c1;
+      }
+      .compare-card ul {
+        list-style: none;
+      }
+      .compare-card li {
+        font-size: 12px;
+        color: #4a5568;
+        padding: 6px 0;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .compare-card li:last-child {
+        border: none;
+      }
+      .compare-card li span.tag {
+        font-size: 10px;
+        font-weight: 600;
+        padding: 1px 6px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
+      .loan .tag {
+        background: #bee3f8;
+        color: #2b6cb0;
+      }
+      .lease .tag {
+        background: #e9d8fd;
+        color: #6b46c1;
+      }
+      .compare-example {
+        margin-top: 14px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px dashed #cbd5e0;
+        border-radius: 8px;
+        font-size: 11px;
+        color: #4a5568;
+        line-height: 1.6;
+      }
+      .compare-example strong {
+        color: #2b6cb0;
+      }
+      .compare-card.lease .compare-example strong {
+        color: #6b46c1;
+      }
+
+      /* ===== VINTAGE ANALYSIS ===== */
+      .vintage-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      .vintage-box h3 {
+        font-family: 'Fraunces', serif;
+        color: #276749;
+        font-size: 16px;
+        margin-bottom: 12px;
+      }
+      .vintage-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 16px;
+        font-size: 12px;
+      }
+      .vintage-grid .v-label {
+        color: #a0aec0;
+        font-weight: 600;
+      }
+      .vintage-grid .v-value {
+        color: #2d3748;
+      }
+      .vintage-grid .v-highlight {
+        color: #276749;
+        font-weight: 600;
+      }
+
+      .bridge-box {
+        margin-top: 16px;
+        padding: 14px;
+        background: #f0fff4;
+        border: 1px dashed #9ae6b4;
+        border-radius: 10px;
+      }
+      .bridge-box .bridge-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #276749;
+        margin-bottom: 6px;
+      }
+      .bridge-box .bridge-text {
+        font-size: 11px;
+        color: #4a5568;
+        line-height: 1.6;
+      }
+
+      .vintage-example {
+        margin-top: 16px;
+        padding: 14px;
+        background: #f7fafc;
+        border: 1px dashed #cbd5e0;
+        border-radius: 10px;
+      }
+      .vintage-example .ex-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 9px;
+        font-weight: 600;
+        color: #805ad5;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: block;
+        margin-bottom: 6px;
+      }
+      .vintage-example-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        margin: 8px 0;
+      }
+      .vintage-example-table th {
+        background: #edf2f7;
+        color: #2d3748;
+        font-weight: 600;
+        padding: 6px 10px;
+        text-align: left;
+        border-bottom: 2px solid #cbd5e0;
+      }
+      .vintage-example-table td {
+        padding: 5px 10px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #4a5568;
+      }
+      .vintage-example-table .warn {
+        color: #c53030;
+        font-weight: 600;
+      }
+      .vintage-example-table .good {
+        color: #276749;
+        font-weight: 600;
+      }
+      .vintage-example .ex-takeaway {
+        margin-top: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #2d3748;
+        line-height: 1.5;
+      }
+
+      /* ===== POLICY IMPACT ===== */
+      .policy-container {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+      @media (max-width: 700px) {
+        .policy-container {
+          grid-template-columns: 1fr;
+        }
+      }
+      .policy-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 20px;
+      }
+      .policy-box h4 {
+        font-family: 'Fraunces', serif;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .policy-box.tighten h4 {
+        color: #c53030;
+      }
+      .policy-box.loosen h4 {
+        color: #276749;
+      }
+      .policy-box ul {
+        list-style: none;
+      }
+      .policy-box li {
+        font-size: 11px;
+        color: #4a5568;
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .policy-arrow {
+        font-size: 28px;
+        color: #a0aec0;
+        text-align: center;
+      }
+      .policy-example {
+        margin-top: 12px;
+        padding: 10px;
+        background: #f7fafc;
+        border: 1px dashed #cbd5e0;
+        border-radius: 8px;
+        font-size: 10px;
+        color: #4a5568;
+        line-height: 1.6;
+      }
+      .policy-example strong {
+        color: #2b6cb0;
+      }
+
+      /* ===== LEADING vs LAGGING CALLOUT ===== */
+      .signal-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 14px;
+        align-items: stretch;
+        margin-bottom: 30px;
+      }
+      @media (max-width: 700px) {
+        .signal-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .signal-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+      }
+      .signal-card h4 {
+        font-family: 'Fraunces', serif;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .signal-card.leading h4 {
+        color: #d69e2e;
+      }
+      .signal-card.lagging h4 {
+        color: #718096;
+      }
+      .signal-card ul {
+        list-style: none;
+        font-size: 12px;
+        color: #4a5568;
+      }
+      .signal-card li {
+        padding: 3px 0;
+      }
+      .signal-card .signal-why {
+        margin-top: 10px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        line-height: 1.5;
+      }
+      .signal-card.leading .signal-why {
+        background: #fefcbf;
+        color: #975a16;
+      }
+      .signal-card.lagging .signal-why {
+        background: #edf2f7;
+        color: #4a5568;
+      }
+      .signal-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #a0aec0;
+      }
+
+      /* ===== FOOTER ===== */
+      .footer {
+        text-align: center;
+        padding: 40px 20px;
+        color: #a0aec0;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Credit Risk Analytics — Visual Study Guide</h1>
+      <p>GM Financial · Risk Analyst II · Quick Reference with Examples</p>
+    </div>
+
+    <div class="container">
+      <!-- ===== ORIGINATION FLOW ===== -->
+      <div class="section-title">How Auto Lending Works (GM Financial)</div>
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="icon">🏪</div>
+          <div class="label">Customer visits dealer</div>
+          <div class="detail">Picks a GM vehicle</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">📝</div>
+          <div class="label">Application submitted</div>
+          <div class="detail">FICO pulled, income verified</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">⚙️</div>
+          <div class="label">Credit decisioning</div>
+          <div class="detail">5 C's evaluated, tier assigned</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">✅</div>
+          <div class="label">Approve / Decline</div>
+          <div class="detail">Terms set: rate, LTV, term</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">💰</div>
+          <div class="label">GMF purchases contract</div>
+          <div class="detail">Dealer funded, GMF owns it</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">📊</div>
+          <div class="label">Servicing & monitoring</div>
+          <div class="detail">Payments, DPD tracking</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">🔄</div>
+          <div class="label">Payoff / Chargeoff</div>
+          <div class="detail">Collect or recover losses</div>
+        </div>
+      </div>
+
+      <!-- ===== 5 C's ===== -->
+      <div class="section-title">The 5 C's of Credit</div>
+      <div class="five-cs">
+        <div class="c-card">
+          <div class="c-icon">👤</div>
+          <div class="c-name">Character</div>
+          <div class="c-what">Trustworthiness & credit history</div>
+          <div class="c-auto">→ FICO score, bureau data</div>
+          <div class="c-example">
+            <strong>Example:</strong> A borrower with a 750 FICO and no prior
+            delinquencies shows strong character. A 580 FICO with two prior
+            collections raises flags.
+          </div>
+        </div>
+        <div class="c-card">
+          <div class="c-icon">💪</div>
+          <div class="c-name">Capacity</div>
+          <div class="c-what">Ability to repay</div>
+          <div class="c-auto">→ PTI ratio, income verification</div>
+          <div class="c-example">
+            <strong>Example:</strong> Borrower earns $4,000/mo with a $600 car
+            payment → PTI = 15%. Manageable. At $1,000/mo payment → PTI = 25%.
+            Risky.
+          </div>
+        </div>
+        <div class="c-card">
+          <div class="c-icon">🏦</div>
+          <div class="c-name">Capital</div>
+          <div class="c-what">Borrower's own investment</div>
+          <div class="c-auto">→ Down payment, lowers LTV</div>
+          <div class="c-example">
+            <strong>Example:</strong> $5K down on a $30K truck → 83% LTV. $0
+            down → 100% LTV. More capital = more skin in the game.
+          </div>
+        </div>
+        <div class="c-card">
+          <div class="c-icon">🚗</div>
+          <div class="c-name">Collateral</div>
+          <div class="c-what">Security for the loan</div>
+          <div class="c-auto">→ The vehicle itself</div>
+          <div class="c-example">
+            <strong>Example:</strong> A new Chevy Silverado holds value well. A
+            7-year-old sedan with 120K miles depreciates fast → weaker
+            collateral.
+          </div>
+        </div>
+        <div class="c-card">
+          <div class="c-icon">📋</div>
+          <div class="c-name">Conditions</div>
+          <div class="c-what">Loan purpose & environment</div>
+          <div class="c-auto">→ Rates, economy, term</div>
+          <div class="c-example">
+            <strong>Example:</strong> An 84-month loan in a rising-rate
+            environment with high unemployment = riskier conditions than a
+            48-month loan in a stable economy.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== LEADING vs LAGGING ===== -->
+      <div class="section-title">
+        Leading vs. Lagging Indicators (Critical Concept)
+      </div>
+      <div class="signal-row">
+        <div class="signal-card leading">
+          <h4>⚡ Leading Indicators</h4>
+          <ul>
+            <li>📊 Delinquency rates (30+ DPD)</li>
+            <li>📈 Roll rates (30→60, 60→90)</li>
+            <li>🔍 Early payment defaults</li>
+          </ul>
+          <div class="signal-why">
+            <strong>Why they matter:</strong> These signal trouble BEFORE losses
+            hit. You can still act — adjust collections, tighten policy,
+            increase reserves. Think of these as the "check engine light."
+          </div>
+        </div>
+        <div class="signal-arrow">→</div>
+        <div class="signal-card lagging">
+          <h4>🕐 Lagging Indicators</h4>
+          <ul>
+            <li>💸 Net charge-off rate</li>
+            <li>📉 Loss severity (realized)</li>
+            <li>📋 Recovery rates</li>
+          </ul>
+          <div class="signal-why">
+            <strong>Why they matter:</strong> These confirm damage already done.
+            Useful for evaluating past underwriting decisions and validating
+            models, but you can't prevent these losses — they're already on the
+            books.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== KEY METRICS ===== -->
+      <div class="section-title">Key Credit Risk Metrics</div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-quality">Quality</span>
+          </div>
+          <div class="m-name">FICO Score</div>
+          <div class="m-formula">Range: 300–850</div>
+          <div class="m-desc">
+            Primary credit quality indicator. GM Financial uses in 90%+ of
+            decisions. Tiers: Super-Prime (750+), Prime (720–749), Near-Prime
+            (660–719), Subprime (&lt;660).
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            GMF originates 10,000 loans in Q1. The weighted-average FICO is
+            <strong>695</strong> (near-prime). If Q2's average drops to
+            <strong>670</strong>, it signals that credit policy may have
+            loosened — underwriting is approving riskier borrowers. You'd flag
+            this and check if approval criteria changed.
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-risk">Risk</span>
+          </div>
+          <div class="m-name">LTV (Loan-to-Value)</div>
+          <div class="m-formula">= Loan Amount ÷ Vehicle Value</div>
+          <div class="m-desc">
+            Higher LTV = more risk. LTV &gt; 100% means negative equity
+            (borrower owes more than vehicle is worth).
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            A borrower finances <strong>$35,000</strong> on a truck worth
+            <strong>$30,000</strong> (rolled in negative equity from their
+            trade-in).
+            <span class="ex-math">LTV = $35,000 ÷ $30,000 = 117%</span>
+            <div class="ex-takeaway">
+              ⚠️ If this borrower defaults in Month 6 and the truck is now worth
+              $25K, GMF loses the full gap: $35K balance − $25K recovery = $10K
+              loss.
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-risk">Risk</span>
+          </div>
+          <div class="m-name">PTI (Payment-to-Income)</div>
+          <div class="m-formula">= Monthly Payment ÷ Gross Monthly Income</div>
+          <div class="m-desc">
+            Measures affordability. Higher PTI = more strain on borrower. Key
+            underwriting metric.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            Borrower earns <strong>$4,500/mo</strong> gross. Monthly car payment
+            is <strong>$650</strong>.
+            <span class="ex-math">PTI = $650 ÷ $4,500 = 14.4%</span>
+            Comfortable. But if insurance rises by $150/mo, effective burden
+            jumps even though PTI on paper stays the same. That's
+            <strong>affordability compression</strong> — a hidden risk.
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-leading">Leading</span>
+          </div>
+          <div class="m-name">Delinquency Rate (DPD)</div>
+          <div class="m-formula">= Count(DPD ≥ 30) ÷ Total Accounts</div>
+          <div class="m-desc">
+            Buckets: 30, 60, 90+ DPD. Early warning signal. Monitor by region,
+            dealer, credit tier, vintage.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            GMF portfolio has <strong>500,000</strong> active loans. In January,
+            <strong>20,000</strong> are 30+ DPD.
+            <span class="ex-math"
+              >Delinquency rate = 20,000 ÷ 500,000 = 4.0%</span
+            >
+            If it was <strong>3.2%</strong> three months ago, the trend is
+            concerning — even though 4% might sound low on its own.
+            <strong>Always watch the trend, not just the level.</strong>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-leading">Leading</span>
+          </div>
+          <div class="m-name">Roll Rate</div>
+          <div class="m-formula">
+            = Accounts moving 30→60 DPD ÷ Accounts at 30 DPD
+          </div>
+          <div class="m-desc">
+            % of accounts worsening from one delinquency bucket to the next.
+            Rising roll rates = deteriorating portfolio.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            In March, <strong>20,000</strong> accounts are 30 DPD. By April,
+            <strong>8,000</strong> of those same accounts are now 60 DPD.
+            <span class="ex-math">30→60 roll rate = 8,000 ÷ 20,000 = 40%</span>
+            If last year's average was <strong>30%</strong>, this means
+            borrowers are self-curing at a lower rate. Expect higher charge-offs
+            in 3–6 months. Time to ramp collections capacity and potentially
+            repo vendor staffing.
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-risk">Lagging</span>
+          </div>
+          <div class="m-name">Net Charge-Off Rate</div>
+          <div class="m-formula">
+            = (Gross Losses − Recoveries) ÷ Avg Receivables
+          </div>
+          <div class="m-desc">
+            Realized losses after recoveries. The bottom line on credit
+            performance. Backward-looking — by the time this rises, the damage
+            is done.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            In Q3, GMF writes off <strong>$200M</strong> in defaulted loans.
+            They recover <strong>$80M</strong> through auctions. Average
+            portfolio balance is <strong>$50B</strong>.
+            <span class="ex-math"
+              >NCO = ($200M − $80M) ÷ $50B = 0.24% (quarterly) → ~0.96%
+              annualized</span
+            >
+            <div class="ex-takeaway">
+              This is the "final score." It tells you how underwriting decisions
+              from 12–24 months ago actually performed. Useful for model
+              validation and benchmarking, but not for early intervention.
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-risk">Lagging</span>
+          </div>
+          <div class="m-name">Loss Severity</div>
+          <div class="m-formula">= Loss Amount ÷ Balance at Default</div>
+          <div class="m-desc">
+            How much is lost per defaulted account. Affected by vehicle
+            depreciation, repossession timing, and auction recovery.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            Borrower defaults with a <strong>$28,000</strong> balance. The
+            vehicle is repossessed and sold at auction for
+            <strong>$18,000</strong>. Repo and auction costs total
+            <strong>$2,000</strong>.
+            <span class="ex-math"
+              >Net recovery = $18,000 − $2,000 = $16,000</span
+            >
+            <span class="ex-math">Loss = $28,000 − $16,000 = $12,000</span>
+            <span class="ex-math"
+              >Loss severity = $12,000 ÷ $28,000 = 42.9%</span
+            >
+            <div class="ex-takeaway">
+              If used car prices drop 15% industry-wide, that auction recovery
+              falls — and severity rises across the whole portfolio, even if
+              borrower behavior doesn't change. That's normalization risk.
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-volume">Volume</span>
+          </div>
+          <div class="m-name">Approval Rate</div>
+          <div class="m-formula">= Approved Apps ÷ Total Apps</div>
+          <div class="m-desc">
+            Indicates credit policy stringency. Dropping approval rate = tighter
+            policy.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            GMF receives <strong>80,000</strong> applications in Q1 and approves
+            <strong>52,000</strong>.
+            <span class="ex-math">Approval rate = 52,000 ÷ 80,000 = 65%</span>
+            If last quarter was <strong>72%</strong>, it means policy tightened.
+            Follow-up question: did the tightening come from raising the FICO
+            floor, lowering max LTV, or reducing max term? Segmentation tells
+            you.
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-volume">Volume</span>
+          </div>
+          <div class="m-name">Penetration Rate</div>
+          <div class="m-formula">= GMF-Financed Sales ÷ Total GM Sales</div>
+          <div class="m-desc">
+            GM Financial's share of GM vehicle sales. Key business KPI that
+            shows the captive lender's importance to the parent company.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            GM sells <strong>600,000</strong> vehicles in a quarter. GMF
+            finances <strong>234,000</strong> of them.
+            <span class="ex-math">Penetration = 234,000 ÷ 600,000 = 39%</span>
+            <div class="ex-takeaway">
+              This is why "just tighten credit" isn't always the right answer.
+              Tighter credit → fewer approvals → lower penetration → weaker
+              dealer relationships → GM sells fewer cars. Risk analysts must
+              quantify the trade-off.
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="m-header">
+            <span class="m-badge badge-lease">Lease</span>
+          </div>
+          <div class="m-name">Residual Value Risk</div>
+          <div class="m-formula">
+            = Projected Value − Actual Value at Lease End
+          </div>
+          <div class="m-desc">
+            Risk that vehicle is worth less than projected at lease return. High
+            uncertainty for EVs due to battery degradation and rapid tech
+            changes.
+          </div>
+          <div class="m-example">
+            <span class="ex-label">Example</span>
+            GMF writes a 36-month lease on a Chevy Equinox EV, projecting it'll
+            be worth <strong>$22,000</strong> at return. But battery technology
+            improves rapidly and a newer model undercuts the used market. Actual
+            value at return: <strong>$16,000</strong>.
+            <span class="ex-math"
+              >Residual loss = $22,000 − $16,000 = $6,000 per vehicle</span
+            >
+            <div class="ex-takeaway">
+              Multiply by thousands of leases and this becomes a massive
+              exposure. That's why EV residual value is one of the biggest
+              emerging risks in auto finance.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== LOAN vs LEASE ===== -->
+      <div class="section-title">Loan vs. Lease — Credit Risk Comparison</div>
+      <div class="compare-container">
+        <div class="compare-card loan">
+          <h3>🔑 Loan (Retail Installment)</h3>
+          <ul>
+            <li>
+              <span class="tag">Ownership</span> Customer buys the vehicle
+              outright
+            </li>
+            <li>
+              <span class="tag">Equity</span> Builds equity over time as balance
+              decreases
+            </li>
+            <li>
+              <span class="tag">Primary Risk</span> Borrower default + negative
+              equity (balance > value)
+            </li>
+            <li>
+              <span class="tag">Loss Driver</span> Vehicle depreciation vs. loan
+              paydown speed
+            </li>
+            <li>
+              <span class="tag">Key Metrics</span> LTV, DPD, charge-off rate,
+              loss severity
+            </li>
+            <li><span class="tag">Term</span> Typically 48–84 months</li>
+          </ul>
+          <div class="compare-example">
+            <strong>Example scenario:</strong> A borrower takes an 84-month loan
+            on a $40K SUV with $0 down (100% LTV). In Month 18, they've paid
+            down to $35K — but the SUV is now worth $28K due to depreciation.
+            They're $7K underwater. If they default now, GMF repossesses and
+            sells at auction for ~$25K (after costs). Loss: ~$10K. The long term
+            and zero down payment created this negative equity trap.
+          </div>
+        </div>
+        <div class="compare-card lease">
+          <h3>🔄 Lease</h3>
+          <ul>
+            <li>
+              <span class="tag">Ownership</span> GM Financial retains ownership
+            </li>
+            <li>
+              <span class="tag">Payments</span> Customer pays for depreciation
+              over term
+            </li>
+            <li>
+              <span class="tag">Primary Risk</span> Default + residual value
+              risk at lease end
+            </li>
+            <li>
+              <span class="tag">Extra Risks</span> Early termination, excess
+              mileage, excess wear
+            </li>
+            <li>
+              <span class="tag">Key Metrics</span> Residual value performance,
+              turn-in rates, DPD
+            </li>
+            <li><span class="tag">Term</span> Typically 24–36 months</li>
+          </ul>
+          <div class="compare-example">
+            <strong>Example scenario:</strong> GMF leases 50,000 Chevy Blazers
+            at a projected residual of $25K each. Three years later, market
+            shifts push actual values to $21K. That's a $4K loss × 50,000
+            vehicles = <strong>$200M</strong> in residual value losses — and the
+            borrower didn't even default. This is pure collateral risk, unique
+            to leasing.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== VINTAGE ANALYSIS ===== -->
+      <div class="section-title">Vintage Analysis</div>
+      <div class="vintage-box">
+        <h3>📈 How It Works</h3>
+        <div class="vintage-grid">
+          <div class="v-label">What:</div>
+          <div class="v-value">
+            Group loans by origination period, track cumulative performance over
+            time
+          </div>
+          <div class="v-label">Why:</div>
+          <div class="v-highlight">
+            Isolates the effect of credit policy changes and economic conditions
+            at origination
+          </div>
+          <div class="v-label">Use case:</div>
+          <div class="v-value">
+            Did tightening the FICO cutoff in Q3 2024 improve that cohort's
+            performance?
+          </div>
+          <div class="v-label">Without it:</div>
+          <div class="v-value">
+            You'd mix old and new originations, masking whether policy changes
+            actually worked
+          </div>
+        </div>
+
+        <div class="vintage-example">
+          <span class="ex-label">Concrete Example — Vintage Comparison</span>
+          <table class="vintage-example-table">
+            <thead>
+              <tr>
+                <th>Vintage (Origination)</th>
+                <th>Cumulative Loss at 12 Mo</th>
+                <th>Cumulative Loss at 24 Mo</th>
+                <th>Avg FICO at Origination</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Q1 2024</td>
+                <td class="good">0.8%</td>
+                <td class="good">2.1%</td>
+                <td>705</td>
+              </tr>
+              <tr>
+                <td>Q3 2024</td>
+                <td class="warn">1.4%</td>
+                <td class="warn">3.6%</td>
+                <td>680</td>
+              </tr>
+              <tr>
+                <td>Q1 2025</td>
+                <td class="good">0.7%</td>
+                <td>— (too early)</td>
+                <td>715</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="ex-takeaway">
+            📌 Q3 2024 underperforms at every seasoning point AND has a lower
+            average FICO → this looks like a credit policy issue (underwriting
+            loosened), not macro. Q1 2025 tightened back up (higher FICO) and
+            early results are improving. Vintage analysis made this visible.
+          </div>
+        </div>
+
+        <div class="bridge-box">
+          <div class="bridge-title">
+            🎓 Your Bridge: Cohort Analysis = Vintage Analysis
+          </div>
+          <div class="bridge-text">
+            In education, you track each incoming class (cohort) over time:
+            retention at Year 1, graduation at Year 4.<br />
+            In lending, you track each origination period (vintage) over time:
+            delinquency at Month 12, losses at Month 24.<br />
+            <strong>Same framework:</strong> Define group by entry date →
+            measure outcomes at consistent intervals → compare groups to isolate
+            what changed.
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== POLICY IMPACT ===== -->
+      <div class="section-title">Credit Policy Trade-Off</div>
+      <div class="policy-container">
+        <div class="policy-box tighten">
+          <h4>🔒 Tighten Policy (e.g., raise min FICO)</h4>
+          <ul>
+            <li>📉 Volume: fewer applicants qualify, lower originations</li>
+            <li>📈 Quality: higher avg FICO, lower delinquencies over time</li>
+            <li>💰 Revenue: less volume = less interest income</li>
+            <li>
+              🤝 Dealers: may weaken relationships, hurt GM sales penetration
+            </li>
+            <li>📊 Vintages: newer cohorts should perform better</li>
+          </ul>
+          <div class="policy-example">
+            <strong>Example:</strong> GMF raises the minimum FICO from 620 to
+            660. This eliminates ~12% of applicants. Delinquency rates on new
+            originations improve by 0.8% within 12 months — but dealer
+            complaints increase and penetration drops from 39% to 35%.
+          </div>
+        </div>
+        <div class="policy-arrow">⇄</div>
+        <div class="policy-box loosen">
+          <h4>🔓 Loosen Policy (e.g., lower min FICO)</h4>
+          <ul>
+            <li>📈 Volume: more applicants qualify, higher originations</li>
+            <li>
+              📉 Quality: lower avg FICO, potentially higher delinquencies
+            </li>
+            <li>
+              💰 Revenue: more volume = more interest income (higher rates too)
+            </li>
+            <li>🤝 Dealers: stronger relationships, higher GM penetration</li>
+            <li>📊 Vintages: newer cohorts may underperform</li>
+          </ul>
+          <div class="policy-example">
+            <strong>Example:</strong> GMF lowers the FICO floor to 580 and
+            raises max LTV to 120%. Volume jumps 18% and dealers are happy — but
+            12 months later, the 30+ DPD rate on that vintage is 6.2% vs. the
+            portfolio average of 3.8%. The yield on those loans needs to cover
+            the extra losses, or it was a bad trade-off.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Your Role: Quantify the Trade-Off</div>
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="icon">📊</div>
+          <div class="label">Mine the data</div>
+          <div class="detail">SQL, SAS, data warehouse</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">🔍</div>
+          <div class="label">Analyze impact</div>
+          <div class="detail">Marginal borrowers, loss rates</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">📈</div>
+          <div class="label">Segment & monitor</div>
+          <div class="detail">Region, dealer, tier, vintage</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">📋</div>
+          <div class="label">Recommend</div>
+          <div class="detail">Clear, concise, actionable</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">👥</div>
+          <div class="label">Present to management</div>
+          <div class="detail">Lead with the "so what"</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Credit Risk Analytics Study Guide · GM Financial Risk Analyst II ·
+      February 2026
+    </div>
+  </body>
+</html>

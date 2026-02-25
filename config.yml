@@ -1,11 +1,11 @@
-baseURL: "https://gejun.name"
-languageCode: "en-us"
+baseURL: 'https://gejun.name'
+languageCode: 'en-us'
 title: "Gejun's Blog"
 
-theme: "PaperMod"
+theme: 'PaperMod'
 
 pagination:
-    pagerSize: 5
+  pagerSize: 5
 
 enableInlineShortcodes: true
 enableRobotsTXT: true
@@ -17,159 +17,157 @@ pygmentsUseClasses: true
 # googleAnalytics: "G-BEP7FKQVEG"
 
 minify:
-    disableXML: true
-    # minifyOutput: true
+  disableXML: true
+  # minifyOutput: true
 
 languages:
-    en:
-        languageName: "English"
-        weight: 1
-        menu:
-            main:
-                - name: Archive
-                  url: archives
-                  weight: 5
-                - name: Search
-                  url: search/
-                  weight: 10
-                - name: Tags
-                  url: tags/
-                  weight: 10
-                - name: Categories
-                  url: categories/
-                  weight: 10
-
+  en:
+    languageName: 'English'
+    weight: 1
+    menu:
+      main:
+        - name: Archive
+          url: archives
+          weight: 5
+        - name: Search
+          url: search/
+          weight: 10
+        - name: Tags
+          url: tags/
+          weight: 10
+        - name: Categories
+          url: categories/
+          weight: 10
 
 outputs:
-    home:
-        - HTML
-        - RSS
-        - JSON
+  home:
+    - HTML
+    - RSS
+    - JSON
 
 params:
-    env: production 
-    description: "Notes on statistics, machine learning, deep learning, and natural language processing. Teaching is the best way of learning."
-    author: "Gejun Zhu"
+  env: production
+  description: 'Notes on statistics, machine learning, deep learning, and natural language processing. Teaching is the best way of learning.'
+  author: 'Gejun Zhu'
 
-    defaultTheme: auto
-    # disableThemeToggle: true
-    ShowShareButtons: true
-    ShowReadingTime: true
-    # disableSpecial1stPost: true
-    displayFullLangName: true
-    ShowPostNavLinks: true
-    ShowBreadCrumbs: true
-    ShowCodeCopyButtons: true
-    ShowToc: true
-    # gtm_id: "G-BEP7FKQVEG"
+  defaultTheme: auto
+  # disableThemeToggle: true
+  ShowShareButtons: true
+  ShowReadingTime: true
+  # disableSpecial1stPost: true
+  displayFullLangName: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowToc: true
+  # gtm_id: "G-BEP7FKQVEG"
 
-    comments: 
-        giscus:
-            repo: "zhugejun/zhugejun.github.io"
-            repo-id: "R_kgDOHhj4uw"
-            category: "Announcements"
-            category-id: "DIC_kwDOHhj4u84CU1X6"
-            mapping: "pathname"
-            strict: "0"
-            reactions_enabled: "1"
-            theme: "preferred_color_scheme"
-            lang: "en"
+  comments:
+    giscus:
+      repo: 'zhugejun/zhugejun.github.io'
+      repo-id: 'R_kgDOHhj4uw'
+      category: 'Announcements'
+      category-id: 'DIC_kwDOHhj4u84CU1X6'
+      mapping: 'pathname'
+      strict: '0'
+      reactions_enabled: '1'
+      theme: 'preferred_color_scheme'
+      lang: 'en'
 
-    images: [""]
+  images: ['']
 
-    profileMode:
-        enabled: false
-        # title: PaperMod
-        imageUrl: "#"
-        imageTitle: my image
-        # imageWidth: 120
-        # imageHeight: 120
-        buttons:
-            - name: Archives
-              url: archives
-            - name: Tags
-              url: tags
+  profileMode:
+    enabled: false
+    # title: PaperMod
+    imageUrl: '#'
+    imageTitle: my image
+    # imageWidth: 120
+    # imageHeight: 120
+    buttons:
+      - name: Archives
+        url: archives
+      - name: Tags
+        url: tags
 
-    homeInfoParams:
-        Title: "👋 Hi, I'm Gejun Zhu"
-        Content: >
-            Welcome to my learning journal. I learn by doing, building projects in analytics engineering,
-            data pipelines, AI, and machine learning to truly understand how things work.
-            Inspired by Feynman's insight, "What I cannot create, I don't understand,"
-            I document what I build, what I break, and what I learn along the way.
-            Currently transitioning from analyst to analytics engineer while exploring the world of LLMs and AI agents.
-            If you believe in learning through hands-on experimentation, you're in the right place.
-    
-    mainSections:
-        - blog
-        - analytics-engineering
-        - data-engineering
-        - machine-learning
-        - mlops
-        - computer-vision
-        - deep-learning
-        - natural-language-processing
-        - llm
-        - python
-        - agent
-        - leetcode
-        - portfolio
+  homeInfoParams:
+    Title: "👋 Hi, I'm Gejun Zhu"
+    Content: >
+      Welcome to my learning journal. I learn by doing, building projects in analytics engineering,
+      data pipelines, AI, and machine learning to truly understand how things work.
+      Inspired by Feynman's insight, "What I cannot create, I don't understand,"
+      I document what I build, what I break, and what I learn along the way.
+      Currently transitioning from analyst to analytics engineer while exploring the world of LLMs and AI agents.
+      If you believe in learning through hands-on experimentation, you're in the right place.
 
+  mainSections:
+    - blog
+    - analytics-engineering
+    - data-engineering
+    - machine-learning
+    - mlops
+    - computer-vision
+    - deep-learning
+    - natural-language-processing
+    - llm
+    - python
+    - agent
+    - leetcode
+    - portfolio
 
-    socialIcons:
-        - name: linkedin
-          url: "https://www.linkedin.com/in/zhugejun/"
-        - name: github
-          url: "https://github.com/zhugejun"
-        - name: KoFi
-          url: "https://ko-fi.com/gejunzhu"
-        - name: RsS
-          url: "index.xml"
+  socialIcons:
+    - name: linkedin
+      url: 'https://www.linkedin.com/in/zhugejun/'
+    - name: github
+      url: 'https://github.com/zhugejun'
+    - name: KoFi
+      url: 'https://ko-fi.com/gejunzhu'
+    - name: RsS
+      url: 'index.xml'
 
-    editPost:
-        URL: "https://github.com/zhugejun/zhugejun.github.io/tree/main/content"
-        Text: "Suggest Changes" 
-        appendFilePath: true 
+  editPost:
+    URL: 'https://github.com/zhugejun/zhugejun.github.io/tree/main/content'
+    Text: 'Suggest Changes'
+    appendFilePath: true
 
-    # label:
-    #     text: "Home"
-    #     icon: icon.png
-    #     iconHeight: 35
+  # label:
+  #     text: "Home"
+  #     icon: icon.png
+  #     iconHeight: 35
 
-    # analytics:
-    #     google:
-    #         SiteVerificationTag: "XYZabc"
+  # analytics:
+  #     google:
+  #         SiteVerificationTag: "XYZabc"
 
-    assets:
-        favicon: "/favicon.svg"
-        favicon16x16: "/favicon.svg"
-        favicon32x32: "/favicon.svg"
-        apple_touch_icon: "/favicon.svg"
-        safari_pinned_tab: "/favicon.svg"
+  assets:
+    favicon: '/favicon.svg'
+    favicon16x16: '/favicon.svg'
+    favicon32x32: '/favicon.svg'
+    apple_touch_icon: '/favicon.svg'
+    safari_pinned_tab: '/favicon.svg'
 
-    # cover:
-    #     hidden: true # hide everywhere but not in structured data
-    #     hiddenInList: true # hide on list pages and home
-    #     hiddenInSingle: true # hide on single page
+  # cover:
+  #     hidden: true # hide everywhere but not in structured data
+  #     hiddenInList: true # hide on list pages and home
+  #     hiddenInSingle: true # hide on single page
 
-    # fuseOpts:
-    #     isCaseSensitive: false
-    #     shouldSort: true
-    #     location: 0
-    #     distance: 1000
-    #     threshold: 0.4
-    #     minMatchCharLength: 0
-    #     keys: ["title", "permalink", "summary", "content"]
+  # fuseOpts:
+  #     isCaseSensitive: false
+  #     shouldSort: true
+  #     location: 0
+  #     distance: 1000
+  #     threshold: 0.4
+  #     minMatchCharLength: 0
+  #     keys: ["title", "permalink", "summary", "content"]
 
 taxonomies:
-    category: categories
-    tag: tags
-    series: series
+  category: categories
+  tag: tags
+  series: series
 
 markup:
-    goldmark:
-        renderer:
-            unsafe: true
+  goldmark:
+    renderer:
+      unsafe: true
 #     highlight:
 #         # anchorLineNos: true
 #         codeFences: true
@@ -179,29 +177,28 @@ markup:
 #         style: monokai
 
 privacy:
-    vimeo:
-        disabled: false
-        simple: true
+  vimeo:
+    disabled: false
+    simple: true
 
-    x:
-        disabled: false
-        enableDNT: true
-        simple: true
+  x:
+    disabled: false
+    enableDNT: true
+    simple: true
 
-    instagram:
-        disabled: false
-        simple: true
+  instagram:
+    disabled: false
+    simple: true
 
-    youtube:
-        disabled: false
-        privacyEnhanced: true
+  youtube:
+    disabled: false
+    privacyEnhanced: true
 
 services:
-    instagram:
-        disableInlineCSS: true
-    x:
-        disableInlineCSS: true
-
+  instagram:
+    disableInlineCSS: true
+  x:
+    disableInlineCSS: true
 
 # quarto
-ignoreFiles: [ "\\.qmd$", "\\.ipynb$", "\\.py$" ]
+ignoreFiles: ["\\.qmd$", "\\.ipynb$", "\\.py$"]
