@@ -512,9 +512,9 @@ tags:
           <div class="code-body">
             <pre id="code-3"><span class="kw">SELECT</span>
     <span class="kw">CASE</span>
-        <span class="kw">WHEN</span> loan_amount < <span class="num">10000</span> <span class="kw">THEN</span> <span class="str">'0-10k'</span>
-        <span class="kw">WHEN</span> loan_amount < <span class="num">20000</span> <span class="kw">THEN</span> <span class="str">'10k-20k'</span>
-        <span class="kw">WHEN</span> loan_amount < <span class="num">30000</span> <span class="kw">THEN</span> <span class="str">'20k-30k'</span>
+        <span class="kw">WHEN</span> loan_amount &lt; <span class="num">10000</span> <span class="kw">THEN</span> <span class="str">'0-10k'</span>
+        <span class="kw">WHEN</span> loan_amount &lt; <span class="num">20000</span> <span class="kw">THEN</span> <span class="str">'10k-20k'</span>
+        <span class="kw">WHEN</span> loan_amount &lt; <span class="num">30000</span> <span class="kw">THEN</span> <span class="str">'20k-30k'</span>
         <span class="kw">ELSE</span> <span class="str">'30k+'</span>
     <span class="kw">END</span> <span class="kw">AS</span> loan_bucket,
     <span class="fn">ROUND</span>(<span class="fn">AVG</span>(fico_score)::NUMERIC, <span class="num">1</span>) <span class="kw">AS</span> avg_fico,
@@ -709,9 +709,9 @@ tags:
             <div class="q-title">Approval Rate by FICO Score Range</div>
             <div class="q-prompt">
               Calculate the approval rate for applications grouped by FICO score
-              ranges: <600, 600-650, 651-700, 701-750, 751+. Show the count of
-              applications, count of approvals, and approval rate percentage for
-              each range.
+              ranges: &lt;600, 600-650, 651-700, 701-750, 751+. Show the count
+              of applications, count of approvals, and approval rate percentage
+              for each range.
             </div>
           </div>
         </div>
@@ -731,10 +731,10 @@ tags:
           <div class="code-body">
             <pre id="code-7"><span class="kw">SELECT</span>
     <span class="kw">CASE</span>
-        <span class="kw">WHEN</span> fico_score < <span class="num">600</span> <span class="kw">THEN</span> <span class="str">'<600'</span>
-        <span class="kw">WHEN</span> fico_score <= <span class="num">650</span> <span class="kw">THEN</span> <span class="str">'600-650'</span>
-        <span class="kw">WHEN</span> fico_score <= <span class="num">700</span> <span class="kw">THEN</span> <span class="str">'651-700'</span>
-        <span class="kw">WHEN</span> fico_score <= <span class="num">750</span> <span class="kw">THEN</span> <span class="str">'701-750'</span>
+        <span class="kw">WHEN</span> fico_score &lt; <span class="num">600</span> <span class="kw">THEN</span> <span class="str">'&lt;600'</span>
+        <span class="kw">WHEN</span> fico_score &lt;= <span class="num">650</span> <span class="kw">THEN</span> <span class="str">'600-650'</span>
+        <span class="kw">WHEN</span> fico_score &lt;= <span class="num">700</span> <span class="kw">THEN</span> <span class="str">'651-700'</span>
+        <span class="kw">WHEN</span> fico_score &lt;= <span class="num">750</span> <span class="kw">THEN</span> <span class="str">'701-750'</span>
         <span class="kw">ELSE</span> <span class="str">'751+'</span>
     <span class="kw">END</span> <span class="kw">AS</span> fico_range,
     <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_apps,
@@ -748,7 +748,7 @@ tags:
 <span class="kw">GROUP BY</span> fico_range
 <span class="kw">ORDER BY</span>
     <span class="kw">CASE</span>
-        <span class="kw">WHEN</span> fico_range = <span class="str">'<600'</span> <span class="kw">THEN</span> <span class="num">1</span>
+        <span class="kw">WHEN</span> fico_range = <span class="str">'&lt;600'</span> <span class="kw">THEN</span> <span class="num">1</span>
         <span class="kw">WHEN</span> fico_range = <span class="str">'600-650'</span> <span class="kw">THEN</span> <span class="num">2</span>
         <span class="kw">WHEN</span> fico_range = <span class="str">'651-700'</span> <span class="kw">THEN</span> <span class="num">3</span>
         <span class="kw">WHEN</span> fico_range = <span class="str">'701-750'</span> <span class="kw">THEN</span> <span class="num">4</span>
@@ -831,7 +831,7 @@ ranked <span class="kw">AS</span> (
     <span class="kw">FROM</span> dealer_delinquency
 )
 <span class="kw">SELECT</span> * <span class="kw">FROM</span> ranked
-<span class="kw">WHERE</span> rank_in_region <= <span class="num">3</span>
+<span class="kw">WHERE</span> rank_in_region &lt;= <span class="num">3</span>
 <span class="kw">ORDER BY</span> region, rank_in_region;</pre>
           </div>
           <div class="explanation">
@@ -882,7 +882,7 @@ ranked <span class="kw">AS</span> (
         <span class="fn">MAX</span>(days_past_due) <span class="kw">AS</span> max_dpd
     <span class="kw">FROM</span> PAYMENTS
     <span class="kw">WHERE</span> payment_date >= <span class="str">'2025-12-01'</span>
-      <span class="kw">AND</span> payment_date < <span class="str">'2026-02-01'</span>
+      <span class="kw">AND</span> payment_date &lt;= <span class="str">'2026-02-01'</span>
     <span class="kw">GROUP BY</span> account_id, <span class="fn">TO_CHAR</span>(payment_date, <span class="str">'YYYY-MM'</span>)
 ),
 bucketed <span class="kw">AS</span> (
@@ -891,9 +891,9 @@ bucketed <span class="kw">AS</span> (
         pay_month,
         <span class="kw">CASE</span>
             <span class="kw">WHEN</span> max_dpd = <span class="num">0</span>  <span class="kw">THEN</span> <span class="str">'Current'</span>
-            <span class="kw">WHEN</span> max_dpd <= <span class="num">29</span> <span class="kw">THEN</span> <span class="str">'1-29 DPD'</span>
-            <span class="kw">WHEN</span> max_dpd <= <span class="num">59</span> <span class="kw">THEN</span> <span class="str">'30-59 DPD'</span>
-            <span class="kw">WHEN</span> max_dpd <= <span class="num">89</span> <span class="kw">THEN</span> <span class="str">'60-89 DPD'</span>
+            <span class="kw">WHEN</span> max_dpd &lt;= <span class="num">29</span> <span class="kw">THEN</span> <span class="str">'1-29 DPD'</span>
+            <span class="kw">WHEN</span> max_dpd &lt;= <span class="num">59</span> <span class="kw">THEN</span> <span class="str">'30-59 DPD'</span>
+            <span class="kw">WHEN</span> max_dpd &lt;= <span class="num">89</span> <span class="kw">THEN</span> <span class="str">'60-89 DPD'</span>
             <span class="kw">ELSE</span> <span class="str">'90+ DPD'</span>
         <span class="kw">END</span> <span class="kw">AS</span> dpd_bucket
     <span class="kw">FROM</span> monthly_status
