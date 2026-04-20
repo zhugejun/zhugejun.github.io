@@ -29,6 +29,9 @@ languages:
         - name: Archive
           url: archives
           weight: 5
+        - name: Projects
+          url: series/
+          weight: 6
         - name: Search
           url: search/
           weight: 10
@@ -92,11 +95,11 @@ params:
   homeInfoParams:
     Title: "👋 Hi, I'm Gejun Zhu"
     Content: >
-      Welcome to my learning journal. I learn by doing, building projects in analytics engineering,
-      data pipelines, AI, and machine learning to truly understand how things work.
+      Welcome to my learning journal. I learn by building — currently working on
+      [StatsCalculators.com](/series/statscalculators/) and [MobileForm.app](/series/mobileform/),
+      and writing about the process as I go.
       Inspired by Feynman's insight, "What I cannot create, I don't understand,"
       I document what I build, what I break, and what I learn along the way.
-      Currently transitioning from analyst to analytics engineer while exploring the world of LLMs and AI agents.
       If you believe in learning through hands-on experimentation, you're in the right place.
 
   mainSections:
