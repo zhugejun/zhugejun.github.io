@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>China Passport Photo — 4×6 Print Sheet</title>
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --line: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c2410c;
+    --accent-soft: #fef3e8;
+    --rule: #d4ccbe;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .mono { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace; }
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-size: 32px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+  .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+  }
+  .spec {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-align: right;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .spec strong { color: var(--ink); font-weight: 600; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 28px;
+  }
+  @media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .canvas-area {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 24px;
+    position: relative;
+  }
+  .canvas-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .canvas-label .live-dim { color: var(--ink); }
+  #previewCanvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #fafafa;
+    border: 1px solid var(--rule);
+    cursor: grab;
+    touch-action: none;
+  }
+  #previewCanvas.dragging { cursor: grabbing; }
+  #previewCanvas.empty { cursor: default; }
+
+  .controls {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-self: start;
+  }
+  .ctrl-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px dashed var(--line);
+    padding: 24px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    background: var(--accent-soft);
+    min-height: 130px;
+  }
+  .upload:hover { background: #fde9d8; border-color: var(--accent); }
+  .upload.has-file {
+    background: #ecf5ec;
+    border-style: solid;
+    border-color: #2d6a2d;
+  }
+  .upload input { display: none; }
+  .upload-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .upload.has-file .upload-icon { color: #2d6a2d; }
+  .upload-text {
+    font-size: 14px;
+    line-height: 1.35;
+    word-break: break-word;
+    max-width: 100%;
+  }
+  .upload.has-file .upload-text { font-weight: 600; }
+  .upload-hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .upload.has-file .upload-hint { color: #2d6a2d; }
+
+  /* Format picker */
+  .format-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .format-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 10px 12px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 1.5px solid var(--rule);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .format-btn:hover:not(.active) { border-color: var(--ink); background: var(--paper); }
+  .format-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--ink);
+  }
+  .format-btn .format-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .format-btn .format-dim {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .format-btn.active .format-dim { color: var(--accent); }
+
+  .slider-group { display: flex; flex-direction: column; gap: 6px; }
+  .slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .slider-row span:last-child { color: var(--muted); }
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--line);
+    outline: none;
+  }
+  input[type="range"]:disabled { opacity: 0.3; cursor: not-allowed; }
+  .slider-group.disabled { opacity: 0.45; }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .check-row input { accent-color: var(--accent); }
+
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--line);
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  button:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+  button:disabled { opacity: 0.35; cursor: not-allowed; }
+  button.secondary { background: transparent; color: var(--ink); }
+  button.secondary:hover:not(:disabled) { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 4px 0;
+  }
+
+  .info {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+  .info strong { display: block; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+
+  details {
+    border-top: 1px solid var(--rule);
+    padding-top: 16px;
+    margin-top: 8px;
+  }
+  details summary {
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    list-style: none;
+  }
+  details summary::after { content: '  +'; }
+  details[open] summary::after { content: '  −'; }
+  details ol { font-size: 13px; padding-left: 18px; margin: 10px 0 0; }
+  details li { margin-bottom: 6px; }
+
+  footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="subtitle">Passport Photo Print Sheet</div>
+    <h1 id="titleText">China · 33 × 48 mm × 4</h1>
+  </div>
+  <div class="spec">
+    <strong>OUTPUT</strong> 1800 × 1200 px @ 300 DPI<br>
+    <strong>PAPER</strong> 4 × 6 in · 152.4 × 101.6 mm<br>
+    <strong>PHOTOS</strong> <span id="specPhotos">4 (2 × 2 grid)</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <div class="canvas-area">
+    <div class="canvas-label">
+      <span id="previewLabel">PREVIEW · 6 × 4 in landscape · 2 × 2 grid</span>
+      <span class="live-dim mono" id="liveDim">— no image —</span>
+    </div>
+    <canvas id="previewCanvas" class="empty"></canvas>
+  </div>
+
+  <aside class="controls">
+    <div>
+      <div class="ctrl-title">1 · Passport Format</div>
+      <div class="format-picker" role="radiogroup" aria-label="Passport format">
+        <button class="format-btn active" data-format="china" type="button">
+          <span class="format-name">China</span>
+          <span class="format-dim">33 × 48 mm</span>
+        </button>
+        <button class="format-btn" data-format="us" type="button">
+          <span class="format-name">United States</span>
+          <span class="format-dim">2 × 2 in</span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-title">2 · Source Photo</div>
+      <label class="upload" id="uploadLabel">
+        <input type="file" id="fileInput" accept="image/*">
+        <svg class="upload-icon" id="uploadIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <div class="upload-text" id="uploadText">Click to upload your photo</div>
+        <div class="upload-hint" id="uploadHint">JPG / PNG · portrait recommended</div>
+      </label>
+    </div>
+
+    <div>
+      <div class="ctrl-title">3 · Adjust Crop</div>
+      <div class="slider-group">
+        <div class="slider-row"><span>Zoom</span><span id="zoomVal">100%</span></div>
+        <input type="range" id="zoom" min="50" max="300" value="100" step="1">
+      </div>
+      <div style="font-size: 11px; color: var(--muted); margin-top: 6px; font-family: 'JetBrains Mono', monospace;">
+        Drag photo on canvas to reposition
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-title">4 · Options</div>
+      <div class="slider-group" style="margin-bottom: 10px;">
+        <div class="slider-row"><span>Gap between photos</span><span id="gapVal">2.0 mm</span></div>
+        <input type="range" id="gap" min="0" max="5" value="2" step="0.5">
+      </div>
+      <label class="check-row">
+        <input type="checkbox" id="cutMarks" checked>
+        <span>Show cut lines</span>
+      </label>
+      <label class="check-row">
+        <input type="checkbox" id="border" checked>
+        <span>Cut-guide border on each photo</span>
+      </label>
+      <label class="check-row">
+        <input type="checkbox" id="faceGuide" checked>
+        <span>Face position guide (preview only)</span>
+      </label>
+      <label class="check-row">
+        <input type="checkbox" id="ruler" checked>
+        <span>Include 33 × 48 mm size-check frame</span>
+      </label>
+    </div>
+
+    <hr class="divider">
+
+    <button id="downloadBtn" disabled>↓ Download 4×6 print file</button>
+    <button class="secondary" id="resetBtn" disabled>Reset position</button>
+
+    <div class="info">
+      <strong>⚠ On screen, the ruler will not measure 33 mm</strong>
+      The PNG is sized for 300 DPI printing. Your screen displays the pixels at its own density, so the SIZE CHECK frame appears larger than 33 × 48 mm in any image viewer. It will measure correctly only on the printed paper. To verify the file itself: check that it's 1800 × 1200 px at 300 DPI in its properties.
+    </div>
+
+    <div class="info">
+      <strong>How to print at Walmart</strong>
+      Upload the downloaded PNG to Walmart Photo as a <em>4×6 standard print</em>. Choose <strong>"Full photo (no crop)"</strong> or "fit" — never auto-crop. After printing, lay a metric ruler over the <span id="sizeCheckRef">dashed SIZE CHECK frame</span>: it must read <span id="sizeCheckDims">33 × 48 mm</span> exactly.
+    </div>
+
+    <details>
+      <summary>Specs & cutting</summary>
+      <ol>
+        <li>Each photo is exactly 33 × 48 mm.</li>
+        <li>Photos sit in a 2 × 2 grid, touching, centered on the sheet.</li>
+        <li>Cut along the gray borders with a paper trimmer or sharp scissors.</li>
+        <li>The dashed 33 × 48 mm SIZE CHECK frame matches one photo exactly — measure it (or any photo) with a metric ruler to verify Walmart printed at correct scale.</li>
+      </ol>
+    </details>
+  </aside>
+
+</div>
+
+<footer>
+  <span>4 × 6 PRINT SHEET</span>
+  <span>33 × 48 MM · CHINA STANDARD</span>
+</footer>
+
+</div>
+
+<script>
+// ============== CONSTANTS ==============
+const DPI = 300;
+const MM_PER_INCH = 25.4;
+const PX_PER_MM = DPI / MM_PER_INCH; // 11.811
+
+// Canvas: 6 x 4 inch landscape
+const CANVAS_W_MM = 152.4;
+const CANVAS_H_MM = 101.6;
+const CANVAS_W_PX = 1800;
+const CANVAS_H_PX = 1200;
+
+// ============== FORMATS ==============
+const FORMATS = {
+  china: {
+    label: 'China',
+    photoWmm: 33,
+    photoHmm: 48,
+    cols: 2,
+    rows: 2,
+    defaultGapMm: 2,
+    maxGapMm: 5,
+    notes: 'Photos sit centered with comfortable margins all around.',
+  },
+  us: {
+    label: 'United States',
+    photoWmm: 50.8,   // exactly 2 inches
+    photoHmm: 50.8,
+    cols: 2,
+    rows: 2,
+    defaultGapMm: 0,
+    maxGapMm: 0,      // 2× 50.8mm = 101.6mm = full canvas height; no room for gap
+    notes: 'Photos extend the full 4-inch height. Side margins 25.4 mm. Use "no crop" at Walmart so the top and bottom of each photo are preserved.',
+  },
+};
+
+let currentFormatKey = 'china';
+
+// Face-position overlay per format.
+// Drawn ONLY on the preview (not in the downloaded PNG).
+// All values in mm, measured from the top-left of one photo.
+const FACE_GUIDES = {
+  china: {
+    // Head: 15–22 mm wide × 28–33 mm tall. Top of head 3–5 mm from top edge.
+    cxMm: 16.5, cyMm: 19,
+    outerWmm: 22, outerHmm: 33,
+    innerWmm: 15, innerHmm: 28,
+    eyeYmm: null,
+  },
+  us: {
+    // Head: ~17–24 mm wide × 25–35 mm tall. Eye line 28–35 mm from BOTTOM
+    // (i.e. 15.8–22.8 mm from top of a 50.8 mm photo). Midpoint ~19.3 mm.
+    cxMm: 25.4, cyMm: 20,
+    outerWmm: 24, outerHmm: 35,
+    innerWmm: 17, innerHmm: 25,
+    eyeYmm: 19.3,
+  },
+};
+
+// Mutable layout state — populated by applyFormat()
+let PHOTO_W_MM, PHOTO_H_MM, PHOTO_W_PX, PHOTO_H_PX, COLS, ROWS;
+let gapMm;
+
+function applyFormat(key) {
+  currentFormatKey = key;
+  const f = FORMATS[key];
+  PHOTO_W_MM = f.photoWmm;
+  PHOTO_H_MM = f.photoHmm;
+  PHOTO_W_PX = Math.round(PHOTO_W_MM * PX_PER_MM);
+  PHOTO_H_PX = Math.round(PHOTO_H_MM * PX_PER_MM);
+  COLS = f.cols;
+  ROWS = f.rows;
+  gapMm = f.defaultGapMm;
+}
+applyFormat(currentFormatKey);
+
+// Gap (mutable — controlled by slider)
+let GAP_PX = Math.round(gapMm * PX_PER_MM);
+
+// Margins recomputed when gap changes
+let GRID_W_PX, GRID_H_PX, MARGIN_X_PX, MARGIN_Y_PX;
+function recomputeLayout() {
+  GAP_PX = Math.round(gapMm * PX_PER_MM);
+  GRID_W_PX = COLS * PHOTO_W_PX + (COLS - 1) * GAP_PX;
+  GRID_H_PX = ROWS * PHOTO_H_PX + (ROWS - 1) * GAP_PX;
+  MARGIN_X_PX = Math.round((CANVAS_W_PX - GRID_W_PX) / 2);
+  MARGIN_Y_PX = Math.round((CANVAS_H_PX - GRID_H_PX) / 2);
+}
+recomputeLayout();
+
+// ============== STATE ==============
+let sourceImage = null;
+let imgOffsetX = 0;   // in photo-px, offset of image center from photo center
+let imgOffsetY = 0;
+let imgZoom = 1.0;    // multiplier on "cover" base scale
+let dragging = false;
+let dragStart = null;
+
+// ============== DOM ==============
+const previewCanvas = document.getElementById('previewCanvas');
+const ctx = previewCanvas.getContext('2d');
+const fileInput = document.getElementById('fileInput');
+const uploadLabel = document.getElementById('uploadLabel');
+const uploadText = document.getElementById('uploadText');
+const zoomSlider = document.getElementById('zoom');
+const zoomVal = document.getElementById('zoomVal');
+const gapSlider = document.getElementById('gap');
+const gapVal = document.getElementById('gapVal');
+const cutMarksCb = document.getElementById('cutMarks');
+const borderCb = document.getElementById('border');
+const rulerCb = document.getElementById('ruler');
+const faceGuideCb = document.getElementById('faceGuide');
+const downloadBtn = document.getElementById('downloadBtn');
+const resetBtn = document.getElementById('resetBtn');
+const liveDim = document.getElementById('liveDim');
+const formatBtns = document.querySelectorAll('.format-btn');
+const titleText = document.getElementById('titleText');
+const specPhotos = document.getElementById('specPhotos');
+const previewLabel = document.getElementById('previewLabel');
+const gapSliderGroup = gapSlider.closest('.slider-group');
+
+// ============== PREVIEW SIZING ==============
+function sizePreview() {
+  const parent = previewCanvas.parentElement;
+  const availW = parent.clientWidth - 48; // padding
+  const scale = availW / CANVAS_W_PX;
+  previewCanvas.style.width = (CANVAS_W_PX * scale) + 'px';
+  previewCanvas.style.height = (CANVAS_H_PX * scale) + 'px';
+  previewCanvas.width = CANVAS_W_PX;
+  previewCanvas.height = CANVAS_H_PX;
+  render();
+}
+window.addEventListener('resize', sizePreview);
+
+// ============== RENDER ==============
+function render(targetCtx = ctx, targetCanvas = previewCanvas) {
+  targetCtx.fillStyle = '#ffffff';
+  targetCtx.fillRect(0, 0, CANVAS_W_PX, CANVAS_H_PX);
+
+  if (!sourceImage) {
+    // Empty state — show placeholder grid
+    targetCtx.strokeStyle = '#d4ccbe';
+    targetCtx.lineWidth = 1;
+    targetCtx.setLineDash([6, 6]);
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const x = MARGIN_X_PX + c * (PHOTO_W_PX + GAP_PX);
+        const y = MARGIN_Y_PX + r * (PHOTO_H_PX + GAP_PX);
+        targetCtx.strokeRect(x, y, PHOTO_W_PX, PHOTO_H_PX);
+      }
+    }
+    targetCtx.setLineDash([]);
+    targetCtx.fillStyle = '#999';
+    targetCtx.font = '28px Georgia, serif';
+    targetCtx.textAlign = 'center';
+    targetCtx.fillText('upload a photo →', CANVAS_W_PX / 2, CANVAS_H_PX / 2);
+    return;
+  }
+
+  // Draw each photo
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const x = MARGIN_X_PX + c * (PHOTO_W_PX + GAP_PX);
+      const y = MARGIN_Y_PX + r * (PHOTO_H_PX + GAP_PX);
+      drawPhoto(targetCtx, x, y);
+    }
+  }
+
+  // Cut marks
+  if (cutMarksCb.checked) drawCutMarks(targetCtx);
+
+  // Per-photo border
+  if (borderCb.checked) {
+    targetCtx.strokeStyle = '#999';
+    targetCtx.lineWidth = 1;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const x = MARGIN_X_PX + c * (PHOTO_W_PX + GAP_PX);
+        const y = MARGIN_Y_PX + r * (PHOTO_H_PX + GAP_PX);
+        targetCtx.strokeRect(x + 0.5, y + 0.5, PHOTO_W_PX - 1, PHOTO_H_PX - 1);
+      }
+    }
+  }
+
+  // Ruler
+  if (rulerCb.checked) drawRuler(targetCtx);
+
+  // Face position guide — preview only, never in the downloaded print
+  const isPreview = targetCanvas === previewCanvas;
+  if (isPreview && faceGuideCb.checked) drawFaceGuides(targetCtx);
+}
+
+function drawFaceGuides(targetCtx) {
+  const guide = FACE_GUIDES[currentFormatKey];
+  if (!guide) return;
+
+  const cxOff = guide.cxMm * PX_PER_MM;
+  const cyOff = guide.cyMm * PX_PER_MM;
+  const outerRx = guide.outerWmm * PX_PER_MM / 2;
+  const outerRy = guide.outerHmm * PX_PER_MM / 2;
+  const innerRx = guide.innerWmm * PX_PER_MM / 2;
+  const innerRy = guide.innerHmm * PX_PER_MM / 2;
+  const eyeOff = guide.eyeYmm != null ? guide.eyeYmm * PX_PER_MM : null;
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const px = MARGIN_X_PX + c * (PHOTO_W_PX + GAP_PX);
+      const py = MARGIN_Y_PX + r * (PHOTO_H_PX + GAP_PX);
+      const cx = px + cxOff;
+      const cy = py + cyOff;
+
+      targetCtx.save();
+
+      // Outer oval — max head envelope (solid)
+      targetCtx.strokeStyle = 'rgba(220, 38, 38, 0.85)';
+      targetCtx.lineWidth = 4;
+      targetCtx.setLineDash([]);
+      targetCtx.beginPath();
+      targetCtx.ellipse(cx, cy, outerRx, outerRy, 0, 0, Math.PI * 2);
+      targetCtx.stroke();
+
+      // Inner oval — min head envelope (dashed)
+      targetCtx.strokeStyle = 'rgba(220, 38, 38, 0.65)';
+      targetCtx.lineWidth = 3;
+      targetCtx.setLineDash([14, 8]);
+      targetCtx.beginPath();
+      targetCtx.ellipse(cx, cy, innerRx, innerRy, 0, 0, Math.PI * 2);
+      targetCtx.stroke();
+      targetCtx.setLineDash([]);
+
+      // Eye line — for formats that specify eye position (US)
+      if (eyeOff != null) {
+        targetCtx.strokeStyle = 'rgba(220, 38, 38, 0.45)';
+        targetCtx.lineWidth = 2;
+        const eyeY = py + eyeOff;
+        targetCtx.beginPath();
+        targetCtx.moveTo(px + 8, eyeY);
+        targetCtx.lineTo(px + PHOTO_W_PX - 8, eyeY);
+        targetCtx.stroke();
+      }
+
+      targetCtx.restore();
+    }
+  }
+}
+
+function drawPhoto(targetCtx, x, y) {
+  targetCtx.save();
+  targetCtx.beginPath();
+  targetCtx.rect(x, y, PHOTO_W_PX, PHOTO_H_PX);
+  targetCtx.clip();
+
+  // Cover-fit base scale
+  const baseScale = Math.max(PHOTO_W_PX / sourceImage.width, PHOTO_H_PX / sourceImage.height);
+  const scale = baseScale * imgZoom;
+  const drawW = sourceImage.width * scale;
+  const drawH = sourceImage.height * scale;
+
+  const cx = x + PHOTO_W_PX / 2 + imgOffsetX;
+  const cy = y + PHOTO_H_PX / 2 + imgOffsetY;
+  targetCtx.drawImage(sourceImage, cx - drawW / 2, cy - drawH / 2, drawW, drawH);
+
+  targetCtx.restore();
+}
+
+function drawCutMarks(targetCtx) {
+  targetCtx.strokeStyle = '#000';
+  targetCtx.lineWidth = 1;
+  targetCtx.setLineDash([]);
+
+  const markLen = Math.round(2.5 * PX_PER_MM); // 2.5mm tick marks
+  const gridBottom = MARGIN_Y_PX + GRID_H_PX;
+  const gridRight = MARGIN_X_PX + GRID_W_PX;
+
+  // Vertical cut lines: at outer grid edges + center of each gap
+  for (let c = 0; c <= COLS; c++) {
+    let x;
+    if (c === 0) x = MARGIN_X_PX;
+    else if (c === COLS) x = gridRight;
+    else x = MARGIN_X_PX + c * PHOTO_W_PX + (c - 1) * GAP_PX + GAP_PX / 2;
+    x = Math.round(x) + 0.5;
+
+    targetCtx.beginPath();
+    targetCtx.moveTo(x, MARGIN_Y_PX - markLen);
+    targetCtx.lineTo(x, MARGIN_Y_PX);
+    targetCtx.stroke();
+    targetCtx.beginPath();
+    targetCtx.moveTo(x, gridBottom);
+    targetCtx.lineTo(x, gridBottom + markLen);
+    targetCtx.stroke();
+  }
+
+  // Horizontal cut lines: at outer grid edges + center of each gap
+  for (let r = 0; r <= ROWS; r++) {
+    let y;
+    if (r === 0) y = MARGIN_Y_PX;
+    else if (r === ROWS) y = gridBottom;
+    else y = MARGIN_Y_PX + r * PHOTO_H_PX + (r - 1) * GAP_PX + GAP_PX / 2;
+    y = Math.round(y) + 0.5;
+
+    targetCtx.beginPath();
+    targetCtx.moveTo(MARGIN_X_PX - markLen, y);
+    targetCtx.lineTo(MARGIN_X_PX, y);
+    targetCtx.stroke();
+    targetCtx.beginPath();
+    targetCtx.moveTo(gridRight, y);
+    targetCtx.lineTo(gridRight + markLen, y);
+    targetCtx.stroke();
+  }
+}
+
+function drawRuler(targetCtx) {
+  // Decide which size-check element to draw based on available right-margin width.
+  // If a full PHOTO_W × PHOTO_H reference frame fits, use it (China).
+  // Otherwise fall back to a vertical scale bar matching photo height (US).
+  const rightMarginX = MARGIN_X_PX + GRID_W_PX;
+  const rightMarginW = CANVAS_W_PX - rightMarginX;
+  const needed = PHOTO_W_PX + Math.round(7 * PX_PER_MM);
+  if (rightMarginW >= needed) {
+    drawReferenceFrame(targetCtx);
+  } else {
+    drawScaleBar(targetCtx);
+  }
+}
+
+function drawReferenceFrame(targetCtx) {
+  // Dashed rectangle exactly matching a single photo's dimensions, placed in
+  // the right margin. Hold a metric ruler over it after printing to verify.
+  const refW = PHOTO_W_PX;
+  const refH = PHOTO_H_PX;
+  const rightMarginX = MARGIN_X_PX + GRID_W_PX;
+  const rightMarginW = CANVAS_W_PX - rightMarginX;
+  const refX = Math.round(rightMarginX + (rightMarginW - refW) / 2);
+  const refY = Math.round((CANVAS_H_PX - refH) / 2);
+
+  targetCtx.strokeStyle = '#000';
+  targetCtx.fillStyle = '#000';
+  targetCtx.lineWidth = 1;
+
+  targetCtx.setLineDash([Math.round(1.5 * PX_PER_MM), Math.round(1 * PX_PER_MM)]);
+  targetCtx.strokeRect(refX + 0.5, refY + 0.5, refW, refH);
+  targetCtx.setLineDash([]);
+
+  // 10 mm tick marks on left and bottom edges
+  const tickLen = Math.round(1.8 * PX_PER_MM);
+  const maxH = Math.floor(PHOTO_H_MM / 10) * 10;
+  for (let mm = 0; mm <= maxH; mm += 10) {
+    const y = refY + mm * PX_PER_MM;
+    targetCtx.beginPath();
+    targetCtx.moveTo(refX - tickLen, y + 0.5);
+    targetCtx.lineTo(refX, y + 0.5);
+    targetCtx.stroke();
+  }
+  const maxW = Math.floor(PHOTO_W_MM / 10) * 10;
+  for (let mm = 0; mm <= maxW; mm += 10) {
+    const x = refX + mm * PX_PER_MM;
+    targetCtx.beginPath();
+    targetCtx.moveTo(x + 0.5, refY + refH);
+    targetCtx.lineTo(x + 0.5, refY + refH + tickLen);
+    targetCtx.stroke();
+  }
+
+  const labelPx = Math.round(2.4 * PX_PER_MM);
+  const smallPx = Math.round(1.7 * PX_PER_MM);
+
+  targetCtx.font = `${labelPx}px monospace`;
+  targetCtx.textAlign = 'center';
+  targetCtx.textBaseline = 'top';
+  targetCtx.fillText(`${PHOTO_W_MM} mm`, refX + refW / 2, refY + refH + tickLen + Math.round(1.5 * PX_PER_MM));
+
+  targetCtx.save();
+  targetCtx.translate(refX - tickLen - Math.round(1.5 * PX_PER_MM), refY + refH / 2);
+  targetCtx.rotate(-Math.PI / 2);
+  targetCtx.textBaseline = 'bottom';
+  targetCtx.fillText(`${PHOTO_H_MM} mm`, 0, 0);
+  targetCtx.restore();
+
+  targetCtx.font = `${smallPx}px monospace`;
+  targetCtx.textAlign = 'center';
+  targetCtx.textBaseline = 'bottom';
+  targetCtx.fillText('SIZE CHECK', refX + refW / 2, refY - Math.round(1.5 * PX_PER_MM));
+
+  targetCtx.textBaseline = 'alphabetic';
+}
+
+function drawScaleBar(targetCtx) {
+  // Vertical I-bar in the right margin, exactly one photo tall.
+  // Lay a metric ruler against it after printing to verify scale.
+  const barLen = PHOTO_H_PX;
+  const rightMarginX = MARGIN_X_PX + GRID_W_PX;
+  const rightMarginW = CANVAS_W_PX - rightMarginX;
+  const barX = Math.round(rightMarginX + rightMarginW / 2);
+  const barY = Math.round((CANVAS_H_PX - barLen) / 2);
+
+  targetCtx.strokeStyle = '#000';
+  targetCtx.fillStyle = '#000';
+  targetCtx.lineWidth = 1;
+
+  // main shaft
+  targetCtx.beginPath();
+  targetCtx.moveTo(barX + 0.5, barY);
+  targetCtx.lineTo(barX + 0.5, barY + barLen);
+  targetCtx.stroke();
+
+  // top and bottom serifs
+  const capHalf = Math.round(2 * PX_PER_MM);
+  targetCtx.beginPath();
+  targetCtx.moveTo(barX - capHalf + 0.5, barY + 0.5);
+  targetCtx.lineTo(barX + capHalf + 0.5, barY + 0.5);
+  targetCtx.moveTo(barX - capHalf + 0.5, barY + barLen + 0.5);
+  targetCtx.lineTo(barX + capHalf + 0.5, barY + barLen + 0.5);
+  targetCtx.stroke();
+
+  // 10 mm tick marks
+  const tickLen = Math.round(1.3 * PX_PER_MM);
+  const maxTick = Math.floor(PHOTO_H_MM / 10) * 10;
+  for (let mm = 10; mm <= maxTick; mm += 10) {
+    const y = barY + mm * PX_PER_MM;
+    targetCtx.beginPath();
+    targetCtx.moveTo(barX - tickLen + 0.5, y + 0.5);
+    targetCtx.lineTo(barX + 0.5, y + 0.5);
+    targetCtx.stroke();
+  }
+
+  const labelPx = Math.round(2.3 * PX_PER_MM);
+  const smallPx = Math.round(1.6 * PX_PER_MM);
+
+  // Vertical dimension label
+  targetCtx.font = `${labelPx}px monospace`;
+  targetCtx.save();
+  targetCtx.translate(barX + capHalf + Math.round(2 * PX_PER_MM), barY + barLen / 2);
+  targetCtx.rotate(-Math.PI / 2);
+  targetCtx.textAlign = 'center';
+  targetCtx.textBaseline = 'bottom';
+  const isUS = currentFormatKey === 'us';
+  targetCtx.fillText(isUS ? '2 in · 50.8 mm' : `${PHOTO_H_MM} mm`, 0, 0);
+  targetCtx.restore();
+
+  // Header
+  targetCtx.font = `${smallPx}px monospace`;
+  targetCtx.textAlign = 'center';
+  targetCtx.textBaseline = 'bottom';
+  targetCtx.fillText('SIZE CHECK', barX, barY - Math.round(2 * PX_PER_MM));
+
+  targetCtx.textBaseline = 'alphabetic';
+}
+
+// ============== FILE LOAD ==============
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = new Image();
+    img.onload = () => {
+      sourceImage = img;
+      imgOffsetX = 0;
+      imgOffsetY = 0;
+      imgZoom = 1.0;
+      zoomSlider.value = 100;
+      zoomVal.textContent = '100%';
+      uploadText.textContent = file.name;
+      document.getElementById('uploadHint').textContent = `${img.width} × ${img.height} px loaded`;
+      // swap upload arrow for checkmark
+      document.getElementById('uploadIcon').innerHTML =
+        '<polyline points="20 6 9 17 4 12"></polyline>';
+      uploadLabel.classList.add('has-file');
+      previewCanvas.classList.remove('empty');
+      downloadBtn.disabled = false;
+      resetBtn.disabled = false;
+      liveDim.textContent = `${img.width} × ${img.height} px source`;
+      render();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+// ============== INTERACTIONS ==============
+
+// Format switching — update layout, UI text, gap slider, then re-render
+function switchFormat(key) {
+  if (!FORMATS[key]) return;
+  applyFormat(key);
+  const f = FORMATS[key];
+
+  // Sync format-button active state
+  formatBtns.forEach(b => b.classList.toggle('active', b.dataset.format === key));
+
+  // Sync header text
+  const isUS = key === 'us';
+  const dimText = isUS ? '2 × 2 in' : `${f.photoWmm} × ${f.photoHmm} mm`;
+  const photoCount = f.cols * f.rows;
+  titleText.textContent = `${f.label} · ${dimText} × ${photoCount}`;
+  specPhotos.textContent = `${photoCount} (${f.cols} × ${f.rows} grid)`;
+  previewLabel.textContent = `PREVIEW · 6 × 4 in landscape · ${f.cols} × ${f.rows} grid`;
+
+  // Sync info text
+  const sizeCheckRef = document.getElementById('sizeCheckRef');
+  const sizeCheckDims = document.getElementById('sizeCheckDims');
+  if (sizeCheckRef && sizeCheckDims) {
+    if (isUS) {
+      sizeCheckRef.textContent = 'SIZE CHECK scale bar';
+      sizeCheckDims.textContent = '50.8 mm (2 in)';
+    } else {
+      sizeCheckRef.textContent = 'dashed SIZE CHECK frame';
+      sizeCheckDims.textContent = `${f.photoWmm} × ${f.photoHmm} mm`;
+    }
+  }
+
+  // Update gap slider: range, value, disabled state
+  gapSlider.max = f.maxGapMm;
+  gapSlider.value = f.defaultGapMm;
+  gapVal.textContent = `${f.defaultGapMm.toFixed(1)} mm`;
+  if (f.maxGapMm === 0) {
+    gapSlider.disabled = true;
+    gapSliderGroup.classList.add('disabled');
+  } else {
+    gapSlider.disabled = false;
+    gapSliderGroup.classList.remove('disabled');
+  }
+
+  recomputeLayout();
+  render();
+}
+
+formatBtns.forEach(btn => {
+  btn.addEventListener('click', () => switchFormat(btn.dataset.format));
+});
+
+zoomSlider.addEventListener('input', () => {
+  imgZoom = parseInt(zoomSlider.value) / 100;
+  zoomVal.textContent = `${zoomSlider.value}%`;
+  render();
+});
+
+gapSlider.addEventListener('input', () => {
+  gapMm = parseFloat(gapSlider.value);
+  gapVal.textContent = `${gapMm.toFixed(1)} mm`;
+  recomputeLayout();
+  render();
+});
+
+cutMarksCb.addEventListener('change', () => render());
+borderCb.addEventListener('change', () => render());
+rulerCb.addEventListener('change', () => render());
+faceGuideCb.addEventListener('change', () => render());
+
+resetBtn.addEventListener('click', () => {
+  imgOffsetX = 0;
+  imgOffsetY = 0;
+  imgZoom = 1.0;
+  zoomSlider.value = 100;
+  zoomVal.textContent = '100%';
+  render();
+});
+
+// Drag to reposition
+function getCanvasPos(e) {
+  const rect = previewCanvas.getBoundingClientRect();
+  const scale = CANVAS_W_PX / rect.width;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: (clientX - rect.left) * scale,
+    y: (clientY - rect.top) * scale
+  };
+}
+
+function startDrag(e) {
+  if (!sourceImage) return;
+  dragging = true;
+  previewCanvas.classList.add('dragging');
+  dragStart = getCanvasPos(e);
+  dragStart.offsetX = imgOffsetX;
+  dragStart.offsetY = imgOffsetY;
+  e.preventDefault();
+}
+function doDrag(e) {
+  if (!dragging) return;
+  const pos = getCanvasPos(e);
+  imgOffsetX = dragStart.offsetX + (pos.x - dragStart.x);
+  imgOffsetY = dragStart.offsetY + (pos.y - dragStart.y);
+  render();
+  e.preventDefault();
+}
+function endDrag() {
+  dragging = false;
+  previewCanvas.classList.remove('dragging');
+}
+
+previewCanvas.addEventListener('mousedown', startDrag);
+window.addEventListener('mousemove', doDrag);
+window.addEventListener('mouseup', endDrag);
+previewCanvas.addEventListener('touchstart', startDrag, { passive: false });
+window.addEventListener('touchmove', doDrag, { passive: false });
+window.addEventListener('touchend', endDrag);
+
+// ============== DOWNLOAD ==============
+downloadBtn.addEventListener('click', () => {
+  // Render to an off-screen canvas at exact 1800x1200
+  const out = document.createElement('canvas');
+  out.width = CANVAS_W_PX;
+  out.height = CANVAS_H_PX;
+  const outCtx = out.getContext('2d');
+  outCtx.imageSmoothingEnabled = true;
+  outCtx.imageSmoothingQuality = 'high';
+  render(outCtx, out);
+
+  // Convert to blob and trigger download
+  out.toBlob((blob) => {
+    // Inject 300 DPI pHYs chunk so print apps read it as 4×6
+    injectDpiAndDownload(blob, 300, `${currentFormatKey}_passport_4x6_300dpi.png`);
+  }, 'image/png');
+});
+
+// Insert pHYs chunk into PNG so it reports 300 DPI metadata
+function injectDpiAndDownload(blob, dpi, filename) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    const buf = new Uint8Array(reader.result);
+    // PPM = dots per meter
+    const ppm = Math.round(dpi * 39.3701);
+    // pHYs chunk: 4 byte length, 'pHYs', 9 bytes data, 4 byte CRC
+    const data = new Uint8Array(9);
+    const dv = new DataView(data.buffer);
+    dv.setUint32(0, ppm);     // x ppm
+    dv.setUint32(4, ppm);     // y ppm
+    data[8] = 1;              // unit: meter
+
+    const type = new Uint8Array([0x70, 0x48, 0x59, 0x73]); // 'pHYs'
+    const crc = crc32(concatUint8(type, data));
+
+    const chunk = new Uint8Array(4 + 4 + 9 + 4);
+    const cv = new DataView(chunk.buffer);
+    cv.setUint32(0, 9);                                    // length
+    chunk.set(type, 4);                                    // 'pHYs'
+    chunk.set(data, 8);                                    // data
+    cv.setUint32(17, crc);                                 // CRC
+
+    // PNG: 8 byte signature, then IHDR is first. Insert pHYs after IHDR.
+    // IHDR: 4 length + 4 type + 13 data + 4 crc = 25 bytes. So after byte 8+25=33.
+    const insertAt = 33;
+    const result = new Uint8Array(buf.length + chunk.length);
+    result.set(buf.subarray(0, insertAt), 0);
+    result.set(chunk, insertAt);
+    result.set(buf.subarray(insertAt), insertAt + chunk.length);
+
+    const newBlob = new Blob([result], { type: 'image/png' });
+    const url = URL.createObjectURL(newBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+  reader.readAsArrayBuffer(blob);
+}
+
+function concatUint8(a, b) {
+  const c = new Uint8Array(a.length + b.length);
+  c.set(a, 0);
+  c.set(b, a.length);
+  return c;
+}
+
+// CRC32 for PNG
+const CRC_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) {
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
+    table[n] = c >>> 0;
+  }
+  return table;
+})();
+function crc32(bytes) {
+  let c = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) {
+    c = CRC_TABLE[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+  }
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+// init
+sizePreview();
+</script>
+</body>
+</html>
