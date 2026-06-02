@@ -9,7 +9,7 @@
       <url>https://gejun.name/</url>
       <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- 0.161.1</generator>
+    <generator>Hugo -- 0.162.1</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 15 Mar 2023 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://gejun.name/natural-language-processing/index.xml" rel="self" type="application/rss+xml" />
@@ -19,8 +19,8 @@
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
       <guid>https://gejun.name/natural-language-processing/understanding-attention-nlp/</guid>
       <description>&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
-      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/kCc8FmEb1nY?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;
-    &lt;/div&gt;
+			&lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/kCc8FmEb1nY?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;
+		&lt;/div&gt;
 
 &lt;p&gt;In &lt;a href=&#34;https://gejun.name/natural-language-processing/building-makemore-mlp/&#34;&gt;Part2&lt;/a&gt;, we constructed a straightforward MLP model to generate characters based on 32k popular names.
 In this lecture, &lt;a href=&#34;https://karpathy.ai&#34;&gt;Andrej&lt;/a&gt; guides us on gradually incorporating the transformer architecture to improve the performance of our bigram model.

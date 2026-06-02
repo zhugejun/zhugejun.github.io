@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -11,19 +12,43 @@
     <loc>https://gejun.name/categories/</loc>
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://gejun.name/tools/passport-photo/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://gejun.name/tags/credit-risk/</loc>
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/</loc>
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://gejun.name/tags/grind-75/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://gejun.name/tags/interactive/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/leetcode/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/leetcode/</loc>
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/tags/mindmap/</loc>
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://gejun.name/tags/passport-photo/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/patterns/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://gejun.name/tags/postgresql/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/print-sheet/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/python/</loc>
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/categories/risk-analysis/</loc>
@@ -42,6 +67,18 @@
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/tags/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/leetcode-patterns/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/categories/tools/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tools/</loc>
+    <lastmod>2026-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/tags/utility/</loc>
     <lastmod>2026-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://gejun.name/tags/analytics/</loc>
@@ -101,6 +138,30 @@
     <loc>https://gejun.name/tags/hands-on/</loc>
     <lastmod>2026-01-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://gejun.name/datasci-simplified/</loc>
+    <lastmod>2023-08-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/datasci-simplified/t-distribution/</loc>
+    <lastmod>2023-08-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/datasci-simplified/anova/</loc>
+    <lastmod>2023-08-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/datasci-simplified/type-i-and-ii-errors/</loc>
+    <lastmod>2023-08-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/datasci-simplified/confidence-interval/</loc>
+    <lastmod>2023-07-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/datasci-simplified/central-limit-theorem/</loc>
+    <lastmod>2023-07-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/datasci-simplified/hypothesis-testing/</loc>
+    <lastmod>2023-07-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://gejun.name/datasci-simplified/expected-value/</loc>
+    <lastmod>2023-07-09T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://gejun.name/tags/attention/</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -155,31 +216,10 @@
     <loc>https://gejun.name/datasci-simplified/back-to-basics/</loc>
     <lastmod>2021-10-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://gejun.name/datasci-simplified/</loc>
-    <lastmod>2021-10-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://gejun.name/datasci-simplified/anova/</loc>
-  </url><url>
-    <loc>https://gejun.name/datasci-simplified/central-limit-theorem/</loc>
-  </url><url>
-    <loc>https://gejun.name/datasci-simplified/confidence-interval/</loc>
-  </url><url>
-    <loc>https://gejun.name/datasci-simplified/expected-value/</loc>
-  </url><url>
-    <loc>https://gejun.name/datasci-simplified/hypothesis-testing/</loc>
-  </url><url>
-    <loc>https://gejun.name/datasci-simplified/t-distribution/</loc>
-  </url><url>
-    <loc>https://gejun.name/datasci-simplified/type-i-and-ii-errors/</loc>
-  </url><url>
-    <loc>https://gejun.name/tools/passport-photo/</loc>
-  </url><url>
     <loc>https://gejun.name/archives/</loc>
   </url><url>
     <loc>https://gejun.name/search/</loc>
   </url><url>
     <loc>https://gejun.name/series/</loc>
-  </url><url>
-    <loc>https://gejun.name/tools/</loc>
   </url>
 </urlset>

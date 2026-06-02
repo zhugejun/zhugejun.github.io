@@ -9,7 +9,7 @@
       <url>https://gejun.name/</url>
       <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- 0.161.1</generator>
+    <generator>Hugo -- 0.162.1</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 24 Feb 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://gejun.name/tags/index.xml" rel="self" type="application/rss+xml" />
@@ -28,10 +28,24 @@
       <description></description>
     </item>
     <item>
+      <title>Grind-75</title>
+      <link>https://gejun.name/tags/grind-75/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/grind-75/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>Interactive</title>
       <link>https://gejun.name/tags/interactive/</link>
       <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
       <guid>https://gejun.name/tags/interactive/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Leetcode</title>
+      <link>https://gejun.name/tags/leetcode/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/leetcode/</guid>
       <description></description>
     </item>
     <item>
@@ -42,10 +56,38 @@
       <description></description>
     </item>
     <item>
+      <title>Passport-Photo</title>
+      <link>https://gejun.name/tags/passport-photo/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/passport-photo/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Patterns</title>
+      <link>https://gejun.name/tags/patterns/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/patterns/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>Postgresql</title>
       <link>https://gejun.name/tags/postgresql/</link>
       <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
       <guid>https://gejun.name/tags/postgresql/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Print-Sheet</title>
+      <link>https://gejun.name/tags/print-sheet/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/print-sheet/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>https://gejun.name/tags/python/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/python/</guid>
       <description></description>
     </item>
     <item>
@@ -74,6 +116,13 @@
       <link>https://gejun.name/tags/study-guide/</link>
       <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
       <guid>https://gejun.name/tags/study-guide/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Utility</title>
+      <link>https://gejun.name/tags/utility/</link>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/utility/</guid>
       <description></description>
     </item>
     <item>
