@@ -1,5 +1,5 @@
 baseURL: 'https://gejun.name'
-languageCode: 'en-us'
+locale: 'en-us'
 title: "Gejun's Blog"
 
 theme: 'PaperMod'
@@ -22,7 +22,7 @@ minify:
 
 languages:
   en:
-    languageName: 'English'
+    label: 'English'
     weight: 1
     menu:
       main:
@@ -205,3 +205,10 @@ services:
 
 # quarto
 ignoreFiles: ["\\.qmd$", "\\.ipynb$", "\\.py$"]
+
+# Allow raw HTML content files (interactive tools, Quarto/reveal.js decks).
+# Hugo v0.158+ defaults to denying text/html content (allowContent: ['! ^text/html$']);
+# this restores rendering of our standalone HTML pages with layout: raw.
+security:
+  allowContent:
+    - '^text/.*$'
