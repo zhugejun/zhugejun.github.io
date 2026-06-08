@@ -9,10 +9,24 @@
       <url>https://gejun.name/</url>
       <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- 0.162.1</generator>
+    <generator>Hugo -- 0.163.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 24 Feb 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 03 Jun 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://gejun.name/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Design Pattern</title>
+      <link>https://gejun.name/tags/design-pattern/</link>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/design-pattern/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>https://gejun.name/tags/python/</link>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid>https://gejun.name/tags/python/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Auto-Finance</title>
       <link>https://gejun.name/tags/auto-finance/</link>
@@ -81,13 +95,6 @@
       <link>https://gejun.name/tags/print-sheet/</link>
       <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
       <guid>https://gejun.name/tags/print-sheet/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Python</title>
-      <link>https://gejun.name/tags/python/</link>
-      <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>https://gejun.name/tags/python/</guid>
       <description></description>
     </item>
     <item>

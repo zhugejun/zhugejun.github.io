@@ -1,0 +1,599 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Python Design Patterns — Field Manual</title><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Spline+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/atelier-cave.min.css><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js></script><style>:root{--bg:#0a1622;--bg-2:#0d1d2e;--panel:#0f2336;--panel-2:#10283e;--ink:#dde8f2;--ink-dim:#7e9bb6;--ink-faint:#4f6c87;--line:#1d3c5a;--hair:rgba(120, 180, 230, 0.1);--grid:rgba(120, 180, 230, 0.045);--accent:#ff9d57;--cyan:#58c6ea;--mint:#74d3a4;--magenta:#d98fd3;--c-keyword:#ff9d57;--c-string:#8fd9ac;--c-comment:#5e7c98;--c-number:#6fc7ec;--c-builtin:#6fc7ec;--c-title:#f2d49b;--c-meta:#d98fd3;--maxw:1320px}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:96px}body{margin:0;background:var(--bg);color:var(--ink);font-family:spline sans,system-ui,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}.grid-bg{position:fixed;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(var(--grid) 1px,transparent 1px)0 0/32px 32px,linear-gradient(90deg,var(--grid) 1px,transparent 1px)0 0/32px 32px,radial-gradient( circle at 80% -10%,rgba(255,157,87,.1),transparent 45% ),radial-gradient( circle at 0% 100%,rgba(88,198,234,8%),transparent 40% ),var(--bg)}.grid-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(var(--hair) 1px,transparent 1px)0 0/160px 160px,linear-gradient(90deg,var(--hair) 1px,transparent 1px)0 0/160px 160px}a{color:inherit;text-decoration:none}header.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:linear-gradient( 180deg,rgba(10,22,34,.92),rgba(10,22,34,.78) );border-bottom:1px solid var(--line)}.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:18px}.brand{display:flex;align-items:baseline;gap:14px}.brand .mark{font-family:big shoulders display;font-weight:800;letter-spacing:.04em;font-size:1.55rem;color:var(--ink)}.brand .mark b{color:var(--accent)}.brand .sub{font-family:jetbrains mono,monospace;font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-dim);padding-bottom:2px}.topbar .spec{margin-left:auto;font-family:jetbrains mono,monospace;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);display:flex;gap:18px}.topbar .spec span b{color:var(--cyan);font-weight:600}.layout{max-width:var(--maxw);margin:0 auto;padding:0 28px;display:grid;grid-template-columns:248px 1fr;gap:48px;align-items:start}aside.sidebar{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 96px);overflow-y:auto;padding:30px 0 60px;margin-top:8px;scrollbar-width:thin;scrollbar-color:var(--line)transparent}aside.sidebar::-webkit-scrollbar{width:6px}aside.sidebar::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}.search{position:relative;margin-bottom:26px}.search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-family:jetbrains mono,monospace;font-size:.8rem;padding:10px 12px 10px 32px;border-radius:3px;outline:none}.search input::placeholder{color:var(--ink-faint)}.search input:focus{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan)}.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-faint)}.nav-group{margin-bottom:24px}.nav-group h4{font-family:jetbrains mono,monospace;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;margin:0 0 10px;display:flex;align-items:center;gap:8px}.nav-group h4 .dot{width:8px;height:8px;border-radius:50%}.nav-group.creational h4{color:var(--accent)}.creational .dot{background:var(--accent)}.nav-group.structural h4{color:var(--cyan)}.structural .dot{background:var(--cyan)}.nav-group.behavioral h4{color:var(--mint)}.behavioral .dot{background:var(--mint)}.nav-group ul{list-style:none;margin:0;padding:0}.nav-group li a{display:flex;gap:10px;align-items:baseline;font-size:.82rem;color:var(--ink-dim);padding:4px 0 4px 16px;border-left:1px solid var(--line);transition:.15s}.nav-group li a .num{font-family:jetbrains mono,monospace;font-size:.68rem;color:var(--ink-faint)}.nav-group li a:hover{color:var(--ink);border-left-color:var(--ink-dim)}.nav-group li a.active{color:var(--ink);border-left-color:initial}.creational li a.active{color:var(--accent)}.structural li a.active{color:var(--cyan)}.behavioral li a.active{color:var(--mint)}main{padding:40px 0 120px;min-width:0}.hero{margin-bottom:54px;position:relative}.hero .tag{font-family:jetbrains mono,monospace;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}.hero h1{font-family:big shoulders display;font-weight:800;font-size:clamp(2.6rem,6vw,4.6rem);line-height:.92;letter-spacing:.01em;margin:0 0 18px;text-transform:uppercase}.hero h1 em{font-style:normal;color:var(--accent)}.hero p{max-width:60ch;color:var(--ink-dim);font-size:1.02rem}.hero .rule{height:1px;background:linear-gradient( 90deg,var(--accent),var(--cyan),var(--mint),transparent );margin:28px 0 0;opacity:.6}.legend{display:flex;flex-wrap:wrap;gap:14px;margin:30px 0 54px}.legend .chip{flex:1 1 220px;border:1px solid var(--line);background:var(--panel);padding:16px 18px;border-radius:4px;position:relative;overflow:hidden}.legend .chip::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}.legend .chip.c::before{background:var(--accent)}.legend .chip.s::before{background:var(--cyan)}.legend .chip.b::before{background:var(--mint)}.legend .chip h5{margin:0 0 4px;font-family:big shoulders display;font-weight:700;font-size:1.15rem;text-transform:uppercase;letter-spacing:.03em}.legend .chip.c h5{color:var(--accent)}.legend .chip.s h5{color:var(--cyan)}.legend .chip.b h5{color:var(--mint)}.legend .chip p{margin:0;font-size:.84rem;color:var(--ink-dim);line-height:1.5}.legend .chip .cnt{position:absolute;top:14px;right:16px;font-family:jetbrains mono,monospace;font-size:.7rem;color:var(--ink-faint)}.qref{margin:0 0 64px}.qref details{border:1px solid var(--line);border-radius:4px;background:var(--panel);overflow:hidden}.qref summary{cursor:pointer;list-style:none;padding:16px 20px;font-family:jetbrains mono,monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim);display:flex;align-items:center;gap:10px}.qref summary::-webkit-details-marker{display:none}.qref summary .arrow{transition:.2s;color:var(--cyan)}.qref details[open] summary .arrow{transform:rotate(90deg)}.qref table{width:100%;border-collapse:collapse;font-size:.85rem}.qref th,.qref td{text-align:left;padding:9px 20px;border-top:1px solid var(--line);vertical-align:top}.qref th{font-family:jetbrains mono,monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}.qref td:first-child{font-weight:600;white-space:nowrap}.qref td .cat{font-family:jetbrains mono,monospace;font-size:.66rem}.qref td .cat.c{color:var(--accent)}.qref td .cat.s{color:var(--cyan)}.qref td .cat.b{color:var(--mint)}.qref tr:hover td{background:var(--panel-2)}.cat-head{margin:64px 0 30px;display:flex;align-items:baseline;gap:18px}.cat-head .idx{font-family:jetbrains mono,monospace;font-size:.72rem;color:var(--ink-faint);letter-spacing:.2em}.cat-head h2{font-family:big shoulders display;font-weight:800;text-transform:uppercase;font-size:clamp(1.8rem,3.4vw,2.7rem);letter-spacing:.02em;margin:0;line-height:1}.cat-head .line{flex:1;height:1px;background:var(--line)}.cat-creational h2{color:var(--accent)}.cat-creational .line{background:linear-gradient(90deg,var(--accent),transparent)}.cat-structural h2{color:var(--cyan)}.cat-structural .line{background:linear-gradient(90deg,var(--cyan),transparent)}.cat-behavioral h2{color:var(--mint)}.cat-behavioral .line{background:linear-gradient(90deg,var(--mint),transparent)}.cat-head p{width:100%;flex-basis:100%;margin:6px 0 0;color:var(--ink-dim);font-size:.92rem}.card{border:1px solid var(--line);border-radius:5px;background:var(--panel);margin-bottom:26px;overflow:hidden;position:relative;transition:border-color .2s,transform .2s}.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;opacity:.85}.card.c::before{background:var(--accent)}.card.s::before{background:var(--cyan)}.card.b::before{background:var(--mint)}.card:hover{border-color:var(--ink-faint)}.card-body{padding:24px 28px 8px}.card-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:4px}.card-num{font-family:jetbrains mono,monospace;font-size:.72rem;color:var(--bg);background:var(--ink-dim);padding:3px 7px;border-radius:3px;font-weight:600;margin-top:6px}.card.c .card-num{background:var(--accent)}.card.s .card-num{background:var(--cyan)}.card.b .card-num{background:var(--mint)}.card h3{font-family:big shoulders display;font-weight:700;font-size:1.7rem;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1}.card .alias{font-family:jetbrains mono,monospace;font-size:.66rem;color:var(--ink-faint);margin-top:5px;letter-spacing:.06em}.intent{font-size:1rem;color:var(--ink);margin:14px 0 16px;padding-left:14px;border-left:2px solid var(--line)}.intent b{color:var(--ink)}.usewhen{margin:0 0 18px}.usewhen .lbl{font-family:jetbrains mono,monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}.usewhen ul{margin:0;padding-left:18px}.usewhen li{font-size:.9rem;color:var(--ink-dim);margin-bottom:3px}.usewhen li::marker{color:var(--ink-faint)}.code-wrap{position:relative;margin:0 -28px;border-top:1px solid var(--line);background:var(--bg-2)}.code-head{display:flex;align-items:center;gap:8px;padding:9px 28px;font-family:jetbrains mono,monospace;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--line)}.code-head .dotrow{display:flex;gap:5px}.code-head .dotrow i{width:9px;height:9px;border-radius:50%;background:var(--line)}.code-head .fname{margin-left:4px}pre{margin:0;padding:18px 28px 22px;overflow-x:auto}pre code.hljs{font-family:jetbrains mono,monospace;font-size:.82rem;line-height:1.62;background:0 0;padding:0}pre::-webkit-scrollbar{height:7px}pre::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}.hljs{color:var(--ink)}.hljs-keyword,.hljs-literal{color:var(--c-keyword);font-weight:500}.hljs-string{color:var(--c-string)}.hljs-comment{color:var(--c-comment);font-style:italic}.hljs-number{color:var(--c-number)}.hljs-built_in,.hljs-type{color:var(--c-builtin)}.hljs-title,.hljs-title.class_,.hljs-title.function_{color:var(--c-title)}.hljs-meta{color:var(--c-meta)}.hljs-params{color:var(--ink)}.hljs-attr{color:var(--cyan)}.note{margin:0;padding:16px 28px;background:var(--panel-2);border-top:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}.note .ic{flex:none;width:22px;height:22px;border:1px solid var(--mint);border-radius:50%;color:var(--mint);display:grid;place-items:center;font-size:.7rem;font-weight:700;font-family:jetbrains mono,monospace;margin-top:1px}.note p{margin:0;font-size:.86rem;color:var(--ink-dim)}.note p b{color:var(--mint);font-weight:600}.note code{font-family:jetbrains mono,monospace;font-size:.8rem;color:var(--c-title);background:var(--bg-2);padding:1px 5px;border-radius:3px}.empty{display:none;text-align:center;padding:60px 0;color:var(--ink-faint);font-family:jetbrains mono,monospace;font-size:.8rem;letter-spacing:.1em}.principles{margin-top:80px;border:1px solid var(--line);border-radius:5px;background:var(--panel);padding:30px 32px}.principles h2{font-family:big shoulders display;font-weight:800;text-transform:uppercase;font-size:1.9rem;margin:0 0 6px;color:var(--ink)}.principles .sub{font-family:jetbrains mono,monospace;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:22px}.principles .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 30px}.principles dt{font-weight:600;color:var(--accent);font-family:jetbrains mono,monospace;font-size:.78rem;letter-spacing:.04em}.principles dd{margin:4px 0 0;font-size:.88rem;color:var(--ink-dim)}footer.foot{max-width:var(--maxw);margin:0 auto;padding:30px 28px 60px;border-top:1px solid var(--line);margin-top:60px;font-family:jetbrains mono,monospace;font-size:.68rem;letter-spacing:.1em;color:var(--ink-faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}footer.foot b{color:var(--ink-dim)}@media(max-width:980px){.layout{grid-template-columns:1fr;gap:0}aside.sidebar{position:static;max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 24px;border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:24px}.search{grid-column:1/-1}.topbar .spec{display:none}.code-wrap{margin:0 -28px}}@media(max-width:560px){.layout,.topbar-inner,footer.foot{padding-left:16px;padding-right:16px}.card-body{padding:20px 18px 8px}.code-wrap{margin:0 -18px}pre{padding:16px 18px}.code-head{padding:9px 18px}.note{padding:14px 18px}}</style></head><body><div class=grid-bg></div><header class=topbar><div class=topbar-inner><div class=brand><span class=mark>DESIGN <b>PATTERNS</b></span>
+<span class=sub>Python Field Manual</span></div><div class=spec><span>23 <b>Patterns</b></span>
+<span>3 <b>Families</b></span>
+<span>Rev <b>3.13</b></span></div></div></header><div class=layout><aside class=sidebar><div class=search><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input id=filter type=text placeholder="filter patterns…" autocomplete=off></div><nav class="nav-group creational"><h4><span class=dot></span> Creational</h4><ul><li><a href=#singleton><span class=num>01</span> Singleton</a></li><li><a href=#factory-method><span class=num>02</span> Factory Method</a></li><li><a href=#abstract-factory><span class=num>03</span> Abstract Factory</a></li><li><a href=#builder><span class=num>04</span> Builder</a></li><li><a href=#prototype><span class=num>05</span> Prototype</a></li></ul></nav><nav class="nav-group structural"><h4><span class=dot></span> Structural</h4><ul><li><a href=#adapter><span class=num>06</span> Adapter</a></li><li><a href=#bridge><span class=num>07</span> Bridge</a></li><li><a href=#composite><span class=num>08</span> Composite</a></li><li><a href=#decorator><span class=num>09</span> Decorator</a></li><li><a href=#facade><span class=num>10</span> Facade</a></li><li><a href=#flyweight><span class=num>11</span> Flyweight</a></li><li><a href=#proxy><span class=num>12</span> Proxy</a></li></ul></nav><nav class="nav-group behavioral"><h4><span class=dot></span> Behavioral</h4><ul><li><a href=#chain><span class=num>13</span> Chain of Resp.</a></li><li><a href=#command><span class=num>14</span> Command</a></li><li><a href=#interpreter><span class=num>15</span> Interpreter</a></li><li><a href=#iterator><span class=num>16</span> Iterator</a></li><li><a href=#mediator><span class=num>17</span> Mediator</a></li><li><a href=#memento><span class=num>18</span> Memento</a></li><li><a href=#observer><span class=num>19</span> Observer</a></li><li><a href=#state><span class=num>20</span> State</a></li><li><a href=#strategy><span class=num>21</span> Strategy</a></li><li><a href=#template><span class=num>22</span> Template Method</a></li><li><a href=#visitor><span class=num>23</span> Visitor</a></li></ul></nav></aside><main><section class=hero><div class=tag>// Gang of Four · annotated for Python 3</div><h1>Reusable solutions<br>to <em>recurring</em> problems.</h1><p>A design pattern is a tried template for a problem that
+keeps showing up in software design — not code you copy,
+but a shape you recognise. This manual catalogues all 23
+classic patterns with a tight Python implementation and,
+crucially, a note on the
+<strong>Pythonic shortcut</strong>, since several
+patterns dissolve into a single language feature here.</p><div class=rule></div></section><section class=legend><div class="chip c"><span class=cnt>5 patterns</span><h5>Creational</h5><p>How objects get made. Decouple construction from the
+concrete class being built.</p></div><div class="chip s"><span class=cnt>7 patterns</span><h5>Structural</h5><p>How objects fit together. Compose entities into
+larger structures while keeping them flexible.</p></div><div class="chip b"><span class=cnt>11 patterns</span><h5>Behavioral</h5><p>How objects talk. Assign responsibilities and
+orchestrate the flow of communication.</p></div></section><section class=qref><details><summary><span class=arrow>▶</span> Quick-reference index —
+one line per pattern</summary><table><thead><tr><th>Pattern</th><th>Family</th><th>In one line</th></tr></thead><tbody><tr><td>Singleton</td><td><span class="cat c">CREA</span></td><td>Guarantee a class has exactly one
+instance, globally reachable.</td></tr><tr><td>Factory Method</td><td><span class="cat c">CREA</span></td><td>Defer which class to instantiate to a
+subclass.</td></tr><tr><td>Abstract Factory</td><td><span class="cat c">CREA</span></td><td>Produce whole families of related
+objects without naming concretes.</td></tr><tr><td>Builder</td><td><span class="cat c">CREA</span></td><td>Assemble a complex object step by step.</td></tr><tr><td>Prototype</td><td><span class="cat c">CREA</span></td><td>Create new objects by cloning an
+existing one.</td></tr><tr><td>Adapter</td><td><span class="cat s">STRU</span></td><td>Make an incompatible interface fit what
+a client expects.</td></tr><tr><td>Bridge</td><td><span class="cat s">STRU</span></td><td>Split an abstraction from its
+implementation so both vary freely.</td></tr><tr><td>Composite</td><td><span class="cat s">STRU</span></td><td>Treat individual objects and groups of
+them uniformly.</td></tr><tr><td>Decorator</td><td><span class="cat s">STRU</span></td><td>Add responsibilities to an object by
+wrapping it.</td></tr><tr><td>Facade</td><td><span class="cat s">STRU</span></td><td>Offer a simple front to a complicated
+subsystem.</td></tr><tr><td>Flyweight</td><td><span class="cat s">STRU</span></td><td>Share common state to support huge
+numbers of objects.</td></tr><tr><td>Proxy</td><td><span class="cat s">STRU</span></td><td>Stand in for another object to control
+access to it.</td></tr><tr><td>Chain of Responsibility</td><td><span class="cat b">BEHA</span></td><td>Pass a request along a chain until
+someone handles it.</td></tr><tr><td>Command</td><td><span class="cat b">BEHA</span></td><td>Package a request as an object — queue,
+log, undo it.</td></tr><tr><td>Interpreter</td><td><span class="cat b">BEHA</span></td><td>Represent a grammar and evaluate
+sentences in it.</td></tr><tr><td>Iterator</td><td><span class="cat b">BEHA</span></td><td>Walk a collection without exposing its
+internals.</td></tr><tr><td>Mediator</td><td><span class="cat b">BEHA</span></td><td>Route object-to-object communication
+through one hub.</td></tr><tr><td>Memento</td><td><span class="cat b">BEHA</span></td><td>Capture and restore an object's state
+without breaking encapsulation.</td></tr><tr><td>Observer</td><td><span class="cat b">BEHA</span></td><td>Notify many dependents automatically
+when state changes.</td></tr><tr><td>State</td><td><span class="cat b">BEHA</span></td><td>Let an object change behavior when its
+internal state changes.</td></tr><tr><td>Strategy</td><td><span class="cat b">BEHA</span></td><td>Make a family of algorithms
+interchangeable at runtime.</td></tr><tr><td>Template Method</td><td><span class="cat b">BEHA</span></td><td>Fix an algorithm's skeleton, let
+subclasses fill steps.</td></tr><tr><td>Visitor</td><td><span class="cat b">BEHA</span></td><td>Add operations to a class hierarchy
+without editing it.</td></tr></tbody></table></details></section><div class="cat-head cat-creational"><span class=idx>FAMILY 01</span><h2>Creational</h2><div class=line></div><p>These patterns abstract the instantiation process,
+letting a system stay independent of how its objects are
+created, composed, and represented.</p></div><article class="card c" id=singleton data-name=singleton><div class=card-body><div class=card-top><span class=card-num>01</span><div><h3>Singleton</h3><div class=alias>family · creational</div></div></div><p class=intent><b>Intent —</b> ensure a class has only one instance
+and give the world a single point of access to it.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>Exactly one object must coordinate actions —
+a config store, a connection pool, a logger.</li><li>You need a single shared resource and a
+global, controlled access point to it.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>singleton.py</span></div><pre><code class=language-python>class Singleton:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+a = Singleton()
+b = Singleton()
+assert a is b          # same object every time</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> a plain <code>module</code> is
+already a singleton — its globals are shared on
+import. Reach for a class-based singleton only when
+you need lazy init or inheritance; otherwise a
+module (or a <code>@functools.cache</code>'d
+factory) is cleaner.</p></div></article><article class="card c" id=factory-method data-name="factory method"><div class=card-body><div class=card-top><span class=card-num>02</span><div><h3>Factory Method</h3><div class=alias>aka · virtual constructor</div></div></div><p class=intent><b>Intent —</b> define an interface for creating an
+object, but let subclasses decide which concrete
+class to instantiate.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>A class can't anticipate the type of objects
+it must create.</li><li>You want subclasses to specify the products
+they build.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>factory_method.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Button(ABC):
+    @abstractmethod
+    def render(self) -&gt; str: ...
+
+class HTMLButton(Button):
+    def render(self): return "&lt;button&gt;OK&lt;/button&gt;"
+
+class WinButton(Button):
+    def render(self): return "[ OK ]"
+
+class Dialog(ABC):
+    @abstractmethod
+    def create_button(self) -&gt; Button: ...   # the factory method
+
+    def render(self):                         # uses the product
+        return self.create_button().render()
+
+class WebDialog(Dialog):
+    def create_button(self): return HTMLButton()
+
+print(WebDialog().render())   # &lt;button&gt;OK&lt;/button&gt;</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> since classes are first-class
+objects, you can often just pass the class itself
+(or a callable) as a parameter instead of
+subclassing a creator.</p></div></article><article class="card c" id=abstract-factory data-name="abstract factory"><div class=card-body><div class=card-top><span class=card-num>03</span><div><h3>Abstract Factory</h3><div class=alias>aka · kit</div></div></div><p class=intent><b>Intent —</b> provide an interface for creating
+families of related objects without specifying their
+concrete classes.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>Products must be used together and you want
+to enforce that consistency (e.g. a whole UI
+theme).</li><li>You want to swap an entire family of objects
+in one move.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>abstract_factory.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Button(ABC):   ...
+class Checkbox(ABC): ...
+
+class GUIFactory(ABC):
+    @abstractmethod
+    def button(self) -&gt; Button: ...
+    @abstractmethod
+    def checkbox(self) -&gt; Checkbox: ...
+
+class MacFactory(GUIFactory):
+    def button(self):   return MacButton()
+    def checkbox(self): return MacCheckbox()
+
+class WinFactory(GUIFactory):
+    def button(self):   return WinButton()
+    def checkbox(self): return WinCheckbox()
+
+def build_ui(factory: GUIFactory):
+    return factory.button(), factory.checkbox()</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> Factory Method makes
+<em>one</em> product; Abstract Factory makes a
+coordinated <em>set</em>. A module exposing several
+factory functions is a lightweight stand-in.</p></div></article><article class="card c" id=builder data-name=builder><div class=card-body><div class=card-top><span class=card-num>04</span><div><h3>Builder</h3><div class=alias>family · creational</div></div></div><p class=intent><b>Intent —</b> separate the construction of a
+complex object from its representation so the same
+process can yield different results.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>An object needs many optional parts or a
+long, step-by-step assembly.</li><li>You want a readable, fluent construction API
+instead of a giant constructor.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>builder.py</span></div><pre><code class=language-python>class Pizza:
+    def __init__(self):
+        self.toppings = []
+
+class PizzaBuilder:
+    def __init__(self):
+        self.pizza = Pizza()
+
+    def add(self, topping):
+        self.pizza.toppings.append(topping)
+        return self            # return self =&gt; fluent chaining
+
+    def build(self):
+        return self.pizza
+
+pizza = PizzaBuilder().add("mozzarella").add("basil").build()
+print(pizza.toppings)          # ['mozzarella', 'basil']</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> keyword arguments with
+defaults and <code>@dataclass</code> cover most
+"many optional fields" cases. Save a true Builder
+for genuinely multi-step or validated assembly.</p></div></article><article class="card c" id=prototype data-name=prototype><div class=card-body><div class=card-top><span class=card-num>05</span><div><h3>Prototype</h3><div class=alias>aka · clone</div></div></div><p class=intent><b>Intent —</b> create new objects by copying a
+fully configured existing instance rather than
+building from scratch.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>Construction is expensive and you already
+have a configured exemplar.</li><li>You want to avoid a parallel hierarchy of
+factory classes.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>prototype.py</span></div><pre><code class=language-python>import copy
+
+class Document:
+    def __init__(self, title, sections):
+        self.title = title
+        self.sections = sections
+
+    def clone(self):
+        return copy.deepcopy(self)    # independent deep copy
+
+template = Document("Report", ["intro", "body"])
+draft = template.clone()
+draft.title = "Q3 Report"             # original untouched</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> the standard library
+<em>is</em> the pattern —
+<code>copy.copy</code> (shallow) and
+<code>copy.deepcopy</code> (deep). Customise via
+<code>__copy__</code> / <code>__deepcopy__</code>.</p></div></article><div class="cat-head cat-structural"><span class=idx>FAMILY 02</span><h2>Structural</h2><div class=line></div><p>These patterns describe how classes and objects are
+composed to form larger structures, keeping those
+structures flexible and efficient as they grow.</p></div><article class="card s" id=adapter data-name="adapter wrapper"><div class=card-body><div class=card-top><span class=card-num>06</span><div><h3>Adapter</h3><div class=alias>aka · wrapper</div></div></div><p class=intent><b>Intent —</b> convert the interface of a class
+into another interface clients expect, letting
+incompatible classes work together.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You want to use an existing class but its
+interface doesn't match yours.</li><li>You're integrating a third-party or legacy
+API you can't change.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>adapter.py</span></div><pre><code class=language-python>class EuropeanSocket:           # the adaptee
+    def voltage(self): return 230
+
+class USADevice:                # expects ~120V via .volts()
+    def run(self, source):
+        print("running at", source.volts())
+
+class SocketAdapter:            # adapts European -&gt; USADevice
+    def __init__(self, socket):
+        self._socket = socket
+    def volts(self):
+        return self._socket.voltage() // 2
+
+USADevice().run(SocketAdapter(EuropeanSocket()))   # running at 115</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> duck typing means you only
+need to match the <em>methods actually called</em>,
+not implement a full interface. That makes adapters
+tiny.</p></div></article><article class="card s" id=bridge data-name=bridge><div class=card-body><div class=card-top><span class=card-num>07</span><div><h3>Bridge</h3><div class=alias>family · structural</div></div></div><p class=intent><b>Intent —</b> decouple an abstraction from its
+implementation so the two can vary independently.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You'd otherwise get a class explosion from
+crossing two dimensions (e.g. shapes ×
+renderers).</li><li>Both the abstraction and implementation
+should be extensible by subclassing.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>bridge.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Device(ABC):              # the implementation side
+    @abstractmethod
+    def enable(self): ...
+
+class TV(Device):
+    def enable(self): print("TV on")
+
+class Radio(Device):
+    def enable(self): print("Radio on")
+
+class Remote:                   # the abstraction side
+    def __init__(self, device: Device):
+        self.device = device    # the bridge
+    def power(self):
+        self.device.enable()
+
+Remote(TV()).power()            # TV on
+Remote(Radio()).power()         # Radio on</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> Bridge is composition over
+inheritance, planned up front. The remote "has-a"
+device rather than "is-a" specific remote subclass.</p></div></article><article class="card s" id=composite data-name="composite tree"><div class=card-body><div class=card-top><span class=card-num>08</span><div><h3>Composite</h3><div class=alias>aka · object tree</div></div></div><p class=intent><b>Intent —</b> compose objects into tree structures
+and let clients treat individual objects and
+compositions uniformly.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You have a part-whole hierarchy — files &
+folders, UI widgets, org charts.</li><li>Clients should ignore the difference between
+a leaf and a container.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>composite.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Component(ABC):
+    @abstractmethod
+    def price(self) -&gt; float: ...
+
+class Product(Component):        # leaf
+    def __init__(self, cost): self.cost = cost
+    def price(self): return self.cost
+
+class Box(Component):            # composite
+    def __init__(self): self.items = []
+    def add(self, item): self.items.append(item)
+    def price(self): return sum(i.price() for i in self.items)
+
+box = Box()
+box.add(Product(10))
+inner = Box(); inner.add(Product(5)); box.add(inner)
+print(box.price())               # 15</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> the leaf and composite share
+one method name (<code>price</code>), so recursion
+"just works" — no type checks needed at the call
+site.</p></div></article><article class="card s" id=decorator data-name="decorator wrapper"><div class=card-body><div class=card-top><span class=card-num>09</span><div><h3>Decorator</h3><div class=alias>aka · wrapper</div></div></div><p class=intent><b>Intent —</b> attach additional responsibilities
+to an object dynamically by wrapping it, a flexible
+alternative to subclassing.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You want to add behavior to individual
+objects, not the whole class.</li><li>Subclassing for every combination of
+features would explode.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>decorator.py</span></div><pre><code class=language-python>class Coffee:
+    def cost(self): return 2.0
+    def label(self): return "coffee"
+
+class MilkDecorator:             # wraps any coffee-like object
+    def __init__(self, drink): self._drink = drink
+    def cost(self):  return self._drink.cost() + 0.5
+    def label(self): return self._drink.label() + " + milk"
+
+class SugarDecorator:
+    def __init__(self, drink): self._drink = drink
+    def cost(self):  return self._drink.cost() + 0.2
+    def label(self): return self._drink.label() + " + sugar"
+
+order = SugarDecorator(MilkDecorator(Coffee()))
+print(order.label(), order.cost())   # coffee + milk + sugar 2.7</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> don't confuse this with
+Python's <code>@decorator</code> syntax — that's a
+language-level <em>function</em> wrapper inspired by
+the same idea. Both wrap to add behavior.</p></div></article><article class="card s" id=facade data-name=facade><div class=card-body><div class=card-top><span class=card-num>10</span><div><h3>Facade</h3><div class=alias>family · structural</div></div></div><p class=intent><b>Intent —</b> provide a unified, simplified
+interface to a set of interfaces in a subsystem.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>A subsystem is complex and most clients only
+need the common path.</li><li>You want to decouple clients from many
+moving internal parts.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>facade.py</span></div><pre><code class=language-python>class CPU:    def boot(self):  print("cpu: boot")
+class Memory: def load(self):  print("mem: load")
+class Disk:   def read(self):  print("disk: read")
+
+class Computer:                  # the facade
+    def __init__(self):
+        self._cpu, self._mem, self._disk = CPU(), Memory(), Disk()
+    def start(self):             # one simple call hides the dance
+        self._cpu.boot()
+        self._disk.read()
+        self._mem.load()
+
+Computer().start()</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> a module's public functions
+often <em>are</em> a facade over private helpers —
+e.g. <code>requests.get()</code> hiding sessions,
+adapters, and pools.</p></div></article><article class="card s" id=flyweight data-name="flyweight cache"><div class=card-body><div class=card-top><span class=card-num>11</span><div><h3>Flyweight</h3><div class=alias>aka · cache / shared object</div></div></div><p class=intent><b>Intent —</b> use sharing to support large numbers
+of fine-grained objects efficiently by separating
+shared (intrinsic) from unique (extrinsic) state.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>An app spawns a huge number of objects with
+lots of duplicated state.</li><li>Memory cost matters and the duplicated state
+can be shared.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>flyweight.py</span></div><pre><code class=language-python>class TreeType:                  # intrinsic, shared state
+    def __init__(self, name, texture):
+        self.name, self.texture = name, texture
+
+class TreeFactory:
+    _pool = {}
+    @classmethod
+    def get(cls, name, texture):
+        key = (name, texture)
+        if key not in cls._pool:
+            cls._pool[key] = TreeType(name, texture)
+        return cls._pool[key]     # reuse, never duplicate
+
+oak_a = TreeFactory.get("oak", "bark.png")
+oak_b = TreeFactory.get("oak", "bark.png")
+assert oak_a is oak_b            # one shared instance; (x, y) stays extrinsic</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> Python already interns small
+ints and short strings. For your own objects, a dict
+pool or <code>@functools.cache</code> on a factory
+gives you flyweight behavior for free.</p></div></article><article class="card s" id=proxy data-name="proxy surrogate"><div class=card-body><div class=card-top><span class=card-num>12</span><div><h3>Proxy</h3><div class=alias>aka · surrogate</div></div></div><p class=intent><b>Intent —</b> provide a placeholder for another
+object to control access to it — for laziness,
+caching, logging, or protection.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You want lazy/expensive initialization
+(virtual proxy).</li><li>You need access control, caching, or logging
+around an object.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>proxy.py</span></div><pre><code class=language-python>class Image:                     # the real, expensive object
+    def __init__(self, path):
+        self.path = path
+        print(f"loading {path}…")   # heavy work in ctor
+    def display(self): print(f"showing {self.path}")
+
+class LazyImage:                 # virtual proxy — same interface
+    def __init__(self, path):
+        self.path = path
+        self._real = None
+    def display(self):
+        if self._real is None:       # load only on first use
+            self._real = Image(self.path)
+        self._real.display()
+
+img = LazyImage("cat.png")       # nothing loaded yet
+img.display()                    # loads, then shows</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> override
+<code>__getattr__</code> to forward unknown
+attributes to the wrapped object, and you get a
+transparent proxy with almost no boilerplate.</p></div></article><div class="cat-head cat-behavioral"><span class=idx>FAMILY 03</span><h2>Behavioral</h2><div class=line></div><p>These patterns are concerned with algorithms and the
+assignment of responsibilities between objects — the
+patterns of communication that emerge between them.</p></div><article class="card b" id=chain data-name="chain of responsibility"><div class=card-body><div class=card-top><span class=card-num>13</span><div><h3>Chain of Responsibility</h3><div class=alias>family · behavioral</div></div></div><p class=intent><b>Intent —</b> pass a request along a chain of
+handlers until one of them handles it, decoupling
+sender from receiver.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>More than one object may handle a request
+and the handler isn't known up front.</li><li>You want to issue a request without
+hard-coding the receiver — e.g. middleware,
+event bubbling.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>chain.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Handler(ABC):
+    def __init__(self): self._next = None
+    def set_next(self, handler):
+        self._next = handler
+        return handler           # enables chaining
+    def handle(self, level):
+        if self._next:
+            return self._next.handle(level)
+        return None
+
+class InfoHandler(Handler):
+    def handle(self, level):
+        if level == "info": return "logged info"
+        return super().handle(level)
+
+class ErrorHandler(Handler):
+    def handle(self, level):
+        if level == "error": return "alerted on error"
+        return super().handle(level)
+
+chain = InfoHandler()
+chain.set_next(ErrorHandler())
+print(chain.handle("error"))     # alerted on error</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> a simple list of callables you
+loop over — stopping at the first truthy return — is
+a flat, very readable version of the same idea.</p></div></article><article class="card b" id=command data-name="command action"><div class=card-body><div class=card-top><span class=card-num>14</span><div><h3>Command</h3><div class=alias>aka · action / transaction</div></div></div><p class=intent><b>Intent —</b> encapsulate a request as an object,
+letting you parameterize, queue, log, and undo
+operations.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You need undo/redo, queues, or a history of
+operations.</li><li>You want to decouple the object that invokes
+from the one that performs.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>command.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Command(ABC):
+    @abstractmethod
+    def execute(self): ...
+
+class Light:
+    def on(self):  print("light on")
+    def off(self): print("light off")
+
+class LightOnCommand(Command):
+    def __init__(self, light): self.light = light
+    def execute(self): self.light.on()
+
+class Remote:                    # the invoker
+    def __init__(self): self.history = []
+    def submit(self, command):
+        command.execute()
+        self.history.append(command)
+
+Remote().submit(LightOnCommand(Light()))</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> a closure or
+<code>functools.partial</code> captures "an action
+plus its args" in one callable — often all the
+Command you need unless you also want undo.</p></div></article><article class="card b" id=interpreter data-name="interpreter grammar"><div class=card-body><div class=card-top><span class=card-num>15</span><div><h3>Interpreter</h3><div class=alias>family · behavioral</div></div></div><p class=intent><b>Intent —</b> given a language, define a
+representation for its grammar and an interpreter
+that uses it to evaluate sentences.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You have a simple, well-defined grammar to
+evaluate (rules, filters, math).</li><li>Efficiency isn't critical and the grammar is
+small enough to map to classes.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>interpreter.py</span></div><pre><code class=language-python>class Number:
+    def __init__(self, value): self.value = value
+    def interpret(self): return self.value
+
+class Add:
+    def __init__(self, left, right):
+        self.left, self.right = left, right
+    def interpret(self):
+        return self.left.interpret() + self.right.interpret()
+
+class Mul:
+    def __init__(self, left, right):
+        self.left, self.right = left, right
+    def interpret(self):
+        return self.left.interpret() * self.right.interpret()
+
+# (2 + 3) * 4
+tree = Mul(Add(Number(2), Number(3)), Number(4))
+print(tree.interpret())          # 20</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> for anything beyond a toy
+grammar, reach for a real parser (<code>ast</code>,
+<code>lark</code>, <code>pyparsing</code>).
+Hand-rolled Interpreter trees get unwieldy fast.</p></div></article><article class="card b" id=iterator data-name="iterator cursor"><div class=card-body><div class=card-top><span class=card-num>16</span><div><h3>Iterator</h3><div class=alias>aka · cursor</div></div></div><p class=intent><b>Intent —</b> provide a way to access the elements
+of a collection sequentially without exposing its
+underlying representation.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You want a uniform traversal API across
+different collection types.</li><li>You need multiple, independent traversals of
+the same structure.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>iterator.py</span></div><pre><code class=language-python>class Countdown:
+    def __init__(self, start): self.start = start
+
+    def __iter__(self):          # generator = iterator, for free
+        n = self.start
+        while n &gt; 0:
+            yield n
+            n -= 1
+
+for x in Countdown(3):
+    print(x)                     # 3, 2, 1</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> this is <em>the</em> pattern
+Python builds in. Implement
+<code>__iter__</code> (often as a generator) and the
+whole language — <code>for</code>, comprehensions,
+<code>in</code>, unpacking — cooperates
+automatically.</p></div></article><article class="card b" id=mediator data-name="mediator hub"><div class=card-body><div class=card-top><span class=card-num>17</span><div><h3>Mediator</h3><div class=alias>aka · intermediary</div></div></div><p class=intent><b>Intent —</b> define an object that encapsulates
+how a set of objects interact, promoting loose
+coupling by keeping them from referring to each
+other directly.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>Many objects communicate in complex, tangled
+ways (a "spaghetti" of references).</li><li>You want to centralize and reuse interaction
+logic.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>mediator.py</span></div><pre><code class=language-python>class ChatRoom:                  # the mediator
+    def __init__(self): self.users = []
+    def join(self, user):
+        self.users.append(user); user.room = self
+    def broadcast(self, sender, msg):
+        for u in self.users:
+            if u is not sender:
+                u.receive(sender.name, msg)
+
+class User:
+    def __init__(self, name): self.name, self.room = name, None
+    def send(self, msg):    self.room.broadcast(self, msg)
+    def receive(self, who, msg): print(f"{self.name} got '{msg}' from {who}")
+
+room = ChatRoom()
+a, b = User("Ada"), User("Bon")
+room.join(a); room.join(b)
+a.send("hi")                     # Bon got 'hi' from Ada</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> Mediator centralizes
+<em>who-talks-to-whom</em>; Observer centralizes
+<em>broadcast on change</em>. They often appear
+together in event systems.</p></div></article><article class="card b" id=memento data-name="memento snapshot undo"><div class=card-body><div class=card-top><span class=card-num>18</span><div><h3>Memento</h3><div class=alias>aka · snapshot / token</div></div></div><p class=intent><b>Intent —</b> capture an object's internal state
+so it can be restored later, without violating
+encapsulation.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You need snapshots for undo, rollback, or
+checkpoints.</li><li>Exposing the object's internals to grab that
+state would break encapsulation.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>memento.py</span></div><pre><code class=language-python>class Memento:
+    def __init__(self, state): self._state = state   # opaque to others
+
+class Editor:
+    def __init__(self): self.text = ""
+    def type(self, s): self.text += s
+    def save(self):    return Memento(self.text)     # create snapshot
+    def restore(self, m): self.text = m._state       # roll back
+
+editor = Editor()
+editor.type("hello")
+checkpoint = editor.save()
+editor.type(" world")
+editor.restore(checkpoint)
+print(editor.text)               # hello</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b>
+<code>copy.deepcopy(obj.__dict__)</code> or
+<code>pickle</code> can serve as a quick memento for
+whole-object snapshots when fields are simple.</p></div></article><article class="card b" id=observer data-name="observer pubsub event"><div class=card-body><div class=card-top><span class=card-num>19</span><div><h3>Observer</h3><div class=alias>aka · publish / subscribe</div></div></div><p class=intent><b>Intent —</b> define a one-to-many dependency so
+that when one object changes state, all its
+dependents are notified automatically.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>A change to one object requires changing
+others, and you don't know how many.</li><li>You want event-driven decoupling between a
+source and its listeners.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>observer.py</span></div><pre><code class=language-python>class Subject:                   # the publisher
+    def __init__(self): self._observers = []
+    def subscribe(self, fn):   self._observers.append(fn)
+    def unsubscribe(self, fn): self._observers.remove(fn)
+    def notify(self, data):
+        for fn in self._observers:
+            fn(data)
+
+def email_alert(data): print("email:", data)
+def sms_alert(data):   print("sms:", data)
+
+news = Subject()
+news.subscribe(email_alert)
+news.subscribe(sms_alert)
+news.notify("server down")       # both fire</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> subscribers can be plain
+functions — no Observer base class required. This
+callback-list form powers most GUI and async event
+handling.</p></div></article><article class="card b" id=state data-name="state machine"><div class=card-body><div class=card-top><span class=card-num>20</span><div><h3>State</h3><div class=alias>aka · objects for states</div></div></div><p class=intent><b>Intent —</b> allow an object to alter its
+behavior when its internal state changes — it
+appears to change its class.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>An object's behavior depends on its state
+and must change at runtime.</li><li>You have sprawling conditionals keyed on a
+state variable.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>state.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class State(ABC):
+    @abstractmethod
+    def next(self): ...
+    @abstractmethod
+    def signal(self): ...
+
+class Red(State):
+    def next(self):   return Green()
+    def signal(self): return "STOP"
+
+class Green(State):
+    def next(self):   return Red()
+    def signal(self): return "GO"
+
+class TrafficLight:
+    def __init__(self): self.state = Red()
+    def change(self):   self.state = self.state.next()
+    def show(self):     return self.state.signal()
+
+light = TrafficLight()
+print(light.show())              # STOP
+light.change()
+print(light.show())              # GO</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> State and Strategy share a
+structure; the difference is intent — State objects
+know about and trigger transitions to
+<em>each other</em>, strategies don't.</p></div></article><article class="card b" id=strategy data-name="strategy policy algorithm"><div class=card-body><div class=card-top><span class=card-num>21</span><div><h3>Strategy</h3><div class=alias>aka · policy</div></div></div><p class=intent><b>Intent —</b> define a family of algorithms,
+encapsulate each, and make them interchangeable at
+runtime.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You have several ways to do one thing and
+want to pick at runtime.</li><li>You want to strip a bulky conditional that
+selects behavior.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>strategy.py</span></div><pre><code class=language-python># In Python, strategies are usually just functions.
+def by_length(s):       return len(s)
+def alphabetical(s):    return s.lower()
+
+def sort_words(words, strategy):
+    return sorted(words, key=strategy)   # inject the algorithm
+
+words = ["pear", "Fig", "banana"]
+print(sort_words(words, by_length))      # ['Fig', 'pear', 'banana']
+print(sort_words(words, alphabetical))   # ['banana', 'Fig', 'pear']</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> first-class functions collapse
+the classic Strategy hierarchy into a single
+parameter. <code>sorted(..., key=fn)</code> is
+Strategy in the standard library.</p></div></article><article class="card b" id=template data-name="template method"><div class=card-body><div class=card-top><span class=card-num>22</span><div><h3>Template Method</h3><div class=alias>family · behavioral</div></div></div><p class=intent><b>Intent —</b> define the skeleton of an algorithm
+in a method, deferring some steps to subclasses
+without changing the algorithm's structure.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>Several variants share an overall workflow
+but differ in specific steps.</li><li>You want to lock the invariant order while
+letting steps vary.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>template_method.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Report(ABC):
+    def generate(self):          # the template method (fixed order)
+        self.header()
+        self.body()              # the varying step
+        self.footer()
+    def header(self): print("=== REPORT ===")
+    @abstractmethod
+    def body(self): ...
+    def footer(self): print("=== END ===")
+
+class SalesReport(Report):
+    def body(self): print("rows of sales data")
+
+SalesReport().generate()</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b> Template Method uses
+inheritance to inject steps; Strategy uses
+composition. If steps need to vary independently,
+prefer passing callables.</p></div></article><article class="card b" id=visitor data-name="visitor double dispatch"><div class=card-body><div class=card-top><span class=card-num>23</span><div><h3>Visitor</h3><div class=alias>aka · double dispatch</div></div></div><p class=intent><b>Intent —</b> represent an operation to perform on
+the elements of an object structure, letting you add
+new operations without changing the element classes.</p><div class=usewhen><div class=lbl>Use when</div><ul><li>You frequently add operations over a stable
+class hierarchy.</li><li>Unrelated operations would otherwise pollute
+the element classes.</li></ul></div></div><div class=code-wrap><div class=code-head><div class=dotrow><i></i><i></i><i></i></div><span class=fname>visitor.py</span></div><pre><code class=language-python>from abc import ABC, abstractmethod
+
+class Shape(ABC):
+    @abstractmethod
+    def accept(self, visitor): ...
+
+class Circle(Shape):
+    def __init__(self, r): self.r = r
+    def accept(self, v): return v.visit_circle(self)
+
+class Square(Shape):
+    def __init__(self, side): self.side = side
+    def accept(self, v): return v.visit_square(self)
+
+class AreaVisitor:               # a new operation, added externally
+    def visit_circle(self, c): return 3.14159 * c.r ** 2
+    def visit_square(self, s): return s.side ** 2
+
+shapes = [Circle(2), Square(3)]
+area = AreaVisitor()
+print([s.accept(area) for s in shapes])   # [12.566…, 9]</code></pre></div><div class=note><span class=ic>Py</span><p><b>Pythonic note:</b>
+<code>functools.singledispatch</code> gives you
+type-based operation dispatch without the
+<code>accept</code> boilerplate — a far more
+Pythonic Visitor for many cases.</p></div></article><div class=empty id=empty>// no patterns match that filter</div><section class=principles><h2>Before you reach for a pattern</h2><div class=sub>// the meta-rules that matter more than any single
+pattern</div><div class=grid2><div><dt>Pattern ≠ goal</dt><dd>Patterns are vocabulary for problems you already
+have. Don't go looking for a place to use one —
+that's how over-engineering starts.</dd></div><div><dt>Composition > inheritance</dt><dd>Most structural and behavioral patterns are just
+"prefer has-a over is-a" in different costumes.
+Reach for objects holding objects.</dd></div><div><dt>Program to an interface</dt><dd>Depend on what an object <em>does</em> (its
+methods), not what it <em>is</em>. In Python,
+duck typing makes this nearly free.</dd></div><div><dt>Many GoF patterns dissolve in Python</dt><dd>First-class functions, generators, decorators,
+<code>copy</code>, and modules already
+<em>are</em> Strategy, Iterator, Decorator,
+Prototype, and Singleton. Use the language
+first.</dd></div><div><dt>Encapsulate what varies</dt><dd>Find the part of your design that changes and
+isolate it. Almost every pattern is one
+application of this single idea.</dd></div><div><dt>Keep it the simplest thing that works</dt><dd>A function beats a class; a class beats a
+hierarchy. Escalate to a full pattern only when
+the simpler form genuinely hurts.</dd></div></div></section></main></div><footer class=foot><span>PYTHON DESIGN PATTERNS · <b>FIELD MANUAL</b> · GANG OF FOUR, 23
+PATTERNS</span>
+<span>BUILT FOR PYTHON <b>3.x</b> · ESCAPE = CLEAR FILTER</span></footer><script>document.addEventListener("DOMContentLoaded",()=>{window.hljs&&document.querySelectorAll("pre code").forEach(e=>hljs.highlightElement(e))});const input=document.getElementById("filter"),cards=Array.from(document.querySelectorAll(".card[data-name]")),empty=document.getElementById("empty"),navLinks=Array.from(document.querySelectorAll(".nav-group a"));function applyFilter(e){e=e.trim().toLowerCase();let t=0;cards.forEach(n=>{const o=(n.dataset.name+" "+n.id).toLowerCase(),s=!e||o.includes(e);n.style.display=s?"":"none",s&&t++}),navLinks.forEach(e=>{const n=e.getAttribute("href").slice(1),t=document.getElementById(n);e.parentElement.style.display=t&&t.style.display==="none"?"none":""}),empty.style.display=t?"none":"block"}input.addEventListener("input",e=>applyFilter(e.target.value)),input.addEventListener("keydown",e=>{e.key==="Escape"&&(input.value="",applyFilter(""),input.blur())});const spyTargets=cards.map(e=>e.id),linkFor=e=>navLinks.find(t=>t.getAttribute("href")==="#"+e),io=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){navLinks.forEach(e=>e.classList.remove("active"));const t=linkFor(e.target.id);t&&t.classList.add("active")}})},{rootMargin:"-30% 0px -60% 0px",threshold:0});cards.forEach(e=>io.observe(e))</script></body></html>
