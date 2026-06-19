@@ -27,3 +27,6 @@ hugo.linux
 .venv/
 
 drafts/
+
+# Brainstorming specs / design docs — keep local, never commit
+docs/
