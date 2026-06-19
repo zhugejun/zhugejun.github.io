@@ -22,8 +22,10 @@
     {{- end }}
     {{- end }}
   </h1>
+  {{- if not (.Param "ShowRssButtonInSectionTermList") -}}
   {{- with .OutputFormats.Get "rss" -}}
   <a class="rss-link" href="{{ .RelPermalink }}" title="Subscribe via RSS">🛰️ RSS for this section</a>
+  {{- end -}}
   {{- end -}}
   {{- if .Description }}
   <div class="post-description">

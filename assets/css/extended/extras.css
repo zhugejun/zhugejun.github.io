@@ -20,7 +20,7 @@
   z-index: 1000;
   transition: width .08s linear;
 }
-.post-meta .updated-stamp { color: var(--accent); }
+.updated-stamp { color: var(--accent); }
 .rss-link {
   display: inline-flex;
   align-items: center;
