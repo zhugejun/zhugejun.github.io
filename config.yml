@@ -32,6 +32,9 @@ languages:
         - name: Projects
           url: series/
           weight: 6
+        - name: Tools
+          url: tools/
+          weight: 7
         - name: Search
           url: search/
           weight: 10

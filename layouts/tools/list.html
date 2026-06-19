@@ -1,0 +1,20 @@
+{{- define "main" }}
+<header class="page-header">
+  <h1>{{ .Title }}</h1>
+  {{ with .Description }}<p>{{ . }}</p>{{ end }}
+</header>
+<div class="post-content">
+  {{ .Content }}
+  {{- with .Params.tools }}
+  <section class="project-cards" aria-label="Interactive tools">
+    {{- range . }}
+    <a class="project-card" href="{{ .url | relURL }}">
+      <span class="project-tag">tool</span>
+      <h3>{{ .title }}</h3>
+      <p>{{ .desc }}</p>
+    </a>
+    {{- end }}
+  </section>
+  {{- end }}
+</div>
+{{- end }}
