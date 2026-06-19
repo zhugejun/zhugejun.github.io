@@ -1,0 +1,24 @@
+{{- with .Params.series }}
+{{- $series := . -}}
+{{- /* Collect all pages in this site that share this series value, ordered by date */ -}}
+{{- $members := where (where site.RegularPages "Params.series" $series) "Permalink" "!=" $.Permalink -}}
+{{- $all := where site.RegularPages "Params.series" $series -}}
+{{- $sorted := sort $all "Date" "asc" -}}
+{{- $idx := -1 -}}
+{{- range $i, $p := $sorted }}{{ if eq $p.Permalink $.Permalink }}{{ $idx = $i }}{{ end }}{{ end -}}
+{{- if ge $idx 0 }}
+<nav class="series-nav" aria-label="Series navigation">
+  <div class="series-nav-title">Part of the <strong>{{ $series }}</strong> series</div>
+  <div class="series-nav-links">
+    {{- if gt $idx 0 }}
+      {{- $prev := index $sorted (sub $idx 1) }}
+      <a class="series-prev" href="{{ $prev.RelPermalink }}">← {{ $prev.Title }}</a>
+    {{- else }}<span></span>{{ end }}
+    {{- if lt $idx (sub (len $sorted) 1) }}
+      {{- $next := index $sorted (add $idx 1) }}
+      <a class="series-next" href="{{ $next.RelPermalink }}">{{ $next.Title }} →</a>
+    {{- else }}<span></span>{{ end }}
+  </div>
+</nav>
+{{- end }}
+{{- end -}}

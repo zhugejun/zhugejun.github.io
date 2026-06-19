@@ -1,0 +1,11 @@
+.series-nav {
+  margin: 2rem 0;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--border, #d0d7de);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  background: var(--entry);
+}
+.series-nav-title { font-size: .85rem; opacity: .8; margin-bottom: .6rem; }
+.series-nav-links { display: flex; justify-content: space-between; gap: 1rem; }
+.series-nav-links a { color: var(--accent); font-weight: 500; }
