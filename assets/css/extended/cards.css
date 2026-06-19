@@ -15,7 +15,7 @@
 .project-card:hover {
   transform: translateY(-2px);
   border-color: var(--accent);
-  box-shadow: 0 6px 20px rgba(79,70,229,.12);
+  box-shadow: 0 6px 20px rgba(37,99,235,.12);
 }
 .project-card h3 { margin: .4rem 0 .3rem; }
 .project-card p { margin: 0; opacity: .8; font-size: .92rem; }

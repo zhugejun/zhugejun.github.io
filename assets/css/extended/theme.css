@@ -23,11 +23,11 @@
 
 /* ===== Accent color ===== */
 :root {
-  --accent: #4f46e5;          /* indigo-600 */
+  --accent: #2563eb;          /* blue-600 */
   --accent-contrast: #ffffff;
 }
 :root[data-theme="dark"] {
-  --accent: #818cf8;          /* indigo-400, brighter on dark */
+  --accent: #60a5fa;          /* blue-400, brighter on dark */
   --accent-contrast: #0b0b14;
 }
 
