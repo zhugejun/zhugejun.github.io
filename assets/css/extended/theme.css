@@ -1,0 +1,75 @@
+/* ===== Fira Code (self-hosted) ===== */
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/FiraCode-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/FiraCode-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/FiraCode-Bold.woff2") format("woff2");
+}
+
+/* ===== Accent color ===== */
+:root {
+  --accent: #4f46e5;          /* indigo-600 */
+  --accent-contrast: #ffffff;
+}
+:root[data-theme="dark"] {
+  --accent: #818cf8;          /* indigo-400, brighter on dark */
+  --accent-contrast: #0b0b14;
+}
+
+/* ===== Body + code fonts ===== */
+:root {
+  --code-font: "Fira Code", ui-monospace, SFMono-Regular, "SF Mono",
+    Menlo, Consolas, monospace;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+    system-ui, Roboto, Helvetica, Arial, sans-serif;
+}
+code, pre, kbd, .chroma, .highlight pre code {
+  font-family: var(--code-font);
+  font-feature-settings: "liga" 0;   /* disable code ligatures by default */
+}
+
+/* ===== Accent wiring ===== */
+a { color: var(--accent); }
+.post-content a,
+.entry-content a { text-decoration-color: var(--accent); }
+.nav .active,
+#menu a.active { border-bottom: 2px solid var(--accent); }
+.post-tags a,
+.terms-tags a {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+.post-tags a:hover,
+.terms-tags a:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+hr { border-top: 1px solid var(--accent); opacity: .25; }
+blockquote { border-inline-start: 3px solid var(--accent); }
+.copy-code:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ===== Dark-palette tuning (less flat than stock) ===== */
+:root[data-theme="dark"] {
+  --theme: #14141b;     /* page background */
+  --entry: #1d1d29;     /* card/entry background */
+  --code-bg: #1d1d29;
+  --border: #2a2a3a;
+}
