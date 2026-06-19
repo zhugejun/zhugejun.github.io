@@ -1,0 +1,31 @@
+.project-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2.5rem;
+}
+.project-card {
+  display: block;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--border, #d0d7de);
+  border-radius: 10px;
+  background: var(--entry);
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px rgba(79,70,229,.12);
+}
+.project-card h3 { margin: .4rem 0 .3rem; }
+.project-card p { margin: 0; opacity: .8; font-size: .92rem; }
+.project-tag {
+  display: inline-block;
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: .1rem .5rem;
+}
