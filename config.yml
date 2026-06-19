@@ -148,6 +148,20 @@ params:
     apple_touch_icon: '/favicon.svg'
     safari_pinned_tab: '/favicon.svg'
 
+  projectCards:
+    - title: StatsCalculators.com
+      desc: Free, fast statistics calculators with step-by-step explanations.
+      url: /series/statscalculators/
+      tag: building
+    - title: MobileForm.app
+      desc: Turn any form into a clean mobile experience.
+      url: /series/mobileform/
+      tag: building
+    - title: Interactive Tools
+      desc: Small in-browser utilities I build while learning.
+      url: /tools/
+      tag: tools
+
   # cover:
   #     hidden: true # hide everywhere but not in structured data
   #     hiddenInList: true # hide on list pages and home
