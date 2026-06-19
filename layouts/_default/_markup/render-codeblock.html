@@ -1,0 +1,11 @@
+{{- $lang := .Type | default "text" -}}
+{{- $file := .Attributes.file -}}
+{{- $opts := dict "lineNumbersInTable" false -}}
+<div class="highlight-wrap">
+  <div class="code-label">
+    {{- with $file }}<span class="code-file">{{ . }}</span>{{ end -}}
+    <span class="code-lang">{{ $lang }}</span>
+  </div>
+  {{- /* Re-emit highlighting; pass through all options (hl_lines, linenos, etc.) */ -}}
+  {{ highlight (trim .Inner "\n") $lang (merge $opts .Options) }}
+</div>
