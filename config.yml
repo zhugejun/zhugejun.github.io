@@ -32,9 +32,6 @@ languages:
         - name: Projects
           url: series/
           weight: 6
-        - name: Tools
-          url: tools/
-          weight: 7
         - name: Search
           url: search/
           weight: 10
@@ -99,7 +96,7 @@ params:
     Title: "👋 Hi, I'm Gejun Zhu"
     Content: >
       Welcome to my learning journal. I learn by building — currently working on
-      [StatsCalculators.com](/series/statscalculators/) and [MobileForm.app](/series/mobileform/),
+      [StatsCalculators.com](/series/statscalculators/)
       and writing about the process as I go.
       Inspired by Feynman's insight, "What I cannot create, I don't understand,"
       I document what I build, what I break, and what I learn along the way.
@@ -150,20 +147,6 @@ params:
     favicon32x32: '/favicon.svg'
     apple_touch_icon: '/favicon.svg'
     safari_pinned_tab: '/favicon.svg'
-
-  projectCards:
-    - title: StatsCalculators.com
-      desc: Free, fast statistics calculators with step-by-step explanations.
-      url: /series/statscalculators/
-      tag: building
-    - title: MobileForm.app
-      desc: Turn any form into a clean mobile experience.
-      url: /series/mobileform/
-      tag: building
-    - title: Interactive Tools
-      desc: Small in-browser utilities I build while learning.
-      url: /tools/
-      tag: tools
 
   # cover:
   #     hidden: true # hide everywhere but not in structured data
