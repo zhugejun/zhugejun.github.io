@@ -1,0 +1,19 @@
+{{- /* Reading progress bar — only on single post pages */ -}}
+{{- if .IsPage }}
+<div id="reading-progress" aria-hidden="true"></div>
+<script>
+(function () {
+  var bar = document.getElementById("reading-progress");
+  if (!bar) return;
+  function update() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var pct = max > 0 ? (h.scrollTop || document.body.scrollTop) / max * 100 : 0;
+    bar.style.width = pct + "%";
+  }
+  document.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+})();
+</script>
+{{- end }}

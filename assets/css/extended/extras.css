@@ -9,3 +9,23 @@
 .series-nav-title { font-size: .85rem; opacity: .8; margin-bottom: .6rem; }
 .series-nav-links { display: flex; justify-content: space-between; gap: 1rem; }
 .series-nav-links a { color: var(--accent); font-weight: 500; }
+
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: var(--accent);
+  z-index: 1000;
+  transition: width .08s linear;
+}
+.post-meta .updated-stamp { color: var(--accent); }
+.rss-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .85rem;
+  color: var(--accent);
+  margin: .5rem 0 1rem;
+}
