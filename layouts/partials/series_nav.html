@@ -1,7 +1,6 @@
 {{- with .Params.series }}
 {{- $series := . -}}
 {{- /* Collect all pages in this site that share this series value, ordered by date */ -}}
-{{- $members := where (where site.RegularPages "Params.series" $series) "Permalink" "!=" $.Permalink -}}
 {{- $all := where site.RegularPages "Params.series" $series -}}
 {{- $sorted := sort $all "Date" "asc" -}}
 {{- $idx := -1 -}}

@@ -12,7 +12,7 @@
     bar.style.width = pct + "%";
   }
   document.addEventListener("scroll", update, { passive: true });
-  window.addEventListener("resize", update);
+  window.addEventListener("resize", update, { passive: true });
   update();
 })();
 </script>
