@@ -163,3 +163,14 @@
 .post-content pre.chroma { background: #f6f8fa; }
 :root[data-theme="dark"] .post-content .highlight,
 :root[data-theme="dark"] .post-content pre.chroma { background: var(--code-bg, #1d1d29); }
+
+/* ===== dbt / Jinja-in-SQL fix =====
+   The SQL lexer tags Jinja ({{ ref(...) }}, dbt_utils, etc.) as Error tokens.
+   github-light paints .err with a maroon background (#82071e); because the dark
+   .err rule only re-set the color, that maroon background bled into dark mode.
+   Neutralize .err in both themes so dbt templating reads as normal code. */
+.chroma .err,
+:root[data-theme="dark"] .chroma .err {
+  color: inherit;
+  background: none;
+}
