@@ -52,12 +52,5 @@ For my day-to-day job, I can wrangle enrollment with SQL, automate reports with 
 There are times that I need to run queries to pull data from CAMS directly, download data from ZogoTech (our third-party OLAP vendor), save it as CSV, and load it to R for aggregation, visualization, and further analysis.
 Sometimes, I need to ingest the enrollment history data from National Student Clearinghouse (NSC) and combine it with data from multiple resources to create a superintendent report.&lt;/p&gt;</description>
     </item>
-    <item>
-      <title></title>
-      <link>https://gejun.name/analytics-engineering/building-college-analytics-system/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://gejun.name/analytics-engineering/building-college-analytics-system/</guid>
-      <description></description>
-    </item>
   </channel>
 </rss>
