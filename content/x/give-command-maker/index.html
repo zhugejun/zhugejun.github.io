@@ -1477,21 +1477,21 @@ tags:
         }
 
         /* ---------- COMMAND BUILDER ---------- */
-        function clean(s) {
-          return String(s).replace(/[\\"]/g, '');
-        } // drop backslash + double-quote
-        function jsonText(text, color, opts) {
-          opts = opts || {};
-          let o = '{"text":"' + clean(text) + '"';
-          if (color) o += ',"color":"' + color + '"';
-          o += ',"italic":' + (opts.italic ? 'true' : 'false');
-          if (opts.bold) o += ',"bold":true';
-          o += '}';
-          return o;
+        // Since Java 1.21.5, text components in commands are written as SNBT compounds
+        // (e.g. {text:"Hi",color:"gold"}), NOT as single-quoted JSON strings.
+        function snbtStr(s) {
+          return (
+            '"' + String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
+          );
         }
-        function sq(json) {
-          return "'" + json.replace(/'/g, "\\'") + "'";
-        } // single-quote wrap for the command
+        function textComp(text, color, opts) {
+          opts = opts || {};
+          const parts = ['text:' + snbtStr(text)];
+          if (color) parts.push('color:' + snbtStr(color));
+          parts.push('italic:' + (opts.italic ? 'true' : 'false'));
+          if (opts.bold) parts.push('bold:true');
+          return '{' + parts.join(',') + '}';
+        }
 
         function buildCommand() {
           const id = itemId();
@@ -1500,12 +1500,10 @@ tags:
           if (S.name.trim())
             comps.push(
               'custom_name=' +
-                sq(
-                  jsonText(S.name, S.nameColor, {
-                    italic: S.italic,
-                    bold: S.bold,
-                  }),
-                ),
+                textComp(S.name, S.nameColor, {
+                  italic: S.italic,
+                  bold: S.bold,
+                }),
             );
 
           const loreFilled = S.lore.filter((l) => l.text.trim());
@@ -1513,7 +1511,7 @@ tags:
             comps.push(
               'lore=[' +
                 loreFilled
-                  .map((l) => sq(jsonText(l.text, l.color, { italic: false })))
+                  .map((l) => textComp(l.text, l.color, { italic: false }))
                   .join(',') +
                 ']',
             );
