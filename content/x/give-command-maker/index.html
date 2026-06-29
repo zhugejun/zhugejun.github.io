@@ -421,6 +421,30 @@ tags:
         padding-left: 2px;
       }
 
+      /* attribute rows */
+      .attr-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        background: var(--dirt);
+        color: #fff;
+        border: 3px solid var(--line);
+        padding: 6px 8px;
+      }
+      .attr-row .an {
+        flex: 1 1 130px;
+        font-size: 18px;
+      }
+      .attr-row input[type='number'] {
+        width: 82px;
+      }
+      .attr-row select {
+        font-size: 16px;
+        max-width: 120px;
+      }
+
       /* toggles */
       .toggle {
         display: inline-flex;
@@ -734,9 +758,36 @@ tags:
             </p>
           </section>
 
+          <!-- ATTRIBUTES -->
+          <section class="panel bevel">
+            <h2>
+              <span class="ic">📊</span> 5 · Attributes
+              <span
+                style="
+                  font-family: var(--body);
+                  font-size: 16px;
+                  color: #7a7464;
+                "
+                >(stat boosts)</span
+              >
+            </h2>
+            <input
+              type="text"
+              id="attrSearch"
+              class="ench-search"
+              placeholder="Search… health, damage, speed, size"
+            />
+            <div class="ench-list" id="attrList"></div>
+            <div id="attrRows"></div>
+            <p class="hint">
+              Tap to add a stat boost. Most work while the item is held or worn.
+              Type the amount — go negative for cursed gear!
+            </p>
+          </section>
+
           <!-- MAGIC OPTIONS -->
           <section class="panel bevel">
-            <h2><span class="ic">🪄</span> 5 · Extra magic</h2>
+            <h2><span class="ic">🪄</span> 6 · Extra magic</h2>
             <div class="toggle" id="tUnbreak">
               <span class="box"></span> Unbreakable (never wears out)
             </div>
@@ -952,6 +1003,84 @@ tags:
           return ENCH_MAX[id] || 99;
         } // unknown ids: assume multi-level so the numeral shows
 
+        // [id, label, defaultAmount, hint]  — attribute ids are namespaced as minecraft:<id> in the command
+        const ATTRS = [
+          ['max_health', 'Max Health', 20, 'base 20 · +2 = 1 extra heart'],
+          ['attack_damage', 'Attack Damage', 5, 'base 1 · bigger hits'],
+          ['attack_speed', 'Attack Speed', 2, 'base 4 · swing faster'],
+          [
+            'movement_speed',
+            'Movement Speed',
+            0.1,
+            'base 0.1 · +0.1 ≈ 2× speed',
+          ],
+          ['armor', 'Armor', 10, 'base 0 · 20 = full armour bar'],
+          ['armor_toughness', 'Armor Toughness', 5, 'base 0 · soaks big hits'],
+          [
+            'knockback_resistance',
+            'Knockback Resistance',
+            1,
+            "0–1 · 1 = can't be pushed",
+          ],
+          [
+            'max_absorption',
+            'Absorption Hearts',
+            10,
+            'base 0 · +2 = 1 yellow heart',
+          ],
+          ['luck', 'Luck', 5, 'base 0 · better loot rolls'],
+          ['jump_strength', 'Jump Strength', 0.5, 'base 0.42 · jump higher'],
+          ['scale', 'Scale (Size)', 1, 'base 1 · +1 = 2× big, -0.5 = tiny'],
+          ['step_height', 'Step Height', 1, 'base 0.6 · step up tall blocks'],
+          [
+            'safe_fall_distance',
+            'Safe Fall Distance',
+            10,
+            'base 3 · fall farther, no damage',
+          ],
+          [
+            'block_interaction_range',
+            'Block Reach',
+            3,
+            'base 4.5 · build/break farther',
+          ],
+          [
+            'mining_efficiency',
+            'Mining Speed',
+            5,
+            'base 0 · break blocks faster',
+          ],
+          [
+            'gravity',
+            'Gravity',
+            -0.04,
+            'base 0.08 · less = floaty (try -0.04)',
+          ],
+        ];
+        const ATTR_LABEL = {},
+          ATTR_DEF = {};
+        ATTRS.forEach(([id, l, d]) => {
+          ATTR_LABEL[id] = l;
+          ATTR_DEF[id] = d;
+        });
+        const SLOTS = [
+          ['any', 'Anywhere'],
+          ['mainhand', 'Main hand'],
+          ['offhand', 'Off hand'],
+          ['hand', 'Either hand'],
+          ['head', 'Head'],
+          ['chest', 'Chest'],
+          ['legs', 'Legs'],
+          ['feet', 'Feet'],
+          ['armor', 'Any armour'],
+          ['body', 'Body'],
+        ];
+        const OPS = [
+          ['add_value', 'Add (+)'],
+          ['add_multiplied_base', '+% of base'],
+          ['add_multiplied_total', '× total'],
+        ];
+
         /* ---------- STATE ---------- */
         const S = {
           pick: 'diamond_sword',
@@ -965,6 +1094,7 @@ tags:
           italic: false,
           lore: [],
           ench: {},
+          attrs: [],
           unbreakable: false,
           glow: false,
           dye: false,
@@ -1131,6 +1261,107 @@ tags:
         }
         renderEnchList();
         renderChosen();
+
+        // attributes
+        function renderAttrList() {
+          const q = $('attrSearch').value.toLowerCase().trim();
+          const list = $('attrList');
+          list.innerHTML = '';
+          ATTRS.filter(([id, l, , h]) =>
+            (id + ' ' + l + ' ' + h).toLowerCase().includes(q),
+          ).forEach(([id, label, def, hint]) => {
+            const row = document.createElement('div');
+            row.className = 'ench-opt';
+            row.innerHTML = `<span>${label}</span><span class="mx">${hint}</span>`;
+            row.onclick = () => {
+              S.attrs.push({
+                type: id,
+                amount: def,
+                slot: 'any',
+                op: 'add_value',
+              });
+              renderAttrRows();
+              update();
+              focusLastAttr();
+            };
+            list.appendChild(row);
+          });
+        }
+        function selectEl(options, value, onchange) {
+          const sel = document.createElement('select');
+          options.forEach(([v, l]) => {
+            const o = document.createElement('option');
+            o.value = v;
+            o.textContent = l;
+            if (v === value) o.selected = true;
+            sel.appendChild(o);
+          });
+          sel.onchange = () => {
+            onchange(sel.value);
+          };
+          return sel;
+        }
+        function renderAttrRows() {
+          const box = $('attrRows');
+          box.innerHTML = '';
+          S.attrs.forEach((a, i) => {
+            const row = document.createElement('div');
+            row.className = 'attr-row';
+            const nm = document.createElement('span');
+            nm.className = 'an';
+            nm.textContent = ATTR_LABEL[a.type] || a.type;
+            const amt = document.createElement('input');
+            amt.type = 'number';
+            amt.step = 'any';
+            amt.value = a.amount;
+            amt.setAttribute(
+              'aria-label',
+              (ATTR_LABEL[a.type] || a.type) + ' amount',
+            );
+            // live update without re-rendering, so the cursor stays put while typing
+            amt.addEventListener('input', () => {
+              const v = parseFloat(amt.value);
+              a.amount = isNaN(v) ? 0 : v;
+              update();
+            });
+            amt.addEventListener('blur', () => {
+              const v = parseFloat(amt.value);
+              a.amount = isNaN(v) ? 0 : v;
+              amt.value = a.amount;
+              update();
+            });
+            const slot = selectEl(SLOTS, a.slot, (v) => {
+              a.slot = v;
+              update();
+            });
+            const op = selectEl(OPS, a.op, (v) => {
+              a.op = v;
+              update();
+            });
+            const rm = document.createElement('button');
+            rm.className = 'x-btn';
+            rm.textContent = '✕';
+            rm.title = 'remove';
+            rm.onclick = () => {
+              S.attrs.splice(i, 1);
+              renderAttrRows();
+              update();
+            };
+            row.append(nm, amt, slot, op, rm);
+            box.appendChild(row);
+          });
+        }
+        function focusLastAttr() {
+          const inputs = $('attrRows').querySelectorAll('input[type=number]');
+          if (inputs.length) {
+            const el = inputs[inputs.length - 1];
+            el.focus();
+            el.select();
+          }
+        }
+        $('attrSearch').addEventListener('input', renderAttrList);
+        renderAttrList();
+        renderAttrRows();
 
         // lore
         function renderLore() {
@@ -1300,6 +1531,30 @@ tags:
                 '}',
             );
 
+          if (S.attrs.length)
+            comps.push(
+              'attribute_modifiers=[' +
+                S.attrs
+                  .map((a, i) => {
+                    const amt = isFinite(a.amount) ? a.amount : 0;
+                    return (
+                      '{type:"minecraft:' +
+                      a.type +
+                      '",amount:' +
+                      amt +
+                      ',operation:"' +
+                      a.op +
+                      '",slot:"' +
+                      a.slot +
+                      '",id:"give_maker:mod' +
+                      i +
+                      '"}'
+                    );
+                  })
+                  .join(',') +
+                ']',
+            );
+
           if (S.unbreakable) comps.push('unbreakable={}');
           if (S.glow) comps.push('enchantment_glint_override=true');
           if (S.dye && isLeather()) {
@@ -1360,6 +1615,24 @@ tags:
             d.className = 'tip-ench';
             d.textContent =
               enchLabel(id) + (enchMax(id) > 1 ? ' ' + roman(lvl) : '');
+            tip.appendChild(d);
+          });
+
+          // attribute modifiers (green for buffs, red for nerfs)
+          S.attrs.forEach((a) => {
+            const amt = isFinite(a.amount) ? a.amount : 0;
+            if (amt === 0) return;
+            const pct = a.op !== 'add_value';
+            const shown = pct ? amt * 100 : amt;
+            const sign = amt > 0 ? '+' : '';
+            const d = document.createElement('div');
+            d.style.color = amt > 0 ? '#54fc54' : '#ff5555';
+            d.textContent =
+              sign +
+              Math.round(shown * 1000) / 1000 +
+              (pct ? '%' : '') +
+              ' ' +
+              (ATTR_LABEL[a.type] || a.type);
             tip.appendChild(d);
           });
 
