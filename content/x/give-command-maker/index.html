@@ -445,6 +445,44 @@ tags:
         max-width: 120px;
       }
 
+      /* mode toggle + history */
+      .mode-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0 4px;
+      }
+      .hist-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 8px;
+        margin-top: 6px;
+        background: #d7d2c2;
+        border: 2px solid #9a9482;
+        box-shadow:
+          inset -2px -2px 0 rgba(0, 0, 0, 0.12),
+          inset 2px 2px 0 rgba(255, 255, 255, 0.5);
+      }
+      .hist-row:hover {
+        filter: brightness(1.05);
+      }
+      .hist-row .hist-label {
+        flex: 1;
+        cursor: pointer;
+        font-size: 18px;
+        word-break: break-word;
+      }
+      .hist-row .hist-mode {
+        font-size: 14px;
+        color: #7a6a4a;
+      }
+      .hist-row .rm {
+        cursor: pointer;
+        color: #c0392b;
+        padding-left: 4px;
+      }
+
       /* toggles */
       .toggle {
         display: inline-flex;
@@ -679,10 +717,26 @@ tags:
               above.
             </p>
 
+            <div class="mode-row">
+              <button class="mc-btn green sel" id="modeGive">
+                🎁 Give new
+              </button>
+              <button class="mc-btn" id="modeEdit">✏️ Edit a slot</button>
+            </div>
+            <div class="row" id="editSlotRow" style="display: none">
+              <label class="lbl">Item is in:</label>
+              <select id="editSlot"></select>
+              <span class="hint" style="margin: 0"
+                >put the item there, then run it</span
+              >
+            </div>
+
             <div class="row">
               <label class="lbl">How many?</label>
               <input type="number" id="amount" value="1" min="1" max="6400" />
-              <label class="lbl" style="min-width: 54px">Give to:</label>
+              <label class="lbl" style="min-width: 54px" id="targetLabel"
+                >Give to:</label
+              >
               <select id="target">
                 <option value="@p">Nearest player (@p)</option>
                 <option value="@a">Everyone (@a)</option>
@@ -804,6 +858,29 @@ tags:
               </div>
             </div>
           </section>
+
+          <!-- HISTORY -->
+          <section class="panel bevel">
+            <h2>
+              <span class="ic">🕘</span> History
+              <span
+                style="
+                  font-family: var(--body);
+                  font-size: 16px;
+                  color: #7a7464;
+                "
+                >(this session)</span
+              >
+            </h2>
+            <div id="historyList"></div>
+            <button
+              class="mc-btn"
+              id="histClear"
+              style="margin-top: 10px; display: none"
+            >
+              Clear history
+            </button>
+          </section>
         </div>
 
         <!-- ============ RIGHT: RESULT ============ -->
@@ -830,9 +907,11 @@ tags:
 
     <footer>
       Made for Minecraft Java <b>26.2</b> (the data-component
-      <code>[component=value]</code> format introduced in 1.20.5). Works in
-      vanilla and on PaperMC/Spigot servers, since they share the same
-      <code>/give</code>. You need cheats on or operator (OP) permission.
+      <code>[component=value]</code> format introduced in 1.20.5). Commands use
+      the <code>minecraft:</code> prefix (e.g. <code>/minecraft:give</code>) so
+      they run the vanilla command even if a Paper/Spigot plugin like
+      EssentialsX has replaced <code>/give</code>. You need cheats on or
+      operator (OP) permission.
     </footer>
 
     <div id="mobileBar">
@@ -1099,6 +1178,8 @@ tags:
           glow: false,
           dye: false,
           dyeColor: '#ff5555',
+          mode: 'give',
+          editSlot: 'weapon.mainhand',
         };
 
         const $ = (id) => document.getElementById(id);
@@ -1564,7 +1645,18 @@ tags:
             id + (comps.length ? '[' + comps.join(',') + ']' : '');
           let tgt = S.target;
           if (tgt === 'name') tgt = S.playerName.trim() || '@p';
-          return '/give ' + tgt + ' ' + itemPart + ' ' + S.amount;
+          if (S.mode === 'edit')
+            return (
+              '/minecraft:item replace entity ' +
+              tgt +
+              ' ' +
+              S.editSlot +
+              ' with ' +
+              itemPart +
+              ' ' +
+              S.amount
+            );
+          return '/minecraft:give ' + tgt + ' ' + itemPart + ' ' + S.amount;
         }
 
         /* ---------- PREVIEW ---------- */
@@ -1695,10 +1787,165 @@ tags:
           document.body.removeChild(t);
           done();
         }
-        $('copyBtn').onclick = () => doCopy($('copyBtn'), 'COPIED! ✔');
-        $('mobileCopy').onclick = () => doCopy($('mobileCopy'), '✔');
+        $('copyBtn').onclick = () => {
+          doCopy($('copyBtn'), 'COPIED! ✔');
+          addHistory();
+        };
+        $('mobileCopy').onclick = () => {
+          doCopy($('mobileCopy'), '✔');
+          addHistory();
+        };
+
+        /* ---------- MODE (give vs edit) ---------- */
+        const EDIT_SLOTS = [
+          ['weapon.mainhand', 'Main hand (held)'],
+          ['weapon.offhand', 'Off hand'],
+          ['armor.head', 'Helmet'],
+          ['armor.chest', 'Chestplate'],
+          ['armor.legs', 'Leggings'],
+          ['armor.feet', 'Boots'],
+        ];
+        for (let i = 0; i < 9; i++)
+          EDIT_SLOTS.push(['hotbar.' + i, 'Hotbar slot ' + (i + 1)]);
+        (function fillEditSlots() {
+          const sel = $('editSlot');
+          EDIT_SLOTS.forEach(([v, l]) => {
+            const o = document.createElement('option');
+            o.value = v;
+            o.textContent = l;
+            sel.appendChild(o);
+          });
+          sel.value = S.editSlot;
+          sel.onchange = () => {
+            S.editSlot = sel.value;
+            update();
+          };
+        })();
+        function reflectMode() {
+          const edit = S.mode === 'edit';
+          $('modeGive').classList.toggle('green', !edit);
+          $('modeGive').classList.toggle('sel', !edit);
+          $('modeEdit').classList.toggle('green', edit);
+          $('modeEdit').classList.toggle('sel', edit);
+          $('editSlotRow').style.display = edit ? '' : 'none';
+          $('targetLabel').textContent = edit ? 'Whose:' : 'Give to:';
+        }
+        $('modeGive').onclick = () => {
+          S.mode = 'give';
+          reflectMode();
+          update();
+        };
+        $('modeEdit').onclick = () => {
+          S.mode = 'edit';
+          reflectMode();
+          update();
+        };
+
+        /* ---------- HISTORY (in-memory, this session) ---------- */
+        const HISTORY = [];
+        const snap = () => JSON.parse(JSON.stringify(S));
+        function addHistory() {
+          const cmd = buildCommand();
+          if (HISTORY.length && HISTORY[0].cmd === cmd) return; // skip duplicate of most recent
+          const base = itemId().replace(/^minecraft:/, '');
+          HISTORY.unshift({
+            cmd,
+            name: S.name.trim() || base,
+            mode: S.mode,
+            state: snap(),
+          });
+          if (HISTORY.length > 30) HISTORY.pop();
+          renderHistory();
+        }
+        function renderHistory() {
+          const list = $('historyList');
+          if (!HISTORY.length) {
+            list.innerHTML =
+              '<p class="hint" style="margin-top:0">Commands you copy land here. Tap one to load it back into the builder.</p>';
+            $('histClear').style.display = 'none';
+            return;
+          }
+          list.innerHTML = '';
+          $('histClear').style.display = '';
+          HISTORY.forEach((h, i) => {
+            const row = document.createElement('div');
+            row.className = 'hist-row';
+            row.title = h.cmd;
+            const lab = document.createElement('span');
+            lab.className = 'hist-label';
+            lab.innerHTML =
+              escapeHtml(h.name) +
+              ' <span class="hist-mode">· ' +
+              (h.mode === 'edit' ? 'edit' : 'give') +
+              '</span>';
+            lab.onclick = () => loadHistory(i);
+            const rm = document.createElement('span');
+            rm.className = 'rm';
+            rm.title = 'remove';
+            rm.textContent = '✕';
+            rm.onclick = (e) => {
+              e.stopPropagation();
+              HISTORY.splice(i, 1);
+              renderHistory();
+            };
+            row.append(lab, rm);
+            list.appendChild(row);
+          });
+        }
+        function loadHistory(i) {
+          const h = HISTORY[i];
+          if (!h) return;
+          Object.assign(S, JSON.parse(JSON.stringify(h.state)));
+          syncUI();
+        }
+        $('histClear').onclick = () => {
+          HISTORY.length = 0;
+          renderHistory();
+        };
+
+        /* ---------- SYNC every control from state (used when loading history) ---------- */
+        function reflectToggle(elId, on) {
+          const el = $(elId);
+          el.classList.toggle('on', on);
+          el.querySelector('.box').textContent = on ? '✔' : '';
+        }
+        function syncUI() {
+          $('customId').value = S.customId;
+          renderGrid();
+          $('amount').value = S.amount;
+          $('target').value = S.target;
+          $('playerName').value = S.playerName;
+          $('playerName').style.display = S.target === 'name' ? '' : 'none';
+          $('selfWarn').classList.toggle('show', S.target === '@s');
+          $('editSlot').value = S.editSlot;
+          reflectMode();
+          $('itemName').value = S.name;
+          [...$('nameSwatches').children].forEach((el, idx) =>
+            el.classList.toggle(
+              'sel',
+              MC_COLORS[idx] && MC_COLORS[idx][0] === S.nameColor,
+            ),
+          );
+          $('boldBtn').textContent = 'Bold: ' + (S.bold ? 'on' : 'off');
+          $('boldBtn').classList.toggle('green', S.bold);
+          $('italicBtn').textContent = 'Italic: ' + (S.italic ? 'on' : 'off');
+          $('italicBtn').classList.toggle('green', S.italic);
+          renderLore();
+          renderEnchList();
+          renderChosen();
+          renderAttrList();
+          renderAttrRows();
+          reflectToggle('tUnbreak', S.unbreakable);
+          reflectToggle('tGlow', S.glow);
+          reflectToggle('tDye', S.dye);
+          $('dyeColor').value = S.dyeColor;
+          $('dyeRow').style.display = isLeather() ? '' : 'none';
+          update();
+        }
 
         /* ---------- INIT ---------- */
+        renderHistory();
+        reflectMode();
         afterItemChange();
         update();
       })();
