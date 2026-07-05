@@ -48,7 +48,12 @@ code, pre, kbd, .chroma, .highlight pre code {
 /* ===== Accent wiring ===== */
 a { color: var(--accent); }
 .post-content a,
-.entry-content a { text-decoration-color: var(--accent); }
+.entry-content a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
 .nav .active,
 #menu a.active { border-bottom: 2px solid var(--accent); }
 .post-tags a,
