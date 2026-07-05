@@ -333,6 +333,13 @@ tags:
         outline-offset: -7px;
         border-color: var(--gold);
       }
+      .sw.grad {
+        width: 54px;
+      }
+      .dim {
+        opacity: 0.4;
+        pointer-events: none;
+      }
 
       /* lore lines */
       .lore-line {
@@ -768,11 +775,38 @@ tags:
                 maxlength="60"
               />
             </div>
-            <p class="hint">Name colour:</p>
-            <div class="swatches" id="nameSwatches"></div>
+            <div id="solidColorWrap">
+              <p class="hint">Name colour:</p>
+              <div class="swatches" id="nameSwatches"></div>
+            </div>
             <div style="margin-top: 10px">
               <button class="mc-btn" id="boldBtn">Bold: off</button>
               <button class="mc-btn" id="italicBtn">Italic: off</button>
+              <button class="mc-btn" id="gradientBtn">🌈 Gradient: off</button>
+            </div>
+            <div id="gradientControls" style="display: none; margin-top: 12px">
+              <p class="hint" style="margin-top: 0">Pick a rainbow:</p>
+              <div class="swatches" id="gradientPresets"></div>
+              <div class="row" style="margin-top: 10px">
+                <label class="lbl" style="min-width: auto">Or mix two:</label>
+                <input
+                  type="color"
+                  id="gradFrom"
+                  value="#ff4d4d"
+                  aria-label="gradient start colour"
+                />
+                <span class="hint" style="margin: 0">→</span>
+                <input
+                  type="color"
+                  id="gradTo"
+                  value="#4d79ff"
+                  aria-label="gradient end colour"
+                />
+              </div>
+              <p class="hint">
+                Each letter fades across the colours. (Bold &amp; italic still
+                work!)
+              </p>
             </div>
           </section>
 
@@ -943,6 +977,69 @@ tags:
           ['black', '#000000'],
         ];
         const COLOR_HEX = Object.fromEntries(MC_COLORS);
+
+        // [label, [colour stops]] — the name fades across these, left to right
+        const GRADIENTS = [
+          [
+            'Rainbow',
+            [
+              '#ff4d4d',
+              '#ffb84d',
+              '#ffff4d',
+              '#4dff88',
+              '#4dd2ff',
+              '#4d4dff',
+              '#d24dff',
+            ],
+          ],
+          ['Fire', ['#fff24d', '#ffab00', '#ff5a00', '#cc0000']],
+          ['Ocean', ['#5dffd0', '#00cfff', '#0066ff', '#3b2bff']],
+          ['Sunset', ['#ffd24d', '#ff7a8a', '#c86bff']],
+          ['Slime', ['#d6ff7a', '#5dff5d', '#00c853']],
+          ['Candy', ['#ff8ad8', '#ff9bff', '#c98bff']],
+        ];
+        function hexToRgb(h) {
+          h = h.replace('#', '');
+          if (h.length === 3)
+            h = h
+              .split('')
+              .map((c) => c + c)
+              .join('');
+          return [
+            parseInt(h.slice(0, 2), 16),
+            parseInt(h.slice(2, 4), 16),
+            parseInt(h.slice(4, 6), 16),
+          ];
+        }
+        const toHex2 = (x) => ('0' + Math.round(x).toString(16)).slice(-2);
+        const rgbToHex = (r, g, b) => '#' + toHex2(r) + toHex2(g) + toHex2(b);
+        // colour at position t (0..1) along a list of hex stops
+        function gradientAt(t, stops) {
+          if (!stops.length) return '#ffffff';
+          if (stops.length === 1) return stops[0];
+          t = Math.max(0, Math.min(1, t));
+          const seg = t * (stops.length - 1);
+          const i = Math.min(Math.floor(seg), stops.length - 2);
+          const f = seg - i;
+          const a = hexToRgb(stops[i]),
+            b = hexToRgb(stops[i + 1]);
+          return rgbToHex(
+            a[0] + (b[0] - a[0]) * f,
+            a[1] + (b[1] - a[1]) * f,
+            a[2] + (b[2] - a[2]) * f,
+          );
+        }
+        const cssGradient = (stops) =>
+          'linear-gradient(90deg,' + stops.join(',') + ')';
+        // split the name into { ch, colour } pieces spread across the gradient
+        function gradientChars(text) {
+          const chars = Array.from(text);
+          const n = chars.length;
+          return chars.map((ch, i) => ({
+            ch,
+            color: gradientAt(n <= 1 ? 0 : i / (n - 1), S.gradStops),
+          }));
+        }
 
         const ITEMS = {
           Weapons: [
@@ -1171,6 +1268,16 @@ tags:
           nameColor: 'white',
           bold: false,
           italic: false,
+          gradient: false,
+          gradStops: [
+            '#ff4d4d',
+            '#ffb84d',
+            '#ffff4d',
+            '#4dff88',
+            '#4dd2ff',
+            '#4d4dff',
+            '#d24dff',
+          ],
           lore: [],
           ench: {},
           attrs: [],
@@ -1254,6 +1361,58 @@ tags:
           };
           nsw.appendChild(s);
         });
+
+        // gradient: preset rainbows + custom two-colour mixer
+        const gpEl = $('gradientPresets');
+        GRADIENTS.forEach(([label, stops]) => {
+          const b = document.createElement('button');
+          b.className = 'sw grad';
+          b.style.background = cssGradient(stops);
+          b.title = label;
+          b.setAttribute('aria-label', label + ' gradient');
+          b.dataset.stops = JSON.stringify(stops);
+          b.onclick = () => {
+            S.gradStops = stops.slice();
+            highlightGradient();
+            update();
+          };
+          gpEl.appendChild(b);
+        });
+        function highlightGradient() {
+          const cur = JSON.stringify(S.gradStops);
+          let matched = false;
+          [...gpEl.children].forEach((el) => {
+            const on = el.dataset.stops === cur;
+            el.classList.toggle('sel', on);
+            if (on) matched = true;
+          });
+          // a non-preset mix: reflect its ends in the custom pickers
+          if (!matched && S.gradStops.length) {
+            $('gradFrom').value = S.gradStops[0];
+            $('gradTo').value = S.gradStops[S.gradStops.length - 1];
+          }
+        }
+        function applyCustomGradient() {
+          S.gradStops = [$('gradFrom').value, $('gradTo').value];
+          highlightGradient();
+          update();
+        }
+        $('gradFrom').addEventListener('input', applyCustomGradient);
+        $('gradTo').addEventListener('input', applyCustomGradient);
+        function reflectGradient() {
+          $('gradientBtn').textContent =
+            '🌈 Gradient: ' + (S.gradient ? 'on' : 'off');
+          $('gradientBtn').classList.toggle('green', S.gradient);
+          $('gradientControls').style.display = S.gradient ? '' : 'none';
+          $('solidColorWrap').classList.toggle('dim', S.gradient);
+          highlightGradient();
+        }
+        $('gradientBtn').onclick = () => {
+          S.gradient = !S.gradient;
+          reflectGradient();
+          update();
+        };
+        reflectGradient();
 
         // enchant list
         function renderEnchList() {
@@ -1578,14 +1737,23 @@ tags:
           const id = itemId();
           const comps = [];
 
-          if (S.name.trim())
-            comps.push(
-              'custom_name=' +
-                textComp(S.name, S.nameColor, {
-                  italic: S.italic,
-                  bold: S.bold,
-                }),
-            );
+          if (S.name.trim()) {
+            if (S.gradient) {
+              // one coloured component per character = a fading gradient name
+              const parts = gradientChars(S.name).map(({ ch, color }) =>
+                textComp(ch, color, { italic: S.italic, bold: S.bold }),
+              );
+              comps.push('custom_name=[' + parts.join(',') + ']');
+            } else {
+              comps.push(
+                'custom_name=' +
+                  textComp(S.name, S.nameColor, {
+                    italic: S.italic,
+                    bold: S.bold,
+                  }),
+              );
+            }
+          }
 
           const loreFilled = S.lore.filter((l) => l.text.trim());
           if (loreFilled.length)
@@ -1676,10 +1844,22 @@ tags:
             'tip-name' +
             (S.bold ? ' b' : '') +
             (S.name.trim() && S.italic ? ' i' : '');
-          const colorHex = S.name.trim()
-            ? COLOR_HEX[S.nameColor] || '#ffffff'
-            : '#ffffff';
-          nameLine.innerHTML = `<span class="emoji">${emoji}</span><span class="${cls}" style="color:${colorHex}">${escapeHtml(displayName)}</span>`;
+          let nameInner;
+          if (S.name.trim() && S.gradient) {
+            const spans = gradientChars(S.name)
+              .map(
+                ({ ch, color }) =>
+                  `<span style="color:${color}">${escapeHtml(ch)}</span>`,
+              )
+              .join('');
+            nameInner = `<span class="${cls}">${spans}</span>`;
+          } else {
+            const colorHex = S.name.trim()
+              ? COLOR_HEX[S.nameColor] || '#ffffff'
+              : '#ffffff';
+            nameInner = `<span class="${cls}" style="color:${colorHex}">${escapeHtml(displayName)}</span>`;
+          }
+          nameLine.innerHTML = `<span class="emoji">${emoji}</span>${nameInner}`;
           if (S.dye && isLeather()) {
             const dot = document.createElement('span');
             dot.className = 'dye-dot';
@@ -1930,6 +2110,7 @@ tags:
           $('boldBtn').classList.toggle('green', S.bold);
           $('italicBtn').textContent = 'Italic: ' + (S.italic ? 'on' : 'off');
           $('italicBtn').classList.toggle('green', S.italic);
+          reflectGradient();
           renderLore();
           renderEnchList();
           renderChosen();
