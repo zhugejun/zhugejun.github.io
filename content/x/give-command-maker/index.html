@@ -264,6 +264,63 @@ tags:
         word-break: break-word;
       }
 
+      /* item search dropdown */
+      .search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 140px;
+      }
+      .search-wrap input[type='text'] {
+        width: 100%;
+      }
+      .search-drop {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 2px);
+        z-index: 40;
+        max-height: 268px;
+        overflow-y: auto;
+        background: #d7d2c2;
+        border: 3px solid var(--line);
+        box-shadow:
+          5px 5px 0 rgba(0, 0, 0, 0.25),
+          inset 3px 3px 0 rgba(0, 0, 0, 0.18);
+      }
+      .search-drop.show {
+        display: block;
+      }
+      .search-opt {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        cursor: pointer;
+      }
+      .search-opt:hover,
+      .search-opt.active {
+        background: var(--grass);
+        color: #fff;
+      }
+      .search-opt .emoji {
+        font-size: 22px;
+        line-height: 1;
+      }
+      .search-opt .nm {
+        font-size: 18px;
+      }
+      .search-opt .id {
+        font-size: 14px;
+        color: #7a7464;
+        margin-left: auto;
+        word-break: break-all;
+      }
+      .search-opt:hover .id,
+      .search-opt.active .id {
+        color: #dfffd0;
+      }
+
       /* form rows */
       .row {
         display: flex;
@@ -694,7 +751,7 @@ tags:
   </head>
   <body>
     <header>
-      <p class="eyebrow">MINECRAFT JAVA 26.2 · PAPERMC · VANILLA</p>
+      <p class="eyebrow" id="eyebrow">MINECRAFT JAVA 26.2 · PAPERMC · VANILLA</p>
       <h1><span class="slash">/give</span> COMMAND MAKER</h1>
       <p class="subtitle">
         Design a custom item, then copy the command straight into a command
@@ -703,6 +760,24 @@ tags:
     </header>
 
     <div class="wrap">
+      <section
+        class="panel bevel"
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px 14px;
+          margin-bottom: 16px;
+        "
+      >
+        <h2 style="margin: 0"><span class="ic">🎮</span> Game version</h2>
+        <select id="versionSel" style="font-size: 19px"></select>
+        <span
+          class="hint"
+          id="versionNote"
+          style="margin: 0; flex: 1; min-width: 200px"
+        ></span>
+      </section>
       <div class="layout">
         <!-- ============ LEFT: BUILDER ============ -->
         <div class="controls">
@@ -712,16 +787,20 @@ tags:
             <div class="tabs" id="tabs"></div>
             <div class="item-grid" id="itemGrid"></div>
             <div class="row">
-              <label class="lbl">Or type:</label>
-              <input
-                type="text"
-                id="customId"
-                placeholder="any item id, e.g. cinnabar  (26.2 new!)"
-              />
+              <label class="lbl">Or search:</label>
+              <div class="search-wrap">
+                <input
+                  type="text"
+                  id="customId"
+                  autocomplete="off"
+                  placeholder="search items… sword, diamond, egg, wolf"
+                />
+                <div class="search-drop" id="searchDrop"></div>
+              </div>
             </div>
             <p class="hint">
-              Typing an id overrides the grid. Leave blank to use your pick
-              above.
+              Start typing to search 150+ items — or type any item id yourself.
+              This overrides the grid; leave blank to use your pick above.
             </p>
 
             <div class="mode-row">
@@ -940,12 +1019,14 @@ tags:
     </div>
 
     <footer>
-      Made for Minecraft Java <b>26.2</b> (the data-component
-      <code>[component=value]</code> format introduced in 1.20.5). Commands use
-      the <code>minecraft:</code> prefix (e.g. <code>/minecraft:give</code>) so
-      they run the vanilla command even if a Paper/Spigot plugin like
-      EssentialsX has replaced <code>/give</code>. You need cheats on or
-      operator (OP) permission.
+      <span id="footerVer"
+        >Made for Minecraft Java <b>26.2</b> (the data-component
+        <code>[component=value]</code> format introduced in 1.20.5).</span
+      >
+      Commands use the <code>minecraft:</code> prefix (e.g.
+      <code>/minecraft:give</code>) so they run the vanilla command even if a
+      Paper/Spigot plugin like EssentialsX has replaced <code>/give</code>. You
+      need cheats on or operator (OP) permission.
     </footer>
 
     <div id="mobileBar">
@@ -1105,6 +1186,211 @@ tags:
           .flat()
           .forEach(([id, , e]) => (EMOJI[id] = e));
 
+        // Broader searchable catalog (the grid stays a curated shortcut).
+        // [id, label, emoji] — ids kids can't remember but love to give.
+        const CATALOG_EXTRA = [
+          // tools & weapons
+          ['wooden_pickaxe', 'Wooden Pickaxe', '⛏️'],
+          ['stone_pickaxe', 'Stone Pickaxe', '⛏️'],
+          ['iron_pickaxe', 'Iron Pickaxe', '⛏️'],
+          ['golden_pickaxe', 'Gold Pickaxe', '⛏️'],
+          ['stone_sword', 'Stone Sword', '🗡️'],
+          ['stone_axe', 'Stone Axe', '🪓'],
+          ['iron_axe', 'Iron Axe', '🪓'],
+          ['netherite_axe', 'Netherite Axe', '🪓'],
+          ['iron_shovel', 'Iron Shovel', '🥄'],
+          ['netherite_shovel', 'Netherite Shovel', '🥄'],
+          ['iron_hoe', 'Iron Hoe', '🌾'],
+          ['brush', 'Brush', '🖌️'],
+          ['arrow', 'Arrow', '🏹'],
+          ['spectral_arrow', 'Spectral Arrow', '🏹'],
+          ['tipped_arrow', 'Tipped Arrow', '🏹'],
+          ['snowball', 'Snowball', '⚪'],
+          ['egg', 'Egg', '🥚'],
+          ['wind_charge', 'Wind Charge', '💨'],
+          ['fire_charge', 'Fire Charge', '🔥'],
+          ['ender_eye', 'Eye of Ender', '👁️'],
+          // armor
+          ['iron_helmet', 'Iron Helmet', '⛑️'],
+          ['iron_chestplate', 'Iron Chestplate', '🦺'],
+          ['iron_leggings', 'Iron Leggings', '👖'],
+          ['iron_boots', 'Iron Boots', '🥾'],
+          ['golden_helmet', 'Gold Helmet', '⛑️'],
+          ['golden_chestplate', 'Gold Chestplate', '🦺'],
+          ['golden_leggings', 'Gold Leggings', '👖'],
+          ['golden_boots', 'Gold Boots', '🥾'],
+          ['chainmail_chestplate', 'Chainmail Chestplate', '🦺'],
+          ['netherite_helmet', 'Netherite Helmet', '⛑️'],
+          ['netherite_leggings', 'Netherite Leggings', '👖'],
+          ['netherite_boots', 'Netherite Boots', '🥾'],
+          ['wolf_armor', 'Wolf Armor', '🐺'],
+          // food
+          ['apple', 'Apple', '🍎'],
+          ['carrot', 'Carrot', '🥕'],
+          ['golden_carrot', 'Golden Carrot', '🥕'],
+          ['potato', 'Potato', '🥔'],
+          ['baked_potato', 'Baked Potato', '🥔'],
+          ['pumpkin_pie', 'Pumpkin Pie', '🥧'],
+          ['melon_slice', 'Melon Slice', '🍉'],
+          ['sweet_berries', 'Sweet Berries', '🫐'],
+          ['honey_bottle', 'Honey Bottle', '🍯'],
+          ['milk_bucket', 'Milk Bucket', '🥛'],
+          ['mushroom_stew', 'Mushroom Stew', '🍲'],
+          ['cooked_chicken', 'Cooked Chicken', '🍗'],
+          ['cooked_porkchop', 'Cooked Porkchop', '🍖'],
+          ['cooked_cod', 'Cooked Cod', '🐟'],
+          ['cooked_salmon', 'Cooked Salmon', '🐟'],
+          ['chorus_fruit', 'Chorus Fruit', '🍇'],
+          // materials
+          ['diamond', 'Diamond', '💎'],
+          ['emerald', 'Emerald', '🟩'],
+          ['gold_ingot', 'Gold Ingot', '🟨'],
+          ['iron_ingot', 'Iron Ingot', '⬜'],
+          ['netherite_ingot', 'Netherite Ingot', '⬛'],
+          ['copper_ingot', 'Copper Ingot', '🟧'],
+          ['coal', 'Coal', '⚫'],
+          ['redstone', 'Redstone Dust', '🔴'],
+          ['lapis_lazuli', 'Lapis Lazuli', '🔵'],
+          ['quartz', 'Nether Quartz', '⚪'],
+          ['amethyst_shard', 'Amethyst Shard', '💜'],
+          ['echo_shard', 'Echo Shard', '🩵'],
+          ['heart_of_the_sea', 'Heart of the Sea', '💙'],
+          ['nautilus_shell', 'Nautilus Shell', '🐚'],
+          ['heavy_core', 'Heavy Core', '🌑'],
+          ['breeze_rod', 'Breeze Rod', '🌬️'],
+          ['blaze_rod', 'Blaze Rod', '🔥'],
+          ['blaze_powder', 'Blaze Powder', '✨'],
+          ['ghast_tear', 'Ghast Tear', '💧'],
+          ['slime_ball', 'Slime Ball', '🟢'],
+          ['honeycomb', 'Honeycomb', '🍯'],
+          ['gunpowder', 'Gunpowder', '💥'],
+          ['bone', 'Bone', '🦴'],
+          ['string', 'String', '🧵'],
+          ['feather', 'Feather', '🪶'],
+          ['leather', 'Leather', '🟫'],
+          ['ink_sac', 'Ink Sac', '⚫'],
+          ['glow_ink_sac', 'Glow Ink Sac', '🌟'],
+          ['turtle_scute', 'Turtle Scute', '🐢'],
+          ['armadillo_scute', 'Armadillo Scute', '🦔'],
+          ['goat_horn', 'Goat Horn', '📯'],
+          ['rabbit_foot', "Rabbit's Foot", '🐇'],
+          ['phantom_membrane', 'Phantom Membrane', '👻'],
+          // blocks & machines
+          ['obsidian', 'Obsidian', '🟪'],
+          ['crying_obsidian', 'Crying Obsidian', '🟪'],
+          ['glowstone', 'Glowstone', '💡'],
+          ['sea_lantern', 'Sea Lantern', '🔷'],
+          ['redstone_block', 'Block of Redstone', '🟥'],
+          ['iron_block', 'Block of Iron', '⬜'],
+          ['netherite_block', 'Block of Netherite', '⬛'],
+          ['bookshelf', 'Bookshelf', '📚'],
+          ['crafting_table', 'Crafting Table', '🛠️'],
+          ['furnace', 'Furnace', '🔥'],
+          ['chest', 'Chest', '🧰'],
+          ['ender_chest', 'Ender Chest', '🟩'],
+          ['shulker_box', 'Shulker Box', '📦'],
+          ['anvil', 'Anvil', '🔨'],
+          ['enchanting_table', 'Enchanting Table', '📖'],
+          ['brewing_stand', 'Brewing Stand', '⚗️'],
+          ['bell', 'Bell', '🔔'],
+          ['lodestone', 'Lodestone', '🧭'],
+          ['respawn_anchor', 'Respawn Anchor', '🔮'],
+          ['conduit', 'Conduit', '🔱'],
+          ['lightning_rod', 'Lightning Rod', '⚡'],
+          ['jukebox', 'Jukebox', '🎵'],
+          ['note_block', 'Note Block', '🎶'],
+          ['piston', 'Piston', '🟫'],
+          ['sticky_piston', 'Sticky Piston', '🟩'],
+          ['observer', 'Observer', '👀'],
+          ['dispenser', 'Dispenser', '🎯'],
+          ['hopper', 'Hopper', '🔽'],
+          ['target', 'Target', '🎯'],
+          ['scaffolding', 'Scaffolding', '🪜'],
+          ['ladder', 'Ladder', '🪜'],
+          ['torch', 'Torch', '🔦'],
+          ['lantern', 'Lantern', '🏮'],
+          // redstone parts
+          ['redstone_torch', 'Redstone Torch', '🔴'],
+          ['lever', 'Lever', '🎚️'],
+          ['repeater', 'Redstone Repeater', '🔁'],
+          ['comparator', 'Redstone Comparator', '⚖️'],
+          ['daylight_detector', 'Daylight Detector', '☀️'],
+          ['tripwire_hook', 'Tripwire Hook', '🪝'],
+          // utility
+          ['bucket', 'Bucket', '🪣'],
+          ['water_bucket', 'Water Bucket', '🌊'],
+          ['lava_bucket', 'Lava Bucket', '🌋'],
+          ['powder_snow_bucket', 'Powder Snow Bucket', '❄️'],
+          ['compass', 'Compass', '🧭'],
+          ['recovery_compass', 'Recovery Compass', '🧭'],
+          ['clock', 'Clock', '🕐'],
+          ['map', 'Empty Map', '🗺️'],
+          ['book', 'Book', '📖'],
+          ['writable_book', 'Book and Quill', '📝'],
+          ['paper', 'Paper', '📄'],
+          ['saddle', 'Saddle', '🐎'],
+          ['lead', 'Lead', '🪢'],
+          ['item_frame', 'Item Frame', '🖼️'],
+          ['glow_item_frame', 'Glow Item Frame', '🖼️'],
+          ['painting', 'Painting', '🖼️'],
+          ['armor_stand', 'Armor Stand', '🧍'],
+          ['flower_pot', 'Flower Pot', '🪴'],
+          ['bundle', 'Bundle', '🎒'],
+          ['experience_bottle', "Bottle o' Enchanting", '🍾'],
+          ['ominous_bottle', 'Ominous Bottle', '🫙'],
+          // transport
+          ['minecart', 'Minecart', '🛒'],
+          ['chest_minecart', 'Minecart with Chest', '🛒'],
+          ['tnt_minecart', 'Minecart with TNT', '🧨'],
+          ['oak_boat', 'Oak Boat', '🛶'],
+          ['rail', 'Rail', '🛤️'],
+          ['powered_rail', 'Powered Rail', '🛤️'],
+          // heads
+          ['player_head', 'Player Head', '🙂'],
+          ['creeper_head', 'Creeper Head', '🟩'],
+          ['zombie_head', 'Zombie Head', '🧟'],
+          ['skeleton_skull', 'Skeleton Skull', '💀'],
+          ['wither_skeleton_skull', 'Wither Skeleton Skull', '💀'],
+          ['dragon_head', 'Dragon Head', '🐲'],
+          // potions
+          ['potion', 'Potion', '🧪'],
+          ['splash_potion', 'Splash Potion', '🧪'],
+          ['lingering_potion', 'Lingering Potion', '🧪'],
+          // spawn eggs
+          ['creeper_spawn_egg', 'Creeper Spawn Egg', '🥚'],
+          ['wolf_spawn_egg', 'Wolf Spawn Egg', '🐺'],
+          ['axolotl_spawn_egg', 'Axolotl Spawn Egg', '🥚'],
+          ['allay_spawn_egg', 'Allay Spawn Egg', '🩵'],
+          ['cat_spawn_egg', 'Cat Spawn Egg', '🐱'],
+          ['horse_spawn_egg', 'Horse Spawn Egg', '🐴'],
+          ['fox_spawn_egg', 'Fox Spawn Egg', '🦊'],
+          ['panda_spawn_egg', 'Panda Spawn Egg', '🐼'],
+          ['villager_spawn_egg', 'Villager Spawn Egg', '🧑‍🌾'],
+          // music discs & trial keys
+          ['music_disc_cat', 'Music Disc (Cat)', '💿'],
+          ['music_disc_pigstep', 'Music Disc (Pigstep)', '💿'],
+          ['music_disc_otherside', 'Music Disc (Otherside)', '💿'],
+          ['trial_key', 'Trial Key', '🗝️'],
+          ['ominous_trial_key', 'Ominous Trial Key', '🗝️'],
+        ];
+
+        // Flatten grid + extras into one deduped catalog, and enrich EMOJI so
+        // the preview shows a nice icon for the wider set too.
+        const CATALOG = (() => {
+          const seen = {};
+          const out = [];
+          Object.values(ITEMS)
+            .flat()
+            .concat(CATALOG_EXTRA)
+            .forEach(([id, label, e]) => {
+              if (seen[id]) return;
+              seen[id] = 1;
+              out.push([id, label, e || '']);
+              if (e && !EMOJI[id]) EMOJI[id] = e;
+            });
+          return out;
+        })();
+
         // [id, label, maxLevel]
         const ENCHANTS = [
           ['sharpness', 'Sharpness', 5],
@@ -1232,6 +1518,24 @@ tags:
             -0.04,
             'base 0.08 · less = floaty (try -0.04)',
           ],
+          [
+            'bounciness',
+            'Bounciness',
+            0.8,
+            'base 0 · 1 = super bouncy landings (26.2+)',
+          ],
+          [
+            'friction_modifier',
+            'Friction',
+            2,
+            'base 1 · higher = grippy, negative = icy slide (26.2+)',
+          ],
+          [
+            'air_drag_modifier',
+            'Air Drag',
+            5,
+            'base 1 · higher = floaty drift, slow fall (26.2+)',
+          ],
         ];
         const ATTR_LABEL = {},
           ATTR_DEF = {};
@@ -1257,8 +1561,116 @@ tags:
           ['add_multiplied_total', '× total'],
         ];
 
+        /* ---------- VERSIONS ----------
+           Each option maps to a command-grammar config. Newest first; the
+           default ('1.21.5') keeps the original SNBT output unchanged.
+             kind       'component' (item[comp=val]) | 'nbt' (item{Tag})
+             text       'snbt' ({text:"Hi"}) | 'json' ('{"text":"Hi"}')
+             enchWrap   true -> enchantments={levels:{..}} ; false -> {..}
+             attrId     'id' (namespaced) | 'uuid' ([I;..]+name)
+             attrScheme 'modern' (minecraft:<id>) | 'generic' (minecraft:generic.<id>)
+        */
+        const VERSIONS = {
+          '1.21.5': {
+            kind: 'component',
+            text: 'snbt',
+            enchWrap: false,
+            attrId: 'id',
+            attrScheme: 'modern',
+            label: '1.21.5 – 26.x  (latest)',
+            eyebrow: 'MINECRAFT JAVA 26.2 · PAPERMC · VANILLA',
+            footer:
+              'Made for Minecraft Java <b>1.21.5 – 26.x</b> (data components with SNBT text, e.g. <code>custom_name={text:"Hi"}</code>).',
+            note: 'Newest format — SNBT text components.',
+          },
+          '1.21': {
+            kind: 'component',
+            text: 'json',
+            enchWrap: true,
+            attrId: 'id',
+            attrScheme: 'modern',
+            label: '1.21 – 1.21.4',
+            eyebrow: 'MINECRAFT JAVA 1.21–1.21.4 · PAPERMC · VANILLA',
+            footer:
+              'Made for Minecraft Java <b>1.21 – 1.21.4</b> (data components with JSON-string text, e.g. <code>custom_name=\'{"text":"Hi"}\'</code>).',
+            note: "Heads-up: items, enchants, or attributes added after 1.21.4 won't work in-game.",
+          },
+          '1.20.5': {
+            kind: 'component',
+            text: 'json',
+            enchWrap: true,
+            attrId: 'uuid',
+            attrScheme: 'generic',
+            label: '1.20.5 – 1.20.6',
+            eyebrow: 'MINECRAFT JAVA 1.20.5–1.20.6 · PAPERMC · VANILLA',
+            footer:
+              'Made for Minecraft Java <b>1.20.5 – 1.20.6</b> (the first data-component versions; attribute modifiers still use <code>uuid</code>).',
+            note: "Heads-up: content added after 1.20.6 won't work in-game.",
+          },
+          '1.13': {
+            kind: 'nbt',
+            label: '1.13 – 1.20.4',
+            eyebrow: 'MINECRAFT JAVA 1.13–1.20.4 · PAPERMC · VANILLA',
+            footer:
+              'Made for Minecraft Java <b>1.13 – 1.20.4</b> (the old NBT-tag format, e.g. <code>sword{display:{Name:...}}</code>). Glow isn\'t available in this format.',
+            note: "Heads-up: content added after your version won't work in-game. Glow and some attributes aren't supported here.",
+          },
+        };
+
+        // Old-format attribute names. Pre-1.13.../NBT era used camelCase under a
+        // category; 1.20.5–1.20.6 components used snake_case with the category
+        // prefix. Modern (1.21+) dropped the category entirely.
+        const ATTR_CAMEL = {
+          max_health: 'generic.maxHealth',
+          attack_damage: 'generic.attackDamage',
+          attack_speed: 'generic.attackSpeed',
+          movement_speed: 'generic.movementSpeed',
+          armor: 'generic.armor',
+          armor_toughness: 'generic.armorToughness',
+          knockback_resistance: 'generic.knockbackResistance',
+          max_absorption: 'generic.maxAbsorption',
+          luck: 'generic.luck',
+        };
+        // attributes that live under the player.* category (not generic.*)
+        const PLAYER_ATTRS = new Set([
+          'block_interaction_range',
+          'entity_interaction_range',
+          'block_break_speed',
+          'mining_efficiency',
+          'sneaking_speed',
+          'submerged_mining_speed',
+          'sweeping_damage_ratio',
+        ]);
+        // NBT-era Slot values (component-only group slots omit Slot = all)
+        const NBT_SLOT = {
+          mainhand: 'mainhand',
+          offhand: 'offhand',
+          head: 'head',
+          chest: 'chest',
+          legs: 'legs',
+          feet: 'feet',
+        };
+        function attrTypeName(id, scheme) {
+          if (scheme === 'camel') return ATTR_CAMEL[id] || 'minecraft:' + id;
+          if (scheme === 'generic')
+            return (
+              'minecraft:' + (PLAYER_ATTRS.has(id) ? 'player.' : 'generic.') + id
+            );
+          return 'minecraft:' + id; // modern
+        }
+        // distinct, deterministic UUID ints per modifier index (NBT / 1.20.5)
+        function uuidInts(i) {
+          return [305419896 + i, 1985229328 + i, 878082192 + i, 271733878 + i];
+        }
+        const OP_NUM = {
+          add_value: 0,
+          add_multiplied_base: 1,
+          add_multiplied_total: 2,
+        };
+
         /* ---------- STATE ---------- */
         const S = {
+          version: '1.21.5',
           pick: 'diamond_sword',
           customId: '',
           amount: 1,
@@ -1654,10 +2066,101 @@ tags:
         renderLore();
 
         /* ---------- simple inputs ---------- */
+        /* ---------- item search (type-ahead over CATALOG) ---------- */
+        let searchResults = [];
+        let searchActive = -1;
+        function renderSearch() {
+          const q = $('customId').value.toLowerCase().trim();
+          const drop = $('searchDrop');
+          searchActive = -1;
+          if (!q) {
+            searchResults = [];
+            drop.classList.remove('show');
+            drop.innerHTML = '';
+            return;
+          }
+          searchResults = CATALOG.filter(
+            ([id, label]) =>
+              id.includes(q) || label.toLowerCase().includes(q),
+          ).slice(0, 14);
+          if (!searchResults.length) {
+            drop.classList.remove('show');
+            drop.innerHTML = '';
+            return;
+          }
+          drop.innerHTML = '';
+          searchResults.forEach(([id, label, emoji], i) => {
+            const opt = document.createElement('div');
+            opt.className = 'search-opt';
+            opt.innerHTML =
+              '<span class="emoji">' +
+              (emoji || '🧱') +
+              '</span><span class="nm">' +
+              label +
+              '</span><span class="id">' +
+              id +
+              '</span>';
+            // mousedown (not click) so it fires before the input's blur
+            opt.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              pickSearch(id);
+            });
+            opt.addEventListener('mousemove', () => setSearchActive(i));
+            drop.appendChild(opt);
+          });
+          drop.classList.add('show');
+        }
+        function setSearchActive(i) {
+          searchActive = i;
+          [...$('searchDrop').children].forEach((el, idx) =>
+            el.classList.toggle('active', idx === i),
+          );
+        }
+        function scrollSearchActive() {
+          const el = $('searchDrop').children[searchActive];
+          if (el) el.scrollIntoView({ block: 'nearest' });
+        }
+        function pickSearch(id) {
+          S.customId = id;
+          $('customId').value = id;
+          searchResults = [];
+          searchActive = -1;
+          $('searchDrop').classList.remove('show');
+          $('searchDrop').innerHTML = '';
+          renderGrid();
+          afterItemChange();
+        }
         $('customId').addEventListener('input', (e) => {
           S.customId = e.target.value;
           renderGrid();
+          renderSearch();
           afterItemChange();
+        });
+        $('customId').addEventListener('keydown', (e) => {
+          const drop = $('searchDrop');
+          if (!drop.classList.contains('show')) return;
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setSearchActive(Math.min(searchActive + 1, searchResults.length - 1));
+            scrollSearchActive();
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setSearchActive(Math.max(searchActive - 1, 0));
+            scrollSearchActive();
+          } else if (e.key === 'Enter') {
+            if (searchActive >= 0 && searchResults[searchActive]) {
+              e.preventDefault();
+              pickSearch(searchResults[searchActive][0]);
+            }
+          } else if (e.key === 'Escape') {
+            drop.classList.remove('show');
+          }
+        });
+        $('customId').addEventListener('focus', () => {
+          if ($('customId').value.trim()) renderSearch();
+        });
+        $('customId').addEventListener('blur', () => {
+          setTimeout(() => $('searchDrop').classList.remove('show'), 120);
         });
         $('amount').addEventListener('input', (e) => {
           S.amount = Math.max(
@@ -1716,6 +2219,32 @@ tags:
           update();
         }
 
+        /* ---------- VERSION selector ---------- */
+        (function fillVersions() {
+          const sel = $('versionSel');
+          Object.entries(VERSIONS).forEach(([k, v]) => {
+            const o = document.createElement('option');
+            o.value = k;
+            o.textContent = v.label;
+            sel.appendChild(o);
+          });
+          sel.value = S.version;
+          sel.onchange = () => {
+            S.version = sel.value;
+            reflectVersion();
+            update();
+          };
+        })();
+        function reflectVersion() {
+          const v = VERSIONS[S.version] || VERSIONS['1.21.5'];
+          $('eyebrow').textContent = v.eyebrow;
+          $('versionNote').textContent = v.note;
+          $('footerVer').innerHTML = v.footer;
+          document.title =
+            '/give Command Maker — Minecraft ' +
+            v.label.replace(/\s*\(latest\)\s*/i, '').trim();
+        }
+
         /* ---------- COMMAND BUILDER ---------- */
         // Since Java 1.21.5, text components in commands are written as SNBT compounds
         // (e.g. {text:"Hi",color:"gold"}), NOT as single-quoted JSON strings.
@@ -1733,50 +2262,85 @@ tags:
           return '{' + parts.join(',') + '}';
         }
 
-        function buildCommand() {
-          const id = itemId();
+        // Before 1.21.5, name/lore text was raw JSON (single-quoted). Build a
+        // plain object, then quote it as a command string (escaping \ and ').
+        function jsonComp(text, color, opts) {
+          opts = opts || {};
+          const o = { text: String(text) };
+          if (color) o.color = color;
+          o.italic = !!opts.italic;
+          if (opts.bold) o.bold = true;
+          return o;
+        }
+        function jsonStr(objOrArr) {
+          return (
+            "'" +
+            JSON.stringify(objOrArr)
+              .replace(/\\/g, '\\\\')
+              .replace(/'/g, "\\'") +
+            "'"
+          );
+        }
+
+        // ----- 1.20.5+ data-component item ([comp=val,...]) -----
+        function buildComponentPart(id, cfg) {
           const comps = [];
 
           if (S.name.trim()) {
-            if (S.gradient) {
-              // one coloured component per character = a fading gradient name
-              const parts = gradientChars(S.name).map(({ ch, color }) =>
-                textComp(ch, color, { italic: S.italic, bold: S.bold }),
-              );
-              comps.push('custom_name=[' + parts.join(',') + ']');
+            if (cfg.text === 'snbt') {
+              if (S.gradient) {
+                const parts = gradientChars(S.name).map(({ ch, color }) =>
+                  textComp(ch, color, { italic: S.italic, bold: S.bold }),
+                );
+                comps.push('custom_name=[' + parts.join(',') + ']');
+              } else {
+                comps.push(
+                  'custom_name=' +
+                    textComp(S.name, S.nameColor, {
+                      italic: S.italic,
+                      bold: S.bold,
+                    }),
+                );
+              }
             } else {
-              comps.push(
-                'custom_name=' +
-                  textComp(S.name, S.nameColor, {
+              const val = S.gradient
+                ? gradientChars(S.name).map(({ ch, color }) =>
+                    jsonComp(ch, color, { italic: S.italic, bold: S.bold }),
+                  )
+                : jsonComp(S.name, S.nameColor, {
                     italic: S.italic,
                     bold: S.bold,
-                  }),
-              );
+                  });
+              comps.push('custom_name=' + jsonStr(val));
             }
           }
 
           const loreFilled = S.lore.filter((l) => l.text.trim());
-          if (loreFilled.length)
-            comps.push(
-              'lore=[' +
-                loreFilled
-                  .map((l) => textComp(l.text, l.color, { italic: false }))
-                  .join(',') +
-                ']',
-            );
+          if (loreFilled.length) {
+            const items =
+              cfg.text === 'snbt'
+                ? loreFilled.map((l) =>
+                    textComp(l.text, l.color, { italic: false }),
+                  )
+                : loreFilled.map((l) =>
+                    jsonStr(jsonComp(l.text, l.color, { italic: false })),
+                  );
+            comps.push('lore=[' + items.join(',') + ']');
+          }
 
           const enchEntries = Object.entries(S.ench);
-          if (enchEntries.length)
+          if (enchEntries.length) {
+            const inner = enchEntries
+              .map(([k, v]) => {
+                const key = /[^a-z0-9_]/.test(k) ? '"' + k + '"' : k; // quote namespaced/modded ids
+                return key + ':' + v;
+              })
+              .join(',');
             comps.push(
-              'enchantments={' +
-                enchEntries
-                  .map(([k, v]) => {
-                    const key = /[^a-z0-9_]/.test(k) ? '"' + k + '"' : k; // quote namespaced/modded ids
-                    return key + ':' + v;
-                  })
-                  .join(',') +
-                '}',
+              'enchantments=' +
+                (cfg.enchWrap ? '{levels:{' + inner + '}}' : '{' + inner + '}'),
             );
+          }
 
           if (S.attrs.length)
             comps.push(
@@ -1784,18 +2348,26 @@ tags:
                 S.attrs
                   .map((a, i) => {
                     const amt = isFinite(a.amount) ? a.amount : 0;
+                    const idField =
+                      cfg.attrId === 'uuid'
+                        ? 'uuid:[I;' +
+                          uuidInts(i).join(',') +
+                          '],name:"give_maker:mod' +
+                          i +
+                          '"'
+                        : 'id:"give_maker:mod' + i + '"';
                     return (
-                      '{type:"minecraft:' +
-                      a.type +
+                      '{type:"' +
+                      attrTypeName(a.type, cfg.attrScheme) +
                       '",amount:' +
                       amt +
                       ',operation:"' +
                       a.op +
                       '",slot:"' +
                       a.slot +
-                      '",id:"give_maker:mod' +
-                      i +
-                      '"}'
+                      '",' +
+                      idField +
+                      '}'
                     );
                   })
                   .join(',') +
@@ -1806,11 +2378,102 @@ tags:
           if (S.glow) comps.push('enchantment_glint_override=true');
           if (S.dye && isLeather()) {
             const n = parseInt(S.dyeColor.slice(1), 16); // (R<<16)+(G<<8)+B
-            comps.push('dyed_color=' + n);
+            // plain int flattened in 1.21.5; earlier components need {rgb:N}
+            comps.push('dyed_color=' + (cfg.text === 'snbt' ? n : '{rgb:' + n + '}'));
           }
 
+          return id + (comps.length ? '[' + comps.join(',') + ']' : '');
+        }
+
+        // ----- 1.13–1.20.4 legacy NBT item ({Tag}) -----
+        function buildNbtPart(id) {
+          const tags = [];
+          const display = [];
+
+          if (S.name.trim()) {
+            const val = S.gradient
+              ? gradientChars(S.name).map(({ ch, color }) =>
+                  jsonComp(ch, color, { italic: S.italic, bold: S.bold }),
+                )
+              : jsonComp(S.name, S.nameColor, {
+                  italic: S.italic,
+                  bold: S.bold,
+                });
+            display.push('Name:' + jsonStr(val));
+          }
+
+          const loreFilled = S.lore.filter((l) => l.text.trim());
+          if (loreFilled.length)
+            display.push(
+              'Lore:[' +
+                loreFilled
+                  .map((l) =>
+                    jsonStr(jsonComp(l.text, l.color, { italic: false })),
+                  )
+                  .join(',') +
+                ']',
+            );
+
+          if (S.dye && isLeather())
+            display.push('color:' + parseInt(S.dyeColor.slice(1), 16));
+
+          if (display.length) tags.push('display:{' + display.join(',') + '}');
+
+          const enchEntries = Object.entries(S.ench);
+          if (enchEntries.length)
+            tags.push(
+              'Enchantments:[' +
+                enchEntries
+                  .map(([k, v]) => {
+                    const eid = k.includes(':') ? k : 'minecraft:' + k;
+                    return '{id:"' + eid + '",lvl:' + v + 's}';
+                  })
+                  .join(',') +
+                ']',
+            );
+
+          if (S.attrs.length)
+            tags.push(
+              'AttributeModifiers:[' +
+                S.attrs
+                  .map((a, i) => {
+                    const amt = isFinite(a.amount) ? a.amount : 0;
+                    const slotPart = NBT_SLOT[a.slot]
+                      ? ',Slot:"' + NBT_SLOT[a.slot] + '"'
+                      : '';
+                    return (
+                      '{AttributeName:"' +
+                      attrTypeName(a.type, 'camel') +
+                      '",Name:"give_maker_mod' +
+                      i +
+                      '",Amount:' +
+                      amt +
+                      ',Operation:' +
+                      (OP_NUM[a.op] || 0) +
+                      ',UUID:[I;' +
+                      uuidInts(i).join(',') +
+                      ']' +
+                      slotPart +
+                      '}'
+                    );
+                  })
+                  .join(',') +
+                ']',
+            );
+
+          if (S.unbreakable) tags.push('Unbreakable:1b');
+          // glow (enchant glint) has no clean pre-1.20.5 equivalent — omitted.
+
+          return id + (tags.length ? '{' + tags.join(',') + '}' : '');
+        }
+
+        function buildCommand() {
+          const cfg = VERSIONS[S.version] || VERSIONS['1.21.5'];
+          const id = itemId();
           const itemPart =
-            id + (comps.length ? '[' + comps.join(',') + ']' : '');
+            cfg.kind === 'nbt'
+              ? buildNbtPart(id)
+              : buildComponentPart(id, cfg);
           let tgt = S.target;
           if (tgt === 'name') tgt = S.playerName.trim() || '@p';
           if (S.mode === 'edit')
@@ -2090,6 +2753,8 @@ tags:
           el.querySelector('.box').textContent = on ? '✔' : '';
         }
         function syncUI() {
+          $('versionSel').value = S.version;
+          reflectVersion();
           $('customId').value = S.customId;
           renderGrid();
           $('amount').value = S.amount;
@@ -2127,6 +2792,7 @@ tags:
         /* ---------- INIT ---------- */
         renderHistory();
         reflectMode();
+        reflectVersion();
         afterItemChange();
         update();
       })();
