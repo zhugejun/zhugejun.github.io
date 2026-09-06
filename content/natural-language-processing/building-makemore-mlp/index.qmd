@@ -16,7 +16,7 @@ jupyter: python3
 ---
 
 
-In [Part 1]({{{< ref "../building-makemore/index.md" >}}}), we built a neural network with a single hidden layer that generates words one character at a time.
+In [Part 1]({{{< ref "../building-makemore/index.md" >}}}), we built a single-layer neural network -- no hidden layer at all -- that generates words one character at a time.
 It worked well enough: the network reproduced exactly what the simple counting model had produced.
 But a bigram model is limited by construction, since it assumes each character depends only on the one immediately before it.
 If a character starts just one bigram, the model will always emit that same next character, no matter what came earlier or how likely the alternatives are.

@@ -13,21 +13,20 @@ math: true
 jupyter: python3
 ---
 
-This is a series of learning notes for the excellent online course [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) created by [Andrej Karpathy](https://karpathy.ai/). The official Jupyter Notebook for this lecture is [here](https://github.com/karpathy/nn-zero-to-hero/blob/master/lectures/makemore/makemore_part1_bigrams.ipynb).
+This is a series of learning notes for the excellent online course [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) created by [Andrej Karpathy](https://karpathy.ai/). Andrej's official notebook for this lecture is [on GitHub](https://github.com/karpathy/nn-zero-to-hero/blob/master/lectures/makemore/makemore_part1_bigrams.ipynb).
 
-In this lecture, Andrej shows us two different approaches to generating characters.
-The first approach involves sampling characters based on a probability distribution, while the second uses a neural network built from scratch.
-Before we can generate characters using either approach, let's prepare the data first.
+In this lecture, Andrej shows two different approaches to generating characters.
+The first samples characters from a probability distribution built by counting; the second trains a neural network from scratch.
+The interesting part is where they end up, so let's prepare the data first.
 
 ## Data Preparation
 
-### Load data
+### Load Data
 
-We are using the most common 32k names of 2018 from ssa.gov website as our data source.
-First, we apply the code below to obtain each bigram's frequency.
-If you don't know what a bigram is, a bigram is a sequence of two adjacent words or characters in a text.
-We also add a special character, ".", to the name's beginning and end to indicate its start and end, respectively.
-As can be seen that the top 5 common bigrams in the data are `n.`, `a.`, `an`, `.a`, and `e.`.
+Our data source is the 32k most common names of 2018, from the ssa.gov website.
+The code below counts how often each bigram occurs, a bigram being simply a sequence of two adjacent characters (or words) in a text.
+We also wrap every name in a special character, `.`, marking where it starts and ends, so that the model can learn which characters tend to begin a name and which tend to end one.
+The five most common bigrams turn out to be `n.`, `a.`, `an`, `.a`, and `e.` -- already a hint that names lean heavily on `a`, `e`, and `n`.
 
 ``` python
 from collections import Counter
@@ -50,12 +49,10 @@ for bigram, frequency in counter.most_common(5):
     Frequency of .a: 4410
     Frequency of e.: 3983
 
-### Numericallization
+### Numericalization
 
-As is known that computers are good at processing numerical data; however, they may not be efficient in dealing with text.
-So our second step is to create two mappings: string to index and index to string.
-These mappings are used to represent words or characters numerically.
-This process is sometimes called numericalization.
+Computers work with numbers, not characters, so our second step is to build two mappings: string to index, and index back to string.
+Together they let us represent each character numerically, a process sometimes called numericalization.
 
 ``` python
 import torch
@@ -76,7 +73,7 @@ print(stoi, itos)
 ### Frequency
 
 Our first step is to obtain the frequencies of the bigrams.
-Since we have a vocabulary of 27 characters-26 letters in lowercase plus 1 special character, we need a $27\times 27$ matrix to store the frequencies of all possible bigrams.
+Our vocabulary holds 27 characters, the 26 lowercase letters plus the special one, so a $27\times 27$ matrix is enough to store the frequency of every possible bigram.
 [Figure 1](#fig-heatmap) is a heatmap of the calculated frequencies.
 The darker the color, the higher the frequency of the bigram.
 
@@ -106,9 +103,10 @@ plt.show()
 
 ### Probability
 
-To get the probability of each bigram, we want to normalize the matrix `N` by row.
-Why? Because we want to know the probability of the character given the current character we have in the process of character generation, i.e., $P(next\ char | current\ char)$.
-To avoid calculating $log0$ later on, we add 1 to the frequency of each bigram.
+To turn those frequencies into probabilities, we normalize `N` row by row.
+Row-wise is the right axis because what we need while generating is the probability of the next character *given* the current one, $P(\text{next char} \mid \text{current char})$.
+Adding 1 to every count before normalizing keeps any entry from being exactly zero, which would send $\log 0$ to $-\infty$ later on.
+This is known as Laplace smoothing.
 
 ``` python
 P = (N + 1).float()
@@ -119,12 +117,12 @@ P /= P.sum(1, keepdims=True)
 
 [Maximum likelihood](https://www.wikiwand.com/en/Maximum_likelihood_estimation) is a statistical method to estimate the parameters of a probability distribution based on observed data.
 The goal of maximum likelihood is to find the values of the distribution's parameters that make the observed data most likely to have been generated by that distribution.
-In our case, we want the next generated character comes from the probability distribution as much as possible.
-How do we calculate the likelihood? It is the product of the probability of each bigram in a word.
-$$ L(\theta) = P(X_1=x_1, X_2=x_2, ..., X_n=x_n) = \Pi_i^n P(X_i=x_i)$$
-For example, the likelihood of the word *good* is calculated as
-$$Likelihood= P(".g") * P("go") * P("oo") * P("od") * P("d.") $$
-$$ = 0.0209 * 0.0430 * 0.0146 * 0.0240 * 0.0936 = 2.9399e-8$$
+In our case, we want the model to assign as much probability as possible to the names we actually observed.
+The likelihood of a word is the product of the probability of each of its bigrams, which by the chain rule under the bigram assumption is
+$$L(\theta) = P(x_1, x_2, \dots, x_n) = \prod_{i=1}^{n} P(x_i \mid x_{i-1})$$
+For example, the likelihood of the word *good* works out to
+$$\text{Likelihood} = P(g \mid \text{.}) \cdot P(o \mid g) \cdot P(o \mid o) \cdot P(d \mid o) \cdot P(\text{.} \mid d)$$
+$$= 0.0209 \cdot 0.0430 \cdot 0.0146 \cdot 0.0240 \cdot 0.0936 = 2.9399 \times 10^{-8}$$
 
 ``` python
 def calc_likelihood(word, verbose=False):
@@ -150,7 +148,7 @@ print(f"Likelihood for good is: {prob:.4e}")
     probability for d.: 0.0936
     Likelihood for good is: 2.9399e-08
 
-Let's generate some words by randomly picking the bigram according to its probability using `torch.multinomial` function and calculate their likelihoods.
+Let's generate a few words by sampling each next character according to its probability with `torch.multinomial`, then score them.
 
 ``` python
 g = torch.Generator().manual_seed(420)
@@ -176,14 +174,17 @@ for gw, lh in generated_words:
     Likelihood for tais: 3.90183367926511e-06
     Likelihood for anuir: 2.335933579900029e-08
 
-It turns out `jen` which has the maximum likelihood 0.000549 is the winner in these 5 randomly generated words.
-Remember that our goal is to maximize the likelihood of the word the model generates because the higher the likelihood, the better the model.
-However, notice that the likelihoods for the generated words are too small, so applying a log function to each probability would make it easier to work with.
-$$ logL(\theta) = log\Pi_i^n P(X_i=x_i)=\Sigma_i^nlogP(X_i=x_i)$$
+Of these five, `jen` wins with a likelihood of 0.000549.
+Our goal is to maximize that number, since a higher likelihood means the model finds the observed names more plausible.
+But notice how small these values already are, and each one is a product of five probabilities.
+On a long name, that product underflows to zero in floating point.
+Taking a logarithm turns the product into a sum and keeps the numbers in a comfortable range:
+$$\log L(\theta) = \log \prod_{i=1}^{n} P(x_i \mid x_{i-1}) = \sum_{i=1}^{n} \log P(x_i \mid x_{i-1})$$
 
-Additionally, maximizing the likelihood is the same as maximizing the log-likelihood because the logarithm function is a monotonic increasing function, which is the same as minimizing the negative log-likelihood.
-We prefer minimization to maximization in any optimization problem.
-Let's calculate the average negative log-likelihood of our name dataset, which is 2.454679.
+Because the logarithm is monotonically increasing, maximizing the likelihood and maximizing the log-likelihood are the same thing, and both are the same as *minimizing* the negative log-likelihood.
+That last form is what we want, since optimizers are conventionally written to minimize.
+Let's compute the average negative log-likelihood over the whole dataset, which comes to 2.454579.
+Keep that number in mind, since the neural network will be aiming at it.
 
 ``` python
 def calc_nll(word):
@@ -206,16 +207,17 @@ print(f"Average negative log-likelihood: {sum(nlls)/sum(ns):.6f}")
 
 ## Neural Network
 
-How does a neural network model fit in the character generation?
-Think of it in this way: given the last generated character, we want the model to output a probability distribution for the next character, in which we can find the most likely character to follow it.
-In other words, our task is to use the model to estimate the probability distribution based on the dataset rather than relying on counting the occurrences of each bigram.
-As always, let's prepare the data in the first step.
+How does a neural network fit into character generation?
+Think of it this way: given the current character, we want the model to output a probability distribution over the 27 possible next characters.
+The task is the same as before, but the distribution is now *learned* from the data instead of read off a table of counts.
+As always, we start by preparing the data.
 
 ### Training Data Preparation
 
-The training data is created using bigrams, where the first character is the input feature, and the second character is used as the target of the model.
-Since feeding integers into a neural network and multiplying them with weights does not make sense, we need to transform them into a different format.
-The most common method is one-hot encoding, which transforms each integer into a vector with all 0s except for a 1 at the index corresponding to the integer. PyTorch provides a built-in `torch.nn.functional.one_hot` function for one-hot encoding.
+The training data comes from the bigrams: the first character is the input feature and the second is the target.
+Feeding the raw indices into the network would be a mistake, because multiplying them by weights implies that `z` (26) is twenty-six times as much of something as `a` (1), when the indices are just arbitrary labels.
+The usual fix is one-hot encoding, which turns each integer into a vector of all 0s with a single 1 at the corresponding index.
+PyTorch provides `torch.nn.functional.one_hot` for exactly this.
 
 ``` python
 import torch.nn.functional as F
@@ -245,13 +247,12 @@ After applying one-hot encoding, we have a tensor `xenc` of shape $228146\times 
 
 The weight matrix of our model has the same shape as the matrix `N` above but is initialized with random values.
 PyTorch's built-in function `torch.randn` gives us random numbers from a normal distribution with mean 0 and standard deviation 1, resulting in positive and negative values.
-After multiplying the one-hot encoding matrix with weights, we obtain the output of the first layer, which may contain negative values.
-However, we want the output to represent the probability of the next character, as we calculated above.
-To achieve this, we can treat the output as the logarithm of the frequencies and apply the exponential function to obtain the positive values, which can be interpreted as the frequencies of the bigrams starting with the input feature.
-Why? Because multiplying a one-hot encoding vector having a 1 at index `i`, with the weight matrix `W` is the same as getting the `ith` row of `W`.
-And we want this frequency matrix to be close to the matrix `N` as close as possible.
-If we further normalize the output over the rows, we can obtain the probability distribution of bigrams.
-In fact, the last two steps, applying exponential function and normalization, of calculation are known as the **softmax** function.
+Multiplying the one-hot matrix by the weights gives us the layer's output, which can contain negative values.
+We want probabilities instead, so we interpret the output as *log*-frequencies and exponentiate it, which makes every entry positive.
+Those exponentiated values can then be read as the frequencies of the bigrams starting with the input character.
+This interpretation works because multiplying a one-hot vector with a 1 at index `i` by the weight matrix `W` simply selects the `i`-th row of `W`, so each row of `W` holds the log-frequencies for one starting character, and we want that matrix to end up as close to `N` as possible.
+Normalizing the result across each row finally turns it into a probability distribution.
+Those last two steps, exponentiating and normalizing, are together known as the **softmax** function.
 
 ``` python
 g = torch.Generator().manual_seed(420)
@@ -272,15 +273,15 @@ print(sum(probs[1,:]))
 ### Optimization
 
 Remember that our goal is to approach the actual probabilities from the training data using maximum likelihood estimation.
-As the training progresses, the model adjusts the weights in such a way that the predicted probabilities for the next character in a word are as close to the actual probabilities of the training data.
-By minimizing the negative log-likelihood, we effectively minimize the distance between predicted and actual probabilities.
-Let's take the first word, `emma`, as an example and see how the neural network calculates its loss.
-This step is also called **forward pass**.
+As training progresses, the model adjusts the weights so that the predicted probabilities for the next character land as close as possible to the ones implied by the training data.
+Minimizing the negative log-likelihood is what closes that gap.
+Let's walk through the first word, `emma`, and see how the network arrives at its loss.
+This step is called the **forward pass**.
 The first bigram is `.e` with the input `.` (index 0) and actual label `e` (index 5).
 The one-hot encoding for `.` is `[1, 0, ..., 0]`, and the output probability for `e` is 0.0246.
 Applying log and negation, we have the loss as 3.7050.
 The same calculation applies to `em`, `mm`, `ma`, and `a.`.
-Finally, we get the loss for `emma` is 3.6985.
+Averaging over all five bigrams gives `emma` a loss of 3.6985.
 
 ``` python
 nlls = torch.zeros(5)
@@ -359,9 +360,9 @@ print(f"Average negative log-likelihood, i.e., loss={nlls.mean().item()}")
     negative log likelihood: 3.4992258548736572
     Average negative log-likelihood, i.e., loss=3.6984527111053467
 
-So how do we calculate the loss efficiently?
-It turns out that we can pass all these row and column indices to the matrix, and then take log and mean afterwards.
-The loss for the forward pass is 3.6374.
+So how do we compute this efficiently, for every bigram at once?
+We can index the probability matrix with all the row and column indices in one go, then take the log and the mean.
+Across the entire dataset, the forward pass gives a loss of 3.6374.
 
 ``` python
 loss = -probs[torch.arange(len(xs)), ys].log().mean()
@@ -373,11 +374,10 @@ print(f"Overall loss: {loss.item()}")
 After obtaining the average loss from the forward pass, we need a backward pass to update the weights.
 To do this, we need to make sure that the parameter `requires_grad` is set to `True` for the weight matrix `W`.
 Next, we zero out all gradients to avoid the accumulation of gradients across batches.
-We then call `loss.backward()` to compute the gradient of the oss with regard to each weight.
-The gradient of a weight indicates how much that increasing that weight will affect the loss.
-If it is positive, increasing the weight will increase the loss too.
-Conversely, increasing the weight will decrease the loss if the gradient is negative.
-For example, `W.grad[0, 0]=0.002339` means that `W[0, 0]` has a positive effect on the loss.
+We then call `loss.backward()` to compute the gradient of the loss with respect to each weight.
+A weight's gradient tells us how the loss would respond if we nudged that weight upward.
+A positive gradient means the loss would rise; a negative one means it would fall.
+For example, `W.grad[0, 0]=0.002339` says that increasing `W[0, 0]` would increase the loss, so gradient descent will push it down.
 
 ``` python
 # set the gradient to zero
@@ -386,7 +386,7 @@ W.grad = None
 loss.backward()
 ```
 
-The next step is to update the weights and recalculate the averge loss.
+The next step is to update the weights and recalculate the average loss.
 
 ``` python
 lr = 0.1
@@ -401,9 +401,10 @@ print(f"Overall loss: {loss.item()}")
 
     Overall loss: 3.6365137100219727
 
-The overall loss is now 3.6365, which is slightly lower than before.
-We can keep doing this **gradient descent** step until the model performance is good enough.
-As we train more epochs, the overall loss is getting closer to the actual overall loss, which is 2.454579.
+The overall loss is now 3.6365, slightly lower than before.
+Repeating this **gradient descent** step drives it down further.
+Notice where it settles: the loss converges toward 2.454579, the negative log-likelihood we computed from the counting model.
+That is no coincidence, since both models can only capture bigram statistics, so the counting table is the best a bigram model can do, and gradient descent is rediscovering it.
 
 ``` python
 lr = 50
@@ -429,9 +430,9 @@ for i in range(301):
     Epochs: 250, loss: 2.4606406688690186
     Epochs: 300, loss: 2.459399700164795
 
-Note that our current neural network only has one hidden layer.
-We can add more hidden layers to improve the model performance.
-Additionally, we can add a **regularization** item (e.g., the mean of the square of all weights) in the loss function to prevent overfitting.
+Note that this network has no hidden layer at all: it is a single linear layer followed by a softmax, which is why it can do no better than the counting table.
+Adding hidden layers is one way forward, and that is exactly what Part 2 does.
+We can also add a **regularization** term, such as the mean of the squared weights, to the loss function to guard against overfitting.
 
 ``` python
 loss = -probs[torch.arange(len(xs)), ys].log().mean() + 0.01 * (W ** 2).mean()
@@ -440,9 +441,9 @@ print(loss)
 
     tensor(2.4834, grad_fn=<AddBackward0>)
 
-In this case, the optimization has two components--average negative log-likelihood and mean of the square of weights.
-The regularization item works like a force to squeeze the weights and make them close to zeros as much as possible.
-The last step is to sample characters from the neural network model.
+The objective now has two components: the average negative log-likelihood and the mean of the squared weights.
+The regularization term acts like a spring pulling the weights toward zero, so the model only grows a large weight when the data justifies it.
+The last step is to sample characters from the trained network.
 
 ``` python
 g = torch.Generator().manual_seed(420)
@@ -472,8 +473,8 @@ for gw, lh in nn_generated_words:
     Likelihood for tais: 3.90183367926511e-06
     Likelihood for anuir: 2.335933579900029e-08
 
-We are using the same seed for the generator.
-The words generated from the neural network are exactly the same as those generated from the probability table above, which is what we want to see.
+Using the same generator seed, the network produces exactly the same words as the probability table did.
+That is the payoff of this lecture: counting and gradient descent, two approaches that look nothing alike, converged on the same bigram distribution.
 
 <!-- ## Exercises
 E01: train a trigram language model, i.e. take two characters as an input to predict the 3rd one. Feel free to use either counting or a neural net. Evaluate the loss; Did it improve over a bigram model?
