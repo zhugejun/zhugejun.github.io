@@ -9,7 +9,7 @@ categories:
 tags: 
   - transformers
   - encoder
-  - docoder
+  - decoder
   - pytorch
   - attention
 format: hugo-md
@@ -19,14 +19,14 @@ jupyter: python3
 
 {{< youtube kCc8FmEb1nY >}}
 
-In [Part2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we constructed a straightforward MLP model to generate characters based on 32k popular names.
-In this lecture, [Andrej](https://karpathy.ai) guides us on gradually incorporating the transformer architecture to improve the performance of our bigram model.
-We will start by refactoring our previous model and then add code from the transformer architecture piece by piece to see how it helps our model.
+In [Part 2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we built a simple MLP that generates names one character at a time, trained on 32k popular names.
+In this lecture, [Andrej Karpathy](https://karpathy.ai) walks through the transformer architecture one piece at a time.
+We will start by refactoring that model, then add each transformer component in turn and watch the loss drop as we go.
 
 ## Data Preparation
 
-Let's first import the necessary libraries and get the data ready.
-We will use the tiny shakespeare dataset, featured in Andrej Karpathy's blog post [The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/).
+Let's import the libraries and get the data ready.
+We will use the tiny Shakespeare dataset, featured in Andrej Karpathy's blog post [The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/).
 
 ```python
 import math
@@ -58,8 +58,8 @@ def decode(l): return ''.join([itos[i] for i in l])
     Vocabulary size: 65
     Vocabulary: "\n !$&',-.3:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
-We have 65 characters, including all lower- and upper-case letters and a few special characters, `\n !$&',-.3:;?`.
-Next, we split the data into two parts: 90% of the dataset for training and 10% for validation.
+The vocabulary has 65 characters: every lower- and upper-case letter, plus a handful of punctuation marks, `\n !$&',-.3:;?`.
+Next, we split the data 90/10 into a training set and a validation set.
 
 ```python
 # create tensor
@@ -76,12 +76,10 @@ print(val_data.shape)
 
 ### Training Data
 
-Feeding the entire text to the transformer all at once can be computationally expensive and prohibitive.
-To address this issue, neural network models use batch processing techniques to update the model's weights and biases.
-This technique involves dividing the training dataset into smaller subsets, or batches, of size `batch_size`.
-The batches are then processed separately by the neural network to update the model's parameters.
-For a character generation model, we need a sequence of characters as our training sample, which can be considered a time dimension.
-For the sample below, the input is `[18]` and the target is `47` at time 0, and the input is `[18, 47]` and the target is `56`, and so on.
+Feeding the entire text to the transformer at once is computationally prohibitive.
+Instead, we cut the training set into smaller subsets, or batches, of size `batch_size`, and update the model's weights one batch at a time.
+A training sample for a character generation model is a sequence of characters, so each sample also carries a time dimension: every prefix of the sequence is its own example.
+In the sample below, the input at time 0 is `[18]` and the target is `47`; at time 1 the input is `[18, 47]` and the target is `56`; and so on.
 
 ```python
 block_size = 8
@@ -102,9 +100,9 @@ for t in range(block_size):
     Time: 6, input: tensor([18, 47, 56, 57, 58,  1, 15]), target: 47
     Time: 7, input: tensor([18, 47, 56, 57, 58,  1, 15, 47]), target: 58
 
-To create our training data, we select a sequence starting from the character of a fixed size `block_size` in each batch.
-We then create our input and target along the time dimension inside each sequence, resulting in `batch_size` time `block_size` training examples.
-The example below shows that there are $4\times 8=32$ training examples in each batch as we have 4 sequences of 8 characters each.
+To build a batch, we pick `batch_size` random starting points in the data and take `block_size` characters from each.
+Unrolling every sequence along the time dimension then gives us `batch_size` times `block_size` training examples.
+The example below uses 4 sequences of 8 characters, so each batch holds $4\times 8=32$ training examples.
 
 ``` python
 batch_size = 4
@@ -170,8 +168,8 @@ for b in range(batch_size):
 
 ## BigramLanguageModel
 
-Let's rewrite our previous bigram model.
-Here is the main part of the model we built in [Part 1](https://gejun.name/natural-language-processing/building-makemore/).
+Let's rewrite the bigram model.
+Here is the core of what we built in [Part 1](https://gejun.name/natural-language-processing/building-makemore/).
 
 ``` python
 W = torch.randn((27, 27), requires_grad=True)
@@ -180,15 +178,15 @@ counts = logits.exp()
 probs = counts / counts.sum(1, keepdim=True)
 ```
 
-### Base model
+### Base Model
 
-From [Part 2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we learned how to represent a token with a fixed-length, real-valued, and learnable vector, which is known as token embedding.
-The embedding matrix can be initialized by [`nn.Embedding`](https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html) where `num_embeddings` refers to the vocabulary size, and `embedding_dim` refers to the length of the feature vector.
-For consistency with the original paper, we will use `d_model` to represent the feature vector's length, which will be set to 64 instead of the vocabulary size.
-As a result, we need to create another linear layer to ensure that the output dimension is the same as the vocabulary size.
+In [Part 2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we learned to represent a token as a fixed-length, learnable vector of real numbers, known as a token embedding.
+The embedding matrix is created with [`nn.Embedding`](https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html), where `num_embeddings` is the vocabulary size and `embedding_dim` is the length of the feature vector.
+Following the original paper, we call that length `d_model` and set it to 64 rather than to the vocabulary size.
+Since the embedding width no longer matches the vocabulary, we add a linear layer to project the output back up to `vocab_size`.
 
-It's worth noting that we cannot compute the cross-entropy for a 3-dimensional matrix, as seen from the [documentation](https://pytorch.org/docs/stable/generated/torch.nn.functional.cross_entropy.html) of `cross_entropy` function.
-Therefore, we need to reshape the logits and targets before computing it.
+One catch: `cross_entropy` does not accept a 3-dimensional input in this layout, as its [documentation](https://pytorch.org/docs/stable/generated/torch.nn.functional.cross_entropy.html) explains.
+So we flatten the batch and time dimensions of the logits and targets before computing the loss.
 
 ``` python
 torch.manual_seed(42)
@@ -242,7 +240,7 @@ print(decode(base_model.generate(idx, max_length=100).squeeze().tolist()))
 
     dF3unFC;RnXbzDP'CnT-P.lBuYkUWdXRaRnqDCk,b!:UE$J,uuheZqKPXEPYMYSAxKlRpvwisS.MIwITP$YqrgGRpP.AwYluRWGI
 
-Certainly, the 100 characters generated at this point are not meaningful as the model has not been trained yet.
+The 100 characters above are gibberish, as expected: the model has not been trained yet.
 
 ### Training
 
@@ -282,13 +280,12 @@ print(decode(base_model.generate(idx, max_length=100).squeeze().tolist()))
     Thind.
     UCESer ur thathapr me machan fl haisu d iere--sthurore ce
 
-The generated characters appear more word-like than before, but most are misspelled because the bigram model only generates a new character based on the last generated character.
-To improve our model's performance, we need a way to incorporate information from previously generated characters up to `block_size`.
-One solution is to use a bag-of-words model to extract features from previously generated characters.
-In a bag-of-words model, a text is treated as a bag of tokens, disregarding grammar and order.
-In the next section, we will introduce the transformer architecture from the classic paper, [Attention is all you need](https://arxiv.org/pdf/1706.03762.pdf).
-We will explain what attention is, how to calculate, and most importantly, how to understand it intuitively.
-Furthermore, we will implement it step by step and see how it improves our model's performance.
+The output is more word-like than before, but most of it is still misspelled, because a bigram model predicts each character from the previous one alone.
+To do better, the model needs to draw on all the preceding characters, up to `block_size` of them.
+The crudest way to do that is a bag-of-words model, which treats the context as an unordered bag of tokens and throws away grammar and position.
+Attention is a far better version of the same idea.
+In the next section, we will introduce the transformer architecture from the classic paper [Attention Is All You Need](https://arxiv.org/pdf/1706.03762.pdf).
+We will cover what attention is, how to compute it, and, most importantly, how to think about it intuitively, then implement it step by step and measure how much it helps.
 
 ## Transformer Architecture
 
@@ -303,36 +300,34 @@ According to the paper:
 > It converts an input sequence of tokens into a sequence of embedding vectors, often called a hidden state.
 > The encoder is composed of a stack of encoder layers, which are used to update the input embeddings to produce representations that encode some contextual information in the sequence."
 
-In the transformer architecture shown above, the encoder is on the left side inside the blue box, and it contains multiple encoder layers.
-The encoder compresses and extracts important information from the input sequence while discarding the irrelevant information.
+In the diagram above, the encoder is the blue box on the left, and it holds a stack of identical encoder layers.
+In short, it extracts and compresses the information that matters in the input sequence and discards the rest.
 
-Next, let's see what a decoder is.
-The decoder is inside the red box on the right side of the transformer architecture.
-It is also composed of a stack of decoder layers, which are similar to encoder layers except that they add an extra masked layer in the multi-head attention.
+The decoder is the red box on the right.
+It is also a stack of layers, much like the encoder layers except that their multi-head attention is masked.
 
-Last but not least, the state generated from the encoder is passed to the decoder and generates the output sequence, which is referred to as cross-attention.
-A decoder uses the encoder's hidden state to iteratively generate an output sequence of tokens, one at a time.
+Finally, the hidden state produced by the encoder is passed to the decoder, which uses it to generate the output sequence one token at a time.
+That link between the two stacks is called cross-attention.
 
-GPT, which stands for Generative Pretrained Transformer, focuses on the decoder part.
-Therefore, our model architecture becomes the following.
+GPT, short for Generative Pretrained Transformer, keeps only the decoder, so our architecture reduces to the following.
 
 <img src="GPT.jpg" class="quarto-discovered-preview-image" alt="gpt-architecture" width="50%"/>
 
-In the next few sections, we will build the model from bottom to top.
-Since the input embedding stays the same, we will skip the input embedding section and talk about positional embedding.
+We will build the model from the bottom up.
+The input embedding is unchanged from Part 2, so we start one level higher, with positional embedding.
 
 ## Positional Embedding
 
-The embedding of input tokens alone does not capture any information about their relative positions within the sequence.
-Hence a positional embedding is introduced to inject this information.
-According to the paper, there are multiple ways for positional embeddings, with some being fixed while others are learnable.
-For our implementation, we will use a learnable positional embedding with the same dimension as the token embedding, which is `d_model`.
-The num_embeddings parameter in the `nn.Embedding` function will be set to `block_size` since our training sequence has a maximum length of `block_size`.
+Token embeddings carry no information about where a token sits in the sequence.
+A positional embedding injects exactly that.
+The paper describes several ways to build one, some fixed and some learnable.
+We will use a learnable one, with the same width as the token embedding, `d_model`, so the two can simply be added together.
+Its `num_embeddings` is `block_size`, since that is the longest sequence the model will ever see.
 
-Let's dive into the dimensions of the input tokens.
-The input tokens have two dimensions: the batch dimension, which indicates how many independent sequences the model processes in parallel, and the time dimension, which records the current position within the sequence up to a maximum length of `block_size`.
-After the input tokens pass through the token and positional embedding layers, they will have an additional channel dimension, which is a convention borrowed from computer vision.
-For simplicity, we will use `B`, `T`, and `C` to denote the batch, time, and channel dimensions, respectively.
+It is worth pausing on the shapes here.
+The input tokens have two dimensions: batch, how many independent sequences the model processes in parallel, and time, the position within a sequence, up to `block_size`.
+Passing them through the token and positional embedding layers adds a third, the channel dimension, a name borrowed from computer vision.
+We will write these as `B`, `T`, and `C` throughout.
 
 ``` python
 class BigramLanguageModel(nn.Module):
@@ -398,11 +393,11 @@ What is attention?
 
 ![attention-multihead](attention-multi-head.png)
 
-We can compute the attention score using the following steps as described in the paper.
+The paper packs the whole computation into a single formula.
 
 $$Attention(Q,K,V)=softmax\bigl( \frac{QK^T}{\sqrt{d_k}}\bigr) V$$
 
-To better understand the attention formula above, it's helpful to review some linear algebra concepts.
+Before unpacking that formula, it helps to revisit a bit of linear algebra.
 
 ### Dot Product
 
@@ -421,8 +416,8 @@ $$\vec{a} \cdot \vec{b} = \|a\| \cdot \|b\| cos(\theta)$$
 *[source](https://www.wikiwand.com/en/Dot_product)*
 
 The quantity $\|a\|cos(\theta)$ is the scalar projection of $\vec{a}$ onto $\vec{b}$.
-The higher the product, the more similar two vectors.
-Let's take the learned embedding from our last model and compute the dot products of some tokens from our vocabulary.
+The larger the dot product, the more the two vectors point in the same direction, and so the more similar they are.
+Let's take the embeddings learned by our last model and compute the dot products of a few tokens from the vocabulary.
 
 ``` python
 char1 = 'a'
@@ -446,27 +441,25 @@ print(f"Dot product of {char1} and {char3}: {calc_dp(char1, char3):.6f}")
     Dot product of a and z: -14.060809
     Dot product of a and e: 12.071777
 
-The dot product of the feature vectors of `a` and itself is much higher than with `e` or `z`.
-Also, the results show that `a` is more similar to `e` then to `z`.
+The dot product of `a` with itself is far larger than with either `e` or `z`, and `a` comes out closer to `e` than to `z`.
 
 ### Attention Score
 
-Every token in the input sequence generates a query vector and a key vector of the same dimension.
-This operation is called **self-attention** because $Q$, $V$, and $T$ are all derived from the same source in GPT.
-The dot product of the query and key vectors measures their similarity.
+Every token in the input sequence produces a query vector and a key vector of the same dimension, and the dot product between them measures how well they match.
+In GPT, $Q$, $K$, and $V$ are all derived from the same sequence, which is why this is called **self-attention**.
 
-Let $X_{m\times n}$ and $W$ denote the embedding matrix of the input sequence and the weight of the linear transformation, where $m$ is the number of tokens, $n$ is the token dimension, and $k$ is the output dimension of the linear transformation or the head size of our attention.
-Each row represents the token embedding for each token in the input.
-Then, we apply three linear transformations on $X$ to project it onto 3 new vector spaces:
+Let $X_{m\times n}$ be the embedding matrix of the input sequence, one row per token, where $m$ is the number of tokens and $n$ is the embedding dimension.
+Let $W$ be the weight of a linear transformation whose output dimension is $k$, the head size of our attention.
+We apply three such transformations to $X$, projecting it into three new vector spaces:
 
 -   $X_{m\times n} \cdot W^Q_{n\times k} = Q_{m\times k}$ to obtain the query space.
 -   $X_{m\times n} \cdot W^K_{n\times k} = K_{m\times k}$ to obtain the key space.
 -   $X_{m\times n} \cdot W^V_{n\times k} = V_{m\times k}$ to obtain the value space.
 
-$Q\cdot K^T$ is the attention score matrix, having a shape of $m \times m$.
-The larger the value, the closer the vectors and hence the more attention.
+$Q\cdot K^T$ is then the attention score matrix, of shape $m \times m$.
+The larger an entry, the closer those two vectors, and the more attention one token pays to the other.
 
-Let's take the learned token and positional embeddings from our previous model, apply the query and key transformations, and calculate the attention scores of the sequence `sea`.
+Let's take the token and positional embeddings learned by our previous model, apply the query and key transformations, and compute the attention scores for the sequence `sea`.
 
 ``` python
 sequence = "sea"
@@ -498,9 +491,9 @@ print(score)
             [ 1.6477,  0.1216, -0.4353],
             [-6.8497, -1.1358, -0.8100]], device='cuda:0')
 
-The attention score vector for `e` is `[ 1.6477,  0.1216, -0.4353]`
-However, the dot products may become too large in magnitude when the head size $d_k$ is large, which can result in extremely small gradients after applying the softmax function.
-To mitigate this issue, the scores are scaled by multiplying with the factor $\frac{1}{\sqrt{d_k}}$, as suggested in the paper.
+The raw score vector for `e` is the second row, `[1.6477, 0.1216, -0.4353]`.
+When the head size $d_k$ is large, though, these dot products grow large in magnitude, which pushes the softmax into a saturated region where its gradients all but vanish.
+The paper avoids that by scaling the scores by $\frac{1}{\sqrt{d_k}}$ before the softmax.
 
 ``` python
 with torch.no_grad():
@@ -513,22 +506,21 @@ with torch.no_grad():
             [0.4392, 0.2999, 0.2609],
             [0.1031, 0.4302, 0.4667]], device='cuda:0')
 
-After scaling, the attention score vector for token `e` in `sea` becomes `[0.4392, 0.2999, 0.2609]`.
-This implies that the token `s` requires more attention than the tokens `e` and `a`.
+After scaling and the softmax, the attention vector for `e` in `sea` becomes `[0.4392, 0.2999, 0.2609]`, so `e` attends most to `s`.
 
-Wait a minute!
-Why does the token `e` pay attention to the future token `a` in a GPT model?
-It is cheating in this way.
-How can we preserve the information from the previous tokens while not peeking the future tokens?
-The masking layer.
+Wait a minute.
+Why is `e` attending to `a`, a token that comes *after* it?
+For a GPT model that is cheating: at generation time those future tokens do not exist yet.
+How do we keep the information from earlier tokens without peeking ahead?
+With a mask.
 
 ### Masking
 
-Where exactly do we apply a masking layer?
-Since we want to use a softmax function to normalize the attention scores until the current position so that the divided attention sums to one, it should be applied after calculating the unscaled attention score and before the softmax layer.
-In this way, we can exclude the future tokens.
-To implement this masking, we will use a PyTorch built-in function, `torch.tril`, which preserves the original values for the lower triangular part of the matrix while setting the upper part to zero.
-In our case, we replace the scores in the upper triangular part of the matrix with a very small number, such as `float("-inf")`, so that they will become zeros after applying the softmax function.
+Where exactly does the mask go?
+The softmax has to normalize over the visible positions only, so that the attention up to the current position sums to one.
+That places the mask after the raw scores are computed and before the softmax.
+To build it, we use PyTorch's `torch.tril`, which keeps the lower triangular part of a matrix and zeros out the upper part, the part that corresponds to future tokens.
+We then replace those future scores with a very large negative number, `float("-inf")`, so that the softmax turns them into exact zeros.
 
 ``` python
 with torch.no_grad():
@@ -542,11 +534,11 @@ with torch.no_grad():
             [0.5348, 0.4652, 0.0000],
             [0.2614, 0.3626, 0.3760]], device='cuda:0')
 
-Now, the scaled attention vector for `e` becomes `[0.5348, 0.4652, 0.0000]`, indicating that the model pays roughly half of its attention to tokens `s` and `e` when it reaches token `e` while completely ignoring the future token `a`.
+The masked attention vector for `e` is now `[0.5348, 0.4652, 0.0000]`: standing at `e`, the model splits its attention roughly evenly between `s` and `e`, and ignores the future token `a` entirely.
 
 ### Weighted Sum
 
-Finally, we obtain a new adjusted embedding for each token in the context by multiplying the attention matrix with the value matrix $V$.
+Finally, multiplying the attention matrix by the value matrix $V$ gives each token in the context a new, context-aware embedding.
 
 ``` python
 v = nn.Linear(embed.shape[1], d_k, bias=False).to(device)
@@ -565,12 +557,12 @@ with torch.no_grad():
               0.0084, -0.1094,  0.3198, -0.5582, -0.7782,  0.4525, -0.1208,  0.1493]],
            device='cuda:0')
 
-To put it in another way, we force the tokens to look at each other by multiplying the attention scores with the value matrix $V$.
-This helps to adjust the value matrix to represent the entire sequence better as training progresses.
+Put another way, this last multiplication is what actually lets the tokens talk to each other: a token's new embedding is a weighted blend of the values of every token it is allowed to see.
+As training progresses, those blended embeddings come to represent the sequence better and better.
 
 ### Demystifying QKV
 
-How do we understand attention from intuition?
+How should we think about attention intuitively?
 Here is a great answer from [Cross Validated](https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms).
 
 > The key/value/query concept is analogous to retrieval systems.
@@ -581,17 +573,16 @@ Here is a great answer from [Cross Validated](https://stats.stackexchange.com/qu
 ![youtube-search](youtube-search.png)
 *[source](https://www.youtube.com/watch?v=ySEx_Bqxvvo&ab_channel=AlexanderAmini)*
 
-Here are the intuitive meaning of these matrices:
+Roughly speaking:
 
--   The query matrix represents a piece of information we are looking for in a query we have.
--   The key matrix is intuitively meant to represent the relevance of each word to our query. And the key matrix represents how important each word is to my overall query.
--   The value matrix intuitively represents the contextless meaning of our input tokens.
+-   The **query** matrix represents what each token is looking for.
+-   The **key** matrix represents what each token has to offer, so matching a query against the keys tells us how relevant every other token is.
+-   The **value** matrix represents the content of each token itself, independent of context.
 
-Imagine that you're at the supermarket buying all the ingredients you need for your dinner.
-You have the dish's recipe, and the ingredients (query) are what you look for in a supermarket.
-Scanning the shelves, you look at the labels (keys) and check whether they match an ingredient on your list.
-You are determining the similarity between query and keys.
-If you have a match, you take the item (value) from the shelf.
+Or picture yourself at the supermarket, shopping for dinner.
+The recipe tells you which ingredients to look for (query).
+Scanning the shelves, you read the labels (keys) to see which ones match your list, which is just a similarity check between query and keys.
+When a label matches, you take the item itself (value) off the shelf.
 
 Let's put the attention layer into a single `Head` class.
 
@@ -621,8 +612,8 @@ class Head(nn.Module):
         return out
 ```
 
-To ensure compatibility with matrix multiplication, we need to set the head size as the embedding dimension, `d_model`, because we currently only have one head layer.
-However, we will not train this model at this moment.
+With only one head, the head size has to equal the embedding dimension `d_model` for the shapes to line up.
+We will hold off on training this version, though, since a few pieces are still missing.
 
 ``` python
 class BigramLanguageModel(nn.Module):
@@ -665,10 +656,10 @@ class BigramLanguageModel(nn.Module):
 
 ### Multi-head Attention
 
-As an old saying goes, two heads are better than one.
-By having multiple heads, we can apply multiple transformations to the embeddings.
-Each projection has its own set of learnable parameters, which enables the self-attention layer to focus on different semantic aspects of the sequence.
-We will denote the number of heads as `h`.
+As the old saying goes, two heads are better than one.
+Running several heads in parallel applies several independent projections to the same embeddings.
+Each head has its own learnable parameters, so each is free to specialize in a different aspect of the sequence.
+We will write the number of heads as `h`.
 
 ``` python
 class MultiHeadAttention(nn.Module):
@@ -684,7 +675,7 @@ class MultiHeadAttention(nn.Module):
 ### Dropout
 
 Dropout was proposed in [Dropout: A Simple Way to Prevent Neural Networks from Overfitting](https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf) by Nitish Srivastava et al. in 2014.
-In this technique, a certain proportion of neurons are randomly dropped out during training to prevent overfitting.
+During training, a fixed proportion of neurons is switched off at random, which stops the network from leaning too heavily on any one of them and helps prevent overfitting.
 
 > We apply dropout to the output of each sub-layer, before it is added to the
 > sub-layer input and normalized.
@@ -692,7 +683,7 @@ In this technique, a certain proportion of neurons are randomly dropped out duri
 ![dropout](dropout.png)
 *[source](https://wiki.tum.de/download/attachments/23568252/Selection_532.png)*
 
-We will apply PyTorch's built-in function `nn.Dropout` to our `Head` and `MultiHeadAttention` layers.
+We add PyTorch's built-in `nn.Dropout` to both the `Head` and `MultiHeadAttention` layers.
 
 ```python
 dropout = 0.1
@@ -740,12 +731,13 @@ class MultiHeadAttention(nn.Module):
 ### Residual Connection
 
 The concept of residual connections was first introduced in 2015 by Kaiming He et al. in their paper [Deep Residual Learning for Image Recognition](https://arxiv.org/pdf/1512.03385.pdf).
-It allows the network to bypass one or more layers, which helps alleviate the vanishing gradient problem that could occur in very deep neural networks.
+A residual connection lets the signal bypass one or more layers, which gives gradients a shorter path back and eases the vanishing gradient problem in very deep networks.
 
 ![resnet-residual-connection](resnet.png)
 *[source](https://paperswithcode.com/)*
 
-To implement residual connections and a projection layer in our multi-head attention module, we modify the `MultiHeadAttention` class as follows.
+Here we add the projection layer that the residual path needs, so that the concatenated heads are mixed back into `d_model` dimensions before being added to the input.
+The addition itself lands a little later, in the `Block` class.
 
 ``` python
 class MultiHeadAttention(nn.Module):
@@ -770,15 +762,15 @@ As stated in the paper:
 > In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully
 > connected feed-forward network, which is applied to each position separately and identically.
 
-This means that instead of processing the entire sequence of embeddings as a single vector, the feed-forward network applies the same linear transformations to each embedding individually.
+In other words, the feed-forward network does not look at the sequence as a whole: it applies the same linear transformations to each position's embedding independently.
 
 > While the linear transformations are the same across different positions, they use different parameters
 > from layer to layer. Another way of describing this is as two convolutions with kernel size 1.
 > The dimensionality of input and output is $d_{model} = 512$, and the inner-layer has dimensionality
 > $d_{ff} = 2048$.
 
-This implies that our first linear layer in the feed-forward layer has an output dimension of `d_model * 4`, which serves as the input dimension of the second linear layer.
-We also apply a dropout layer to the feed-forward layer to avoid overfitting.
+So the inner layer is four times as wide as the model: the first linear layer expands `d_model` to `d_model * 4`, and the second projects it back down.
+We add a dropout layer here as well.
 
 ``` python
 class FeedForward(nn.Module):
@@ -800,16 +792,15 @@ class FeedForward(nn.Module):
 ### Layer Normalization
 
 The concept of layer normalization was introduced by Jimmy Lei Ba et al. in their paper [Layer Normalization](https://arxiv.org/pdf/1607.06450.pdf) published in 2016.
-Unlike batch normalization, which normalizes the inputs to a batch of data, layer normalization normalizes the inputs to a single layer of the network.
-In our implementation, we apply layer normalization before self-attention and feed-forward layers.
+Where batch normalization normalizes each feature across a batch of examples, layer normalization normalizes all the features of a single example, which makes it independent of batch size.
+In our implementation, we apply it *after* the self-attention and feed-forward sub-layers, as the original paper does; see the [Notes](#notes) for how this differs from the video.
 
 ![layer-normalization](layer-normalization.png)
 *[source](https://paperswithcode.com/)*
 
 ### Refactoring
 
-Let's refactor the code to put multi-head attention and feed-forward layers to a single `Block` class.
-Moreover, the head size would be automatically set to `d_model/h`.
+Let's fold the multi-head attention and feed-forward layers into a single `Block` class, with the head size derived automatically as `d_model/h`.
 
 ``` python
 class Block(nn.Module):
@@ -835,13 +826,13 @@ class Block(nn.Module):
         return x
 ```
 
-## Put Everything Together
+## Putting It All Together
 
-Here are the steps to build a GPT with transformer architecture:
+Here are the steps to assemble the full GPT:
 
 1.  Initialize the token embedding table with the vocabulary size and embedding dimension `(vocab_size, d_model)`.
 2.  Initialize the positional embedding table with the maximum sequence length and embedding dimension `(block_size, d_model)`.
-3.  Create `N` identical decoder layers using the `Block` class with multi-head attention, feed-forward, and layer normalization layers. The `head_size` parameter will be automatically set to `d_model/h`.
+3.  Stack `N` identical decoder layers, each a `Block` of multi-head attention, feed-forward, and layer normalization. The head size is set automatically to `d_model/h`.
 4.  Add a linear output layer with the output dimension equal to the `vocab_size`.
 
 ``` python
@@ -1026,9 +1017,14 @@ print(decode(model.generate(context, max_length=2000)[0].tolist()))
     And in stay be I have will am gove his derefy:
     lade them brooks it in
 
-The newly generated text contains more word-like characters and resembles the style of Shakespeare, with a more significant proportion of correctly spelled words.
+The training loss has fallen from about 2.4 with the bigram model to 1.60, and it shows.
+The text now has the shape of Shakespeare: speaker names in capitals, line breaks in roughly the right places, and a much larger share of correctly spelled words.
+It is still nonsense, of course, but it is nonsense with structure.
 
 ## Revisiting Attention
+
+Now that the model is trained, let's look at what a single attention head has actually learned.
+We take the last head of the last block and inspect the attention scores it assigns while reading a short passage.
 
 ``` python
 sequence = """MENENIUS:\nWhat is gra"""
@@ -1110,9 +1106,9 @@ print(f"Adjusted and compressed embeddings for the sequence:\n {new_embed}")
 
 ## Notes
 
-Here are some tiny differences between my code and the code in the video.
+A couple of small differences between my code and the code in the video.
 
-1.  I applied layer normalization after the self-attention layer, while he applied immediately on `x` before `x` entered the self-attention and feed-forward layers.
+1.  I apply layer normalization *after* each sub-layer (post-LN, as in the original paper), while the video applies it to `x` *before* `x` enters the self-attention and feed-forward layers (pre-LN).
 
 ``` python
 class Block(nn.Module):
@@ -1133,7 +1129,7 @@ class Block(nn.Module):
         return x
 ```
 
-1.  The scaling factor I used was $d_k$ instead of $d_{model}$ (maybe it's a typo in his code?).
+2.  The scaling factor should be $\sqrt{d_k}$, the head size, rather than $\sqrt{d_{model}}$ (maybe a typo in his code?).
 
 ``` python
 class Head(nn.Module):
@@ -1164,10 +1160,9 @@ class Head(nn.Module):
 
 ## Other Resources
 
--   https://sebastianraschka.com/blog/2023/self-attention-from-scratch.html
--   https://jalammar.github.io/illustrated-transformer/
--   https://www.youtube.com/watch?v=ptuGllU5SQQ&list=PLoROMvodv4rOSH4v6133s9LFPRHjEmbmJ&index=9
--   https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms
--   https://web.stanford.edu/class/cs224n/readings/cs224n-self-attention-transformers-2023_draft.pdf
--   https://learning.oreilly.com/library/view/natural-language-processing/9781098136789/
--   https://nlp.seas.harvard.edu/annotated-transformer/
+-   Sebastian Raschka, [Understanding and Coding the Self-Attention Mechanism](https://sebastianraschka.com/blog/2023/self-attention-from-scratch.html)
+-   Jay Alammar, [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)
+-   Stanford CS224N, [Self-Attention and Transformers](https://www.youtube.com/watch?v=ptuGllU5SQQ&list=PLoROMvodv4rOSH4v6133s9LFPRHjEmbmJ&index=9) (lecture video) and the accompanying [course notes](https://web.stanford.edu/class/cs224n/readings/cs224n-self-attention-transformers-2023_draft.pdf)
+-   Cross Validated, [What exactly are keys, queries, and values in attention mechanisms?](https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms)
+-   Tunstall, von Werra and Wolf, [Natural Language Processing with Transformers](https://learning.oreilly.com/library/view/natural-language-processing/9781098136789/)
+-   Harvard NLP, [The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)
