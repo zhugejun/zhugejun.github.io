@@ -31,9 +31,9 @@ Deep inside GMF's system, Maria's application appeared before five invisible jud
 
 **Judge Character** looked at Maria's credit history. "FICO score: 710. No prior collections. One late payment from three years ago, but otherwise clean." He nodded approvingly. _Character is about trustworthiness — can you be counted on to pay?_ Maria's history said yes.
 
-**Judge Capacity** pulled up her income. Maria earned \$5,000 a month. The Silverado's payment would be \$680. He did the math quickly: $680 ÷ $5,000 = **13.6% PTI (Payment-to-Income)**. "She can afford this," he said. _Capacity asks: even if you're trustworthy, do you actually have the money?_ If her payment had been $1,400 — a 28% PTI — he would've slammed the gavel down.
+**Judge Capacity** pulled up her income. Maria earned \$5,000 a month. The Silverado's payment would be \$680. He did the math quickly: \$680 ÷ \$5,000 = **13.6% PTI (Payment-to-Income)**. "She can afford this," he said. _Capacity asks: even if you're trustworthy, do you actually have the money?_ If her payment had been \$1,400 — a 28% PTI — he would've slammed the gavel down.
 
-**Judge Capital** looked at her down payment. Maria had saved \$6,000 to put down on the \$38,000 truck. That meant she was financing \$32,000 on a $38,000 vehicle — an **LTV (Loan-to-Value) of 84%**. "Skin in the game," he said with satisfaction. _Capital is about how much the borrower has invested._ If Maria had put zero down, her LTV would be 100% — and she'd start the loan underwater the moment the truck depreciated.
+**Judge Capital** looked at her down payment. Maria had saved \$6,000 to put down on the \$38,000 truck. That meant she was financing \$32,000 on a \$38,000 vehicle — an **LTV (Loan-to-Value) of 84%**. "Skin in the game," he said with satisfaction. _Capital is about how much the borrower has invested._ If Maria had put zero down, her LTV would be 100% — and she'd start the loan underwater the moment the truck depreciated.
 
 **Judge Collateral** inspected the truck itself. A brand-new Silverado? Strong resale value. It holds its price well at auction. "Solid collateral," she ruled. _The collateral is the safety net — if everything goes wrong, can we sell this and recover our money?_ A seven-year-old sedan with 120,000 miles would've been a different story.
 
@@ -55,7 +55,7 @@ Here's where their risks diverge:
 
 **Maria's risk (the loan):** If she loses her job and stops paying, GMF repossesses the truck and sells it at auction. The danger is **negative equity** — if her loan balance is higher than what the truck is worth, GMF eats the difference. That gap is called **loss severity**.
 
-**Derek's risk (the lease):** Even if Derek pays perfectly every month, GMF still faces **residual value risk**. They projected the Blazer EV would be worth \$25,000 when Derek returns it in three years. But what if battery technology leaps forward, a sleeker model hits the market, and used Blazer EVs are suddenly only worth \$19,000? That's a \$6,000 loss per vehicle — and Derek didn't miss a single payment. Multiply that by 50,000 leases and you're staring at a **$300 million hole**.
+**Derek's risk (the lease):** Even if Derek pays perfectly every month, GMF still faces **residual value risk**. They projected the Blazer EV would be worth \$25,000 when Derek returns it in three years. But what if battery technology leaps forward, a sleeker model hits the market, and used Blazer EVs are suddenly only worth \$19,000? That's a \$6,000 loss per vehicle — and Derek didn't miss a single payment. Multiply that by 50,000 leases and you're staring at a **\$300 million hole**.
 
 This is why leasing is a different animal. Loans are about _borrower behavior_. Leases add _market risk_ on top of it.
 
@@ -77,9 +77,9 @@ He clicked into the next metric. "**Roll rates**: 40% of accounts that were 30 d
 
 Priya scribbled furiously. "So those are the early warnings. What about the autopsy reports?"
 
-Hector smiled. "Those are the **lagging indicators**. **Net charge-off rate**: we wrote off \$200 million last quarter and recovered \$80 million at auction. On a $50 billion portfolio, that's an annualized NCO of about 0.96%. That tells us how we did — past tense. The borrowers already defaulted. The trucks already went to auction. There's nothing left to prevent."
+Hector smiled. "Those are the **lagging indicators**. **Net charge-off rate**: we wrote off \$200 million last quarter and recovered \$80 million at auction. On a \$50 billion portfolio, that's an annualized NCO of about 0.96%. That tells us how we did — past tense. The borrowers already defaulted. The trucks already went to auction. There's nothing left to prevent."
 
-"Then there's **loss severity** — how much we actually lost per defaulted loan. Borrower defaults with a \$28,000 balance, we repo the truck, sell it for \$18,000, subtract \$2,000 in costs. We recovered \$16,000 and lost $12,000. That's 42.9% severity."
+"Then there's **loss severity** — how much we actually lost per defaulted loan. Borrower defaults with a \$28,000 balance, we repo the truck, sell it for \$18,000, subtract \$2,000 in costs. We recovered \$16,000 and lost \$12,000. That's 42.9% severity."
 
 "And finally, **recovery rates** — the flip side of severity. How much of what we're owed do we actually get back?"
 
@@ -135,15 +135,15 @@ Priya spent two weeks buried in SQL queries and SAS models. She segmented the ma
 
 Her findings told a nuanced story:
 
-Raising the floor to 660 would improve the 12-month delinquency rate on new originations by about 0.8 percentage points. But it would drop penetration from 39% to roughly 35%, and dealer complaints would increase. The lost interest income from those eliminated borrowers was about \$45 million annually — partially offset by roughly $30 million in avoided losses.
+Raising the floor to 660 would improve the 12-month delinquency rate on new originations by about 0.8 percentage points. But it would drop penetration from 39% to roughly 35%, and dealer complaints would increase. The lost interest income from those eliminated borrowers was about \$45 million annually — partially offset by roughly \$30 million in avoided losses.
 
-The net cost of tightening: about $15 million in lost revenue, but with a significantly healthier portfolio and lower reserve requirements.
+The net cost of tightening: about \$15 million in lost revenue, but with a significantly healthier portfolio and lower reserve requirements.
 
 She also proposed a middle path: keep the FICO floor at 620, but cap the **LTV at 100%** for anyone below 660 and limit their **term to 60 months max**. This would keep marginal borrowers in the pipeline but prevent the worst-case scenarios — the 117% LTV, 84-month loans that create negative equity traps nobody can escape.
 
 Hector reviewed her presentation. "Lead with the 'so what,'" he reminded her.
 
-So she did. Slide one: _"Q3 2024 policy loosening is projected to cost $38M in excess losses. Here are three options to course-correct, with trade-offs quantified."_
+So she did. Slide one: _"Q3 2024 policy loosening is projected to cost \$38M in excess losses. Here are three options to course-correct, with trade-offs quantified."_
 
 Management chose the middle path.
 
@@ -151,7 +151,7 @@ Management chose the middle path.
 
 ## Epilogue: Maria's Payment
 
-Back in the real world, Maria made her 12th payment on the Silverado. She was on time, every time. Her loan balance was down to \$27,400, and the truck was still worth about $31,000. She had positive equity — the best position a borrower can be in.
+Back in the real world, Maria made her 12th payment on the Silverado. She was on time, every time. Her loan balance was down to \$27,400, and the truck was still worth about \$31,000. She had positive equity — the best position a borrower can be in.
 
 Somewhere in GMF's system, her account was one of 500,000 being monitored by people like Priya — analysts who understood that behind every metric was a person, and behind every person was a number that told a story about risk.
 

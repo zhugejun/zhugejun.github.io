@@ -1,0 +1,20 @@
+{{- /*
+  Render math server-side with KaTeX (Hugo's built-in transform.ToMath), so no
+  JavaScript is needed at runtime. Only the KaTeX stylesheet is required; it is
+  loaded by layouts/partials/extend_head.html on pages with `math: true`.
+
+  Pages without `math: true` get their delimiters emitted verbatim, so a stray
+  `$` there can never be silently swallowed as a formula.
+*/ -}}
+{{- if .Page.Param "math" -}}
+  {{- $opts := dict "output" "htmlAndMathml" "displayMode" (eq .Type "block") -}}
+  {{- with try (transform.ToMath .Inner $opts) -}}
+    {{- with .Err -}}
+      {{- errorf "KaTeX: %s\n  in %s\n  math: %s" . $.Page.File.Filename $.Inner -}}
+    {{- else -}}
+      {{- .Value -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- .Text -}}
+{{- end -}}

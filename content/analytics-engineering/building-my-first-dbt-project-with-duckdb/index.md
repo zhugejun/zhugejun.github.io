@@ -252,7 +252,7 @@ case
 end as customer_segment
 ```
 
-Now when marketing says "actually, VIP should be $150 and 2 orders," I can just update the logic in one place, and it will automatically propagate to all reports and analyses that use the `dim_customers` table.
+Now when marketing says "actually, VIP should be \$150 and 2 orders," I can just update the logic in one place, and it will automatically propagate to all reports and analyses that use the `dim_customers` table.
 
 ### 3. Testing, Testing, Testing
 

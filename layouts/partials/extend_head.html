@@ -1,2 +1,9 @@
 {{- /* Preload self-hosted Fira Code for faster first code paint */ -}}
 <link rel="preload" href="/fonts/FiraCode-Regular.woff2" as="font" type="font/woff2" crossorigin>
+
+{{- /* KaTeX stylesheet, only on pages with `math: true`.
+       Formulas themselves are rendered at build time by
+       layouts/_default/_markup/render-passthrough.html, so no JS is loaded. */ -}}
+{{- if .Param "math" }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+{{- end }}

@@ -171,6 +171,19 @@ markup:
   goldmark:
     renderer:
       unsafe: true
+    extensions:
+      # Hand math to the render-passthrough hook verbatim, so Goldmark does not
+      # eat backslashes (\| -> |) or apply smart punctuation (... -> &hellip;)
+      # inside formulas. Literal currency in prose must be written as \$.
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - ["$$", "$$"]
+            - ["\\[", "\\]"]
+          inline:
+            - ["$", "$"]
+            - ["\\(", "\\)"]
 #     highlight:
 #         # anchorLineNos: true
 #         codeFences: true

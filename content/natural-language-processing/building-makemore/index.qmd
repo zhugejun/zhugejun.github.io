@@ -111,7 +111,7 @@ How do we calculate the likelihood? It is the product of the probability of each
 $$ L(\theta) = P(X_1=x_1, X_2=x_2, ..., X_n=x_n) = \Pi_i^n P(X_i=x_i)$$
 For example, the likelihood of the word _good_ is calculated as 
 $$Likelihood= P(".g") * P("go") * P("oo") * P("od") * P("d.") $$
-$$ = 0.0209\*0.0430\*0.0146\*0.0240\*0.0936=2.9399e-8$$
+$$ = 0.0209 * 0.0430 * 0.0146 * 0.0240 * 0.0936 = 2.9399e-8$$
 
 ```{python}
 def calc_likelihood(word, verbose=False):
