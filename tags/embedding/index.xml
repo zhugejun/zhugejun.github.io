@@ -9,7 +9,7 @@
       <url>https://gejun.name/</url>
       <link>https://gejun.name/</link>
     </image>
-    <generator>Hugo -- 0.163.3</generator>
+    <generator>Hugo -- 0.165.0</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 13 Mar 2023 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://gejun.name/tags/embedding/index.xml" rel="self" type="application/rss+xml" />
@@ -18,13 +18,12 @@
       <link>https://gejun.name/natural-language-processing/building-makemore-mlp/</link>
       <pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate>
       <guid>https://gejun.name/natural-language-processing/building-makemore-mlp/</guid>
-      <description>&lt;p&gt;In &lt;a href=&#34;https://gejun.name/natural-language-processing/building-makemore/&#34;&gt;Part1&lt;/a&gt;, we learned how to build a neural network with one hidden layer to generate words.
-The model we built performed fairly well as we got the exact words generated based on counting.
-However, the bigram model suffers from the limitation that it assumes that each character only depends on its previous character.
-Suppose there is only one bigram starting with a particular character.
-In that case, the model will always generate the following character in that bigram, regardless of the context or the probability of other characters.
-This lack of context can lead to poor performance of bigram models.
-In this lecture, Andrej shows us how to build a multilayer neural network to improve the model performance.&lt;/p&gt;</description>
+      <description>&lt;p&gt;In &lt;a href=&#34;https://gejun.name/natural-language-processing/building-makemore/&#34;&gt;Part 1&lt;/a&gt;, we built a single-layer neural network &amp;ndash; no hidden layer at all &amp;ndash; that generates words one character at a time.
+It worked well enough: the network reproduced exactly what the simple counting model had produced.
+But a bigram model is limited by construction, since it assumes each character depends only on the one immediately before it.
+If a character starts just one bigram, the model will always emit that same next character, no matter what came earlier or how likely the alternatives are.
+That missing context is what holds bigram models back.
+In this lecture, &lt;a href=&#34;https://karpathy.ai&#34;&gt;Andrej Karpathy&lt;/a&gt; shows how a deeper network fixes it.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
