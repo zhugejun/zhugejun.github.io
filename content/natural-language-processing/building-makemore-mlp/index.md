@@ -15,17 +15,16 @@ math: true
 jupyter: python3
 ---
 
-In [Part1]({{< ref "../building-makemore/index.md" >}}), we learned how to build a neural network with one hidden layer to generate words.
-The model we built performed fairly well as we got the exact words generated based on counting.
-However, the bigram model suffers from the limitation that it assumes that each character only depends on its previous character.
-Suppose there is only one bigram starting with a particular character.
-In that case, the model will always generate the following character in that bigram, regardless of the context or the probability of other characters.
-This lack of context can lead to poor performance of bigram models.
-In this lecture, Andrej shows us how to build a multilayer neural network to improve the model performance.
+In [Part 1]({{< ref "../building-makemore/index.md" >}}), we built a neural network with a single hidden layer that generates words one character at a time.
+It worked well enough: the network reproduced exactly what the simple counting model had produced.
+But a bigram model is limited by construction, since it assumes each character depends only on the one immediately before it.
+If a character starts just one bigram, the model will always emit that same next character, no matter what came earlier or how likely the alternatives are.
+That missing context is what holds bigram models back.
+In this lecture, [Andrej Karpathy](https://karpathy.ai) shows how a deeper network fixes it.
 
-Unlike the bigram model we built in the last lecture, our new mode is a multilayer perceptron (MLP) that takes the previous 2 characters to predict the probabilities of the next character.
+Unlike that bigram model, our new one is a multilayer perceptron (MLP) that looks at the previous 3 characters to predict the probability of the next one.
 This MLP language model was proposed in the paper [A Neural Probabilistic Language Model](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf) by Bengio et al. in 2003.
-As always, the official Jupyter Notebook for this part is [here](https://github.com/karpathy/nn-zero-to-hero/blob/master/lectures/makemore/makemore_part2_mlp.ipynb).
+As always, Andrej's official notebook for this lecture is [on GitHub](https://github.com/karpathy/nn-zero-to-hero/blob/master/lectures/makemore/makemore_part2_mlp.ipynb).
 
 ## Data Preparation
 
@@ -49,7 +48,7 @@ print(stoi, itos)
     {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9, 'j': 10, 'k': 11, 'l': 12, 'm': 13, 'n': 14, 'o': 15, 'p': 16, 'q': 17, 'r': 18, 's': 19, 't': 20, 'u': 21, 'v': 22, 'w': 23, 'x': 24, 'y': 25, 'z': 26, '.': 0} {1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h', 9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm', 14: 'n', 15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 's', 20: 't', 21: 'u', 22: 'v', 23: 'w', 24: 'x', 25: 'y', 26: 'z', 0: '.'}
 
 Next, we create the training data.
-This time, we use the last 2 characters, instead of 1, to predict the next character, which is a 3-gram or trigram model.
+This time we feed the model the last 3 characters instead of 1, so `block_size` is 3 and every training example is a 4-gram: three characters of context plus the character to predict.
 
 ```python
 block_size = 3
@@ -74,18 +73,17 @@ print(X.shape, y.shape)
 
 ## Multilayer Perceptron (MLP)
 
-As stated in the name, our neural network model will have multiple hidden layers.
-Besides this, we will also learn a new way to represent characters.
+As the name suggests, a multilayer perceptron stacks fully connected layers with a nonlinearity in between, which is where our new model gains its depth over the bigram one.
+Along the way, we will also learn a new way to represent characters.
 
 ### Feature Vector
 
 ![feature vector idea](mlp-feature-vector.png)
 
-The paper proposed that each word would be associated with a feature vector which can be learned as training progresses.
-In other words, we use feature vectors to represent words in a language model.
-The number of features or the length of the vector is much smaller than the size of the vocabulary.
-Since the size of our vocabulary is 27, we will use a vector of length of 2 for now.
-This feature vector can be considered as word embedding nowadays.
+The paper proposes associating every word with a feature vector that the model learns as training progresses.
+The vector is much shorter than the vocabulary is large, which is the whole point: similar words can end up close to one another instead of each getting its own isolated slot.
+Our vocabulary holds only 27 characters, so a vector of length 2 is enough to start with, and short enough that we can plot it later.
+Today we would simply call this vector an embedding.
 
 ```python
 g = torch.Generator().manual_seed(42)
@@ -96,15 +94,14 @@ print(f"Vector representation for character a is: {C[stoi['a']]}")
 
     Vector representation for character a is: tensor([ 0.9007, -2.1055])
 
-The code above initializes our lookup table with $27\times 2$ random numbers using `torch.randn` function.
-As we can see that the vector representation for the character `a` is `[ 0.9007, -2.1055]`.
+The code above initializes the lookup table with $27\times 2$ random numbers via `torch.randn`, which gives the character `a` the vector `[0.9007, -2.1055]`.
 
-Next, we are going to replace the indices in matrix `X` with vector representations.
-Since multiplying a one-hot encoding vector having a 1 at index `i` with the weight matrix `W` is the same as getting the `ith` row of `W`, we will extract the `ith` row from the embedding matrix directly instead of multiplying one-hot encoding with it.
+Next, we replace the indices in `X` with their vector representations.
+Multiplying a one-hot vector that has a 1 at index $i$ by a weight matrix $W$ simply picks out the $i$-th row of $W$, so instead of building those one-hot vectors at all, we index into the embedding matrix directly.
 
 ![matrix multiplication](matrix-multiplication.png)
 
-According to the [tensor indexing documentation](https://pytorch.org/cppdocs/notes/tensor_indexing.html#getter) of PyTorch, we can extract corresponding feature vectors by treating `X` as an indexing matrix.
+PyTorch lets us do exactly that: as its [tensor indexing documentation](https://pytorch.org/cppdocs/notes/tensor_indexing.html#getter) explains, we can pass `X` itself as an index matrix and get the corresponding feature vectors back.
 
 ```python
 embed = C[X]
@@ -119,18 +116,17 @@ print(embed.shape)
             [1.9269, 1.4873]])
     torch.Size([228146, 3, 2])
 
-To put it in another way, we transform the matrix `X` of $228146\times 3$ to the embedding matrix `embed` of $228146\times 3 \times 2$ because all the indices have been replaced with a vector of $1\times 2$.
+In other words, `X` of shape $228146\times 3$ becomes `embed` of shape $228146\times 3 \times 2$: every index has been swapped for the length-2 vector it points to.
 
 ### Model Architecture
 
 ![MLP architecture](mlp-architecture.png)
 
-As highlighted in the picture above, we should have a vector for each trigram after extracting its feature from the lookup table.
-This way, we can do matrix multiplication like before.
-However, we have a $3\times 2$ matrix for each trigram instead.
-So we need to concatenate all the rows of the matrix into one vector.
-We can use `torch.cat` to concatenate the second dimension together, but PyTorch has a more efficient way, the `view` function([doc](https://pytorch.org/docs/stable/generated/torch.Tensor.view.html)), to do so.
-See this [blog post](http://blog.ezyang.com/2019/05/pytorch-internals/) for more details about tensor and PyTorch internals.
+As the picture above highlights, we want a single vector per training example so that we can do matrix multiplication as before.
+What the lookup gives us instead is a $3\times 2$ matrix per example, one row per context character.
+So we flatten those rows into one vector of length 6.
+`torch.cat` would do the job, but PyTorch has a cheaper option in the `view` function ([doc](https://pytorch.org/docs/stable/generated/torch.Tensor.view.html)), which reinterprets the same underlying storage without copying it.
+See this [blog post](http://blog.ezyang.com/2019/05/pytorch-internals/) for more on tensors and PyTorch internals.
 
 ```python
 print(embed[0, :])
@@ -142,13 +138,11 @@ print(embed.view(-1, 6)[0, :])
             [1.9269, 1.4873]])
     tensor([1.9269, 1.4873, 1.9269, 1.4873, 1.9269, 1.4873])
 
-### Building Model
+### Building the Model
 
-Next, we are going to initialize the weights and biases of our first and second hidden layers.
-Since the input dimension of our first layer is 6 and the number of neurons is 100, we initialize the weight matrix of shape $6\times 100$ and the bias vector of length 100.
-The same rule applies to the second layer.
-The second layer's input dimension is the first layer's output dimension, 100.
-Because the output of the second layer is the probability of all 27 characters, we initialize the weight matrix of shape $100\times 27$ with the bias vector of length 27.
+Next, we initialize the weights and biases of the hidden layer and the output layer.
+The hidden layer takes the flattened 6-dimensional input and has 100 neurons, so its weight matrix has shape $6\times 100$ and its bias vector has length 100.
+The output layer follows the same rule: its input dimension is the hidden layer's output, 100, and because it has to score all 27 characters, its weight matrix has shape $100\times 27$ with a bias vector of length 27.
 
 ```python
 # 1st hidden layer
@@ -180,9 +174,9 @@ print(f"Overall loss: {loss:.6f}")
 
     Overall loss: nan
 
-However, as Andrej mentioned in the video, there is a potential issue with calculating the softmax function traditionally, as we saw above.
-If the output logits contain a large value, such as 100, applying the exponential function can result in `nan` values.
-Therefore, a better way to calculate the loss is to use the built-in `cross_entropy` function instead.
+The loss came out as `nan`, and the culprit is the way we computed the softmax by hand.
+If a logit is large enough, say 100, then `exp(100)` overflows to `inf`, and dividing `inf` by `inf` gives `nan`.
+PyTorch's built-in `cross_entropy` avoids this by subtracting the largest logit before exponentiating, so we use it instead.
 
 ```python
 loss = F.cross_entropy(logits, y) 
@@ -191,9 +185,9 @@ print(f"Overall loss: {loss:.6f}")
 
     Overall loss: 78.392731
 
-## Put Everything Together
+## Putting It All Together
 
-Here is the code after we put everything together and enabled backward pass.
+Here is the code with everything assembled and the backward pass enabled.
 
 ```python
 g = torch.Generator().manual_seed(42)
@@ -212,9 +206,9 @@ print(f"Total parameters: {sum(p.nelement() for p in parameters)}")
 
     Total parameters: 3481
 
-The total number of learnable parameters of our model is 3482.
-Next, we are going to run the model for 10 epochs and see how loss changes.
-Notice that we apply the activation function `tanh` as described in the paper in the code below.
+That comes to 3,481 learnable parameters in total.
+Next, we run the model for 10 full passes over the dataset and watch how the loss changes.
+Note the `tanh` activation on the hidden layer in the code below, as the paper prescribes.
 
 ```python
 for _ in range(10):
@@ -247,15 +241,13 @@ for _ in range(10):
     Loss: 10.479723930358887
     Loss: 10.136445045471191
 
-The model's loss decreases as expected.
-However, you will notice that the loss comes out slower if you have a larger model with much more parameters.
-Why? Because we are using the whole dataset as a batch to calculate the loss and update the weights accordingly.
-In [Stochastic Gradient Descent (SGD)](https://www.wikiwand.com/en/Stochastic_gradient_descent), the model parameters are updated based on the gradient of the loss function with respect to a randomly selected subset of the training data.
-Moreover, we can apply this idea to accelerate the training process.
+The loss decreases, as expected, but slowly, and it gets slower still on a larger model with more parameters.
+The reason is that each of those 10 updates required a forward and backward pass over all 228,146 examples just to take a single step.
+[Stochastic gradient descent (SGD)](https://www.wikiwand.com/en/Stochastic_gradient_descent) trades exactness for speed: it estimates the gradient from a small random subset of the training data, which is noisier per step but lets us take far more steps in the same amount of time.
 
 ### Applying Mini-batch
 
-We pick 32 as the mini-batch size, and the model runs very fast for 1000 epochs.
+With a mini-batch size of 32, 1000 steps finish almost instantly, and they reach a far lower loss than the 10 full-batch passes did.
 
 ```python
 for i in range(1000):
@@ -312,9 +304,8 @@ print(f"Overall loss: {loss.item()}")
 
 ### Learning Rate Selection
 
-So how can we determine a suitable learning rate?
-In our previous training processes, we used a fixed learning rate of 0.1, but how can we know that 0.1 is optimal?
-Next, we are going to do some experiments to explore how to choose a good learning rate.
+So far we have used a fixed learning rate of 0.1, but how would we know whether 0.1 is any good?
+One simple way to find out is to sweep it: train once while raising the learning rate exponentially from 0.001 to 1, record the loss at every step, and see where the curve bottoms out.
 
 ```python
 g = torch.Generator().manual_seed(42)
@@ -378,17 +369,16 @@ plt.plot(lre, losses)
     Loss: 5.7273149490356445
 
 <figure>
-<img src="index_files/figure-markdown_strict/fig-loss-vs-lr-output-4.png" id="fig-loss-vs-lr" width="653" height="411" alt="Figure 1: A plot for loss on different logarithm of learing rates" />
-<figcaption aria-hidden="true">Figure 1: A plot for loss on different logarithm of learing rates</figcaption>
+<img src="index_files/figure-markdown_strict/fig-loss-vs-lr-output-4.png" id="fig-loss-vs-lr" width="653" height="411" alt="Figure 1: A plot for loss on different logarithm of learning rates" />
+<figcaption aria-hidden="true">Figure 1: A plot for loss on different logarithm of learning rates</figcaption>
 </figure>
 
-According to the plot in [Figure 1](#fig-loss-vs-lr), the optimal logarithmic learning rate is around -1.0, which makes the learning rate 0.1.
+As [Figure 1](#fig-loss-vs-lr) shows, the loss bottoms out around an exponent of -1.0, which corresponds to a learning rate of $10^{-1}=0.1$, the value we had been using all along.
 
 ### Learning Rate Decay
 
-As the training progresses, the loss could encounter a plateau, meaning that it stops decreasing even though the training process is still ongoing.
-To overcome this, learning rate decay can be applied, which decreases the learning rate over time as the training progresses.
-The model can escape from plateaus and continue improving its performance.
+Training often reaches a plateau, where the loss stops falling even though the steps keep coming, because a learning rate that was useful early on is now too large to settle into a minimum.
+Learning rate decay fixes this by shrinking the learning rate over time, letting the model take finer steps once it is close.
 
 ```python
 g = torch.Generator().manual_seed(42)
@@ -429,9 +419,10 @@ plt.plot(range(epochs), losses)
 
 ### Train, Validation, and Test
 
-Evaluating the model performance on unseen data is important to make sure it generalizes well.
-It is common practice to split the training data into three parts: 80% for training, 10% for validation, and 10% for testing.
-The validation set could also be used for early stopping, which means stopping the training process when the performance on the validation set starts to degrade, preventing the model from overfitting to the training set.
+To know whether the model generalizes, we have to measure it on data it has never seen.
+The common practice is to split the data three ways: 80% for training, 10% for validation, and 10% for testing.
+The validation set is the one we tune against, and it also enables early stopping, which halts training as soon as validation performance starts to degrade, before the model overfits the training set.
+The test set stays untouched until the very end.
 
 ```python
 def build_dataset(words, block_size=3):
@@ -519,7 +510,8 @@ plt.show()
 <figcaption aria-hidden="true">Figure 2: Plot for training and validation loss</figcaption>
 </figure>
 
-As shown in [Figure 2](#fig-loss-plot), there is a tiny drop in the validation loss at 10000 epochs, which indicates that our training did encounter a plateau and learning rate decay works very well.
+As [Figure 2](#fig-loss-plot) shows, the validation loss drops again right at step 10,000, exactly where the learning rate falls from 0.1 to 0.01.
+The training had indeed plateaued, and the decay got it moving again.
 Let's check the loss of the testing data.
 
 ```python
@@ -534,11 +526,11 @@ print(f"Loss on testing data: {test_loss:.6f}")
     Loss on validation data: 2.375811
     Loss on testing data: 2.374066
 
-The losses on validation and testing data are close, indicating we are not overfitting.
+The validation and test losses are nearly identical, which is a good sign that we are not overfitting.
 
 ## Visualization of Embedding
 
-Let's visualize our embedding matrix.
+Because our embedding is only 2-dimensional, we can plot it directly and see what the model learned.
 
 ```python
 plt.figure(figsize=(8,8))
@@ -554,11 +546,12 @@ plt.show()
 <figcaption aria-hidden="true">Figure 3: Visualization of 2D embedding matrix</figcaption>
 </figure>
 
-As depicted in [Figure 3](#fig-embedding), the vowels are closely grouped in the left bottom corner of the plot, while the `.` is situated far away in the top right corner.
+As [Figure 3](#fig-embedding) shows, the vowels cluster together in the bottom-left corner, while `.`, the end-of-word token, sits far off in the top right.
+The model worked out that grouping on its own, purely from the task of predicting the next character.
 
 ## Word Generation
 
-The last thing we want to do is word generation.
+The last thing to do is generate some names.
 
 ```python
 g = torch.Generator().manual_seed(420)
@@ -600,6 +593,5 @@ for _ in range(20):
     dyannili
     saom
 
-The words generated by the multilayer perceptron model make more sense than those from our last model.
-Still, there are many other ways to improve model performance.
-For example, train more epochs with learning rate decay, increase the batch size to make the training more stable, and add more data.
+These read much more like real names than anything the bigram model produced.
+There is still plenty of room to improve, though: train for more steps, widen the embedding beyond 2 dimensions, enlarge the hidden layer, or raise the batch size to make each step less noisy.
