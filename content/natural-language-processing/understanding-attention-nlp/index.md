@@ -19,7 +19,7 @@ jupyter: python3
 
 {{< youtube kCc8FmEb1nY >}}
 
-In [Part 2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we built a simple MLP that generates names one character at a time, trained on 32k popular names.
+In [Part 2]({{< ref "../building-makemore-mlp/index.md" >}}), we built a simple MLP that generates names one character at a time, trained on 32k popular names.
 In this lecture, [Andrej Karpathy](https://karpathy.ai) walks through the transformer architecture one piece at a time.
 We will start by refactoring that model, then add each transformer component in turn and watch the loss drop as we go.
 
@@ -169,7 +169,7 @@ for b in range(batch_size):
 ## BigramLanguageModel
 
 Let's rewrite the bigram model.
-Here is the core of what we built in [Part 1](https://gejun.name/natural-language-processing/building-makemore/).
+Here is the core of what we built in [Part 1]({{< ref "../building-makemore/index.md" >}}).
 
 ``` python
 W = torch.randn((27, 27), requires_grad=True)
@@ -180,7 +180,7 @@ probs = counts / counts.sum(1, keepdim=True)
 
 ### Base Model
 
-In [Part 2](https://gejun.name/natural-language-processing/building-makemore-mlp/), we learned to represent a token as a fixed-length, learnable vector of real numbers, known as a token embedding.
+In [Part 2]({{< ref "../building-makemore-mlp/index.md" >}}), we learned to represent a token as a fixed-length, learnable vector of real numbers, known as a token embedding.
 The embedding matrix is created with [`nn.Embedding`](https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html), where `num_embeddings` is the vocabulary size and `embedding_dim` is the length of the feature vector.
 Following the original paper, we call that length `d_model` and set it to 64 rather than to the vocabulary size.
 Since the embedding width no longer matches the vocabulary, we add a linear layer to project the output back up to `vocab_size`.
